@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+$primary-color: #7f1d1d;
+$student-color: #ea580c;
+$organization-color: #581c1c;
+$background-gray: #e4e0e0;
+$card-background: #fff7f7;
+
+$radius-lg: 20px;
+$font-xl: 32px;
+$font-md: 16px;
+$transition-base: 0.3s ease;
+
+:host, html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: $background-gray;
+  box-sizing: border-box;
+  overflow-x: hidden; 
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  outline: none;
+  display: none; 
+}
+
+.role-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: $background-gray;
+  font-family: 'Roboto', sans-serif;
+  position: relative; 
+}
+
+/* ✅ Card styling */
+.role-card {
+  background: $card-background;
+  padding: 60px 80px;
+  border-radius: $radius-lg;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+
+  h1 {
+    font-size: $font-xl;
+    color: $primary-color;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    font-size: $font-md;
+    margin-bottom: 40px;
+    color: #111827;
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: $font-md;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 18px;
+    transition: background $transition-base;
+
+    &.student {
+      background: $student-color;
+
+      &:hover {
+        background: darken($student-color, 10%);
+      }
+    }
+
+    &.organization {
+      background: $organization-color;
+
+      &:hover {
+        background: darken($organization-color, 8%);
+      }
+    }
+  }
+}
