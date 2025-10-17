@@ -1,0 +1,42 @@
+<div class="org-login-container">
+  <div class="org-login-card">
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Login to your account</p>
+
+    <form (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="yourorg@gmail.com"
+          [(ngModel)]="credentials.email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          [(ngModel)]="credentials.password"
+          required
+        />
+      </div>
+
+      <div class="forgot-password">
+        <a href="#" (click)="onForgotPassword($event)">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-login">Login</button>
+
+      <div class="signup-link">
+        Don't have an account? <a (click)="goToRegister()">Sign up</a>
+      </div>
+    </form>
+  </div>
+</div>

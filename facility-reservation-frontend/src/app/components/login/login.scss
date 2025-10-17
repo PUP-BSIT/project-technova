@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+// Color Variables
+$primary-color: #7f1d1d;
+$primary-hover: #991b1b;
+$secondary-color: #dc2626;
+$accent-color: #f59e0b;
+
+$background-gray: #E4E0E0;
+$card-background: #fef3f3;
+$input-background: #ffffff;
+
+$text-primary: #000000;
+$text-secondary: #6b7280;
+$text-placeholder: #9ca3af;
+
+$border-color: #d1d5db;
+$border-focus: #7f1d1d;
+
+// Spacing Variables
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 40px;
+$spacing-xxl: 60px;
+
+// Border Radius
+$radius-sm: 8px;
+$radius-lg: 20px;
+
+// Font Sizes
+$font-xs: 12px;
+$font-sm: 14px;
+$font-md: 16px;
+$font-xl: 32px;
+
+// Font Weights
+$font-regular: 400;
+$font-medium: 500;
+$font-bold: 700;
+
+// Transitions
+$transition-base: 0.3s ease;
+
+// Reset browser defaults
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+  background: $background-gray;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  background: $background-gray;
+}
+
+// Component Styles
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  background: $background-gray;
+  font-family: 'Roboto', sans-serif;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.login-card {
+  background: $card-background;
+  padding: $spacing-xxl 50px;
+  border-radius: $radius-lg;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  
+  h1 {
+    font-size: $font-xl;
+    color: $primary-color;
+    margin-bottom: $spacing-xs;
+    text-align: center;
+    font-weight: $font-bold;
+  }
+  
+  .subtitle {
+    font-size: $font-md;
+    color: $text-primary;
+    margin-bottom: $spacing-xl;
+    text-align: center;
+    font-weight: $font-regular;
+  }
+}
+
+.login-form {
+  .form-group {
+    margin-bottom: $spacing-lg;
+    
+    label {
+      display: block;
+      margin-bottom: $spacing-xs;
+      color: $text-primary;
+      font-weight: $font-medium;
+      font-size: $font-sm;
+      
+      .required {
+        color: $primary-color;
+      }
+    }
+    
+    input {
+      width: 100%;
+      padding: 14px $spacing-md;
+      border: 1px solid $border-color;
+      border-radius: $radius-sm;
+      font-size: $font-sm;
+      font-family: 'Roboto', sans-serif;
+      background: $input-background;
+      transition: border-color $transition-base;
+      box-sizing: border-box;
+      
+      &:focus {
+        outline: none;
+        border-color: $border-focus;
+      }
+      
+      &::placeholder {
+        color: $text-placeholder;
+      }
+    }
+    
+    .password-wrapper {
+      position: relative;
+      
+      input {
+        padding-right: 45px;
+      }
+      
+      .toggle-password {
+        position: absolute;
+        right: $spacing-sm;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $text-secondary;
+        transition: color $transition-base;
+        
+        &:hover {
+          color: darken($text-secondary, 20%);
+        }
+        
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+  
+  .forgot-password-link {
+    text-align: center;
+    margin-bottom: $spacing-lg;
+    
+    a {
+      color: $accent-color;
+      text-decoration: none;
+      font-size: $font-sm;
+      font-weight: $font-medium;
+      transition: all $transition-base;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: $primary-color;
+    color: white;
+    border: none;
+    border-radius: $radius-sm;
+    font-size: $font-md;
+    font-weight: $font-medium;
+    cursor: pointer;
+    transition: background $transition-base;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: $spacing-lg;
+    
+    &:hover {
+      background: $primary-hover;
+    }
+  }
+  
+  .signup-link {
+    text-align: center;
+    font-size: $font-sm;
+    color: $text-primary;
+    
+    a {
+      color: $secondary-color;
+      text-decoration: none;
+      font-weight: $font-medium;
+      cursor: pointer;
+      transition: all $transition-base;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
