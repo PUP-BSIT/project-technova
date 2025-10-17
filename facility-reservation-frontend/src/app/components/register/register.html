@@ -91,6 +91,20 @@
       <h2 class="section-title">PERSONAL INFORMATION</h2>
 
       <div class="form-group">
+        <label class="form-label">Role <span class="required">*</span></label>
+        <select
+          class="form-input"
+          [(ngModel)]="formData.role"
+          [class.error]="showRoleError"
+        >
+          <option value="">Select Role</option>
+          <option value="STUDENT">Student</option>
+          <option value="FACULTY">Faculty</option>
+        </select>
+        <span class="error-message" *ngIf="showRoleError">Please select a role</span>
+      </div>
+
+      <div class="form-group">
         <label class="form-label">First Name <span class="required">*</span></label>
         <input
           type="text"
@@ -115,12 +129,14 @@
       <div class="form-group">
         <label class="form-label">Last Name <span class="required">*</span></label>
         <input
-          type="text"
-          class="form-input"
-          placeholder="Enter Last Name"
-          [(ngModel)]="formData.lastName"
+            type="text"
+            class="form-input"
+            placeholder="Enter Last Name"
+            [(ngModel)]="formData.lastName"
+            [class.error]="showLastNameError"
         />
-      </div>
+        <span class="error-message" *ngIf="showLastNameError">Please enter a last name</span>
+    </div>
 
       <div class="form-group">
         <label class="form-label">Student ID <span class="required">*</span></label>
@@ -142,24 +158,28 @@
       <h2 class="section-title">CONTACT INFORMATION</h2>
 
       <div class="form-group">
-        <label class="form-label">Email</label>
+        <label class="form-label">Email <span class="required">*</span></label>
         <input
-          type="email"
-          class="form-input"
-          placeholder="Enter Email Account"
-          [(ngModel)]="formData.email"
+            type="email"
+            class="form-input"
+            placeholder="Enter Email Account"
+            [(ngModel)]="formData.email"
+            [class.error]="showEmailError"
         />
-      </div>
+        <span class="error-message" *ngIf="showEmailError">Please enter a valid email address</span>
+    </div>
 
-      <div class="form-group">
-        <label class="form-label">Phone <span class="optional">(Optional)</span></label>
+    <div class="form-group">
+        <label class="form-label">Phone <span class="required">*</span></label>
         <input
-          type="tel"
-          class="form-input"
-          placeholder="Enter Phone Number"
-          [(ngModel)]="formData.phone"
+            type="tel"
+            class="form-input"
+            placeholder="Enter Phone Number"
+            [(ngModel)]="formData.phone"
+            [class.error]="showPhoneError"
         />
-      </div>
+        <span class="error-message" *ngIf="showPhoneError">Please enter a phone number</span>
+    </div>
 
       <div class="form-group">
         <label class="form-label">Address</label>
@@ -226,8 +246,14 @@
         <span class="error-message" *ngIf="passwordMismatch">Password not match</span>
       </div>
 
+      <div class="registration-error" *ngIf="errorMessage">
+        <p class="error-message">{{ errorMessage }}</p>
+      </div>
+
       <div class="form-actions">
-        <button class="btn-submit" (click)="submitForm()">Submit</button>
+        <button class="btn-submit" (click)="submitForm()" [disabled]="isLoading">
+          {{ isLoading ? 'Submitting...' : 'Submit' }}
+        </button>
       </div>
     </div>
 

@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth';
   selector: 'app-register',
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './register.html',
-  styleUrls: ['./register.scss'],
+  styleUrls: ['./register.scss']
 })
 export class RegisterComponent {
   currentStep = 1;
@@ -36,10 +36,13 @@ export class RegisterComponent {
     address: '',
     password: '',
     confirmPassword: '',
-    role: '',
+    role: ''
   };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   nextStep() {
     // Validation for step 1 - personal Information
@@ -95,8 +98,7 @@ export class RegisterComponent {
 
     // validate password strength
     if (!this.isValidPassword(this.formData.password)) {
-      this.errorMessage =
-        'Password must be at least 8 characters with uppercase, lowercase, number, and special character.';
+      this.errorMessage = 'Password must be at least 8 characters with uppercase, lowercase, number, and special character.';
       this.hasPasswordError = true;
       return;
     }
@@ -114,7 +116,7 @@ export class RegisterComponent {
       phoneNumber: this.formData.phone,
       password: this.formData.password,
       role: this.formData.role,
-      organizationName: this.formData.address || 'Computer Society', // Default value if address is empty
+      organizationName: this.formData.address || 'Computer Society' // Default value if address is empty
     };
 
     console.log('Sending registration data:', registerData);
@@ -129,7 +131,7 @@ export class RegisterComponent {
         console.error('Registration error:', error);
         this.isLoading = false;
         this.errorMessage = error.error?.message || 'Registration failed. Please try again.';
-      },
+      }
     });
   }
 
