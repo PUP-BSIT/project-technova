@@ -1,11 +1,14 @@
 import { Routes } from '@angular/router';
+import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { LoginComponent } from './components/login/login';
-import { RegisterComponent } from './components/register/register';
-import { DashboardComponent } from './components/dashboard/dashboard';
+import { OrgLoginComponent } from './components/org-login/org-login';
+// import { RegisterComponent } from './components/register/register';
+// import { DashboardComponent } from './components/dashboard/dashboard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/login', pathMatch: 'full' },
+    { path: '', component: RoleSelectionComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
-    { path: 'dashboard', component: DashboardComponent }
+    { path: 'org-login', component: OrgLoginComponent },
+    // { path: 'register', component: RegisterComponent },
+    // { path: 'dashboard', component: DashboardComponent }
 ];
