@@ -3,10 +3,10 @@ package com.campus.facility_reservation.service;
 import com.campus.facility_reservation.dto.RegisterRequest;
 import com.campus.facility_reservation.dto.LoginRequest;
 import com.campus.facility_reservation.dto.AuthResponse;
-import com.campus.facility_reservation.model.Role;        // <-- NEW
-import com.campus.facility_reservation.model.RoleType;    // <-- NEW
+import com.campus.facility_reservation.model.Role;
+import com.campus.facility_reservation.model.RoleType;
 import com.campus.facility_reservation.model.User;
-import com.campus.facility_reservation.repository.RoleRepository; // <-- NEW
+import com.campus.facility_reservation.repository.RoleRepository;
 import com.campus.facility_reservation.repository.UserRepository;
 import com.campus.facility_reservation.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository; // <-- Added dependency for role lookup
+    private final RoleRepository roleRepository;
     // private final JwtUtil jwtUtil;
 
     public String register(RegisterRequest request) {
@@ -27,7 +27,6 @@ public class UserService {
             return "Email already in use";
         }
 
-        // --- FIX FOR COMPILATION ERROR STARTS HERE ---
        // 1. Convert the incoming role String (e.g., "STUDENT") to the enum
         RoleType roleType = RoleType.valueOf(request.getRole().toUpperCase());
 
@@ -38,12 +37,7 @@ public class UserService {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role); // <-- Now setting the correct Role entity
-        // Note: You may want to set other fields (firstName, lastName, etc.) here
-        // if this method is intended for full registration.
-        // Assuming AuthService handles the full fields, only basic fields are set here.
-
-        // --- FIX FOR COMPILATION ERROR ENDS HERE ---
+        user.setRole(role);
 
         userRepository.save(user);
         return "User registered successfully";
@@ -57,7 +51,6 @@ public class UserService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        // Create AuthResponse using the no-arg constructor and setters
         AuthResponse response = new AuthResponse();
         response.setAccessToken("dummy-token");
         response.setMessage("Login successful");

@@ -30,7 +30,6 @@ public class AuthService {
     private JwtTokenProvider jwtTokenProvider;
     
     // Register new user
-    // Assuming the method signature uses RegisterRequest, not AuthRequest
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
                 throw new RuntimeException("Email already registered");
@@ -66,7 +65,7 @@ public class AuthService {
                 user.getId(), user.getRole().getName().toString());
     }
     
-    // Login user (assuming AuthRequest or separate DTO is used here)
+    // Login user
     public AuthResponse login(String email, String password) {
         // Find user by email
         User user = userRepository.findByEmail(email)
@@ -123,7 +122,6 @@ public class AuthService {
     }
     
     // Update user profile
-    // Assuming the method signature uses RegisterRequest, not AuthRequest
     public UserResponse updateUserProfile(Long userId, RegisterRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
