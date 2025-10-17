@@ -20,6 +20,10 @@ This system replaces manual forms and verbal requests with a **centralized digit
 - **👥 User Authentication** – Secure login & registration
 
 ---
+## 🌐 Webhost/Live Demo
+- **Live Demo:** <br />
+[![(CEFRS) Campus Equipment & Facility Reservation System](https://img.shields.io/badge/CEFRS-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://mediumblue-raven-507899.hostingersite.com/)
+---
 
 ## 🗓️ Project Timeline
 
