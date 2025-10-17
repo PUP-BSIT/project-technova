@@ -20,6 +20,13 @@ $color-success: #16a34a;
   box-sizing: border-box;
 }
 
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+  background: $color-bg;
+}
+
 html {
   margin: 0;
   padding: 0;
@@ -30,6 +37,8 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  min-width: 100vw;
   background: $color-bg;
   font-family: 'Roboto', sans-serif;
   padding: 0;
