@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './register.html',
   styleUrls: ['./register.scss']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   currentStep = 1;
   showPassword = false;
   showConfirmPassword = false;
@@ -41,17 +42,34 @@ export class RegisterComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
+
+  ngOnInit(): void {
+    // Get the role from the URL query parameters (e.g., ?role=STUDENT)
+    this.route.queryParams.subscribe(params => {
+      const roleFromUrl = params['role'];
+
+      if (roleFromUrl) {
+        // Assign the role to the formData object which is used in submitForm()
+        this.formData.role = roleFromUrl;
+        console.log('Successfully set role from URL:', this.formData.role);
+      } else {
+        // If no role is in the URL, redirect back to the selection page
+        console.error('Error: Role parameter is missing from the URL. Redirecting.');
+        this.router.navigate(['/select-role']); // selection path
+      }
+    });
+  }
 
   nextStep() {
     // Validation for step 1 - personal Information
     if (this.currentStep === 1) {
       this.showFirstNameError = !this.formData.firstName.trim();
       this.showLastNameError = !this.formData.lastName.trim();
-      this.showRoleError = !this.formData.role;
 
-      if (this.showFirstNameError || this.showLastNameError || this.showRoleError) {
+      if (this.showFirstNameError || this.showLastNameError) {
         return;
       }
     }
@@ -103,12 +121,17 @@ export class RegisterComponent {
       return;
     }
 
+    // FINAL CHECK: If role is somehow missing just before submission, stop and error.
+    if (!this.formData.role) {
+      this.errorMessage = 'Role type is missing. Please restart the process from role selection.';
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
     this.passwordMismatch = false;
     this.hasPasswordError = false;
 
-    // map form data to match backend RegisterRequest DTO
     const registerData = {
       firstName: this.formData.firstName,
       lastName: this.formData.lastName,
