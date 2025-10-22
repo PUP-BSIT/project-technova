@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-role-selection',
@@ -12,13 +11,13 @@ import { RouterModule } from '@angular/router';
 })
 export class RoleSelectionComponent {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
-  goToStudent() {
-    this.router.navigate(['/login']);
+  goToStudentAuth() {
+    this.router.navigate(['/login'], { queryParams: { role: 'STUDENT' } });
   }
 
-  goToOrganization() {
-    this.router.navigate(['/org-login']);
+  goToOrganizationAuth() {
+    this.router.navigate(['/login'], { queryParams: { role: 'ORGANIZATION' } });
   }
 }
