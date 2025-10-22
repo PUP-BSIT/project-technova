@@ -1,3 +1,4 @@
+@use "sass:color";
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 $primary-color: #7f1d1d;
@@ -11,14 +12,16 @@ $font-xl: 32px;
 $font-md: 16px;
 $transition-base: 0.3s ease;
 
-:host, html, body {
+:host,
+html,
+body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   background-color: $background-gray;
   box-sizing: border-box;
-  overflow-x: hidden; 
+  overflow-x: hidden;
 }
 
 * {
@@ -34,7 +37,7 @@ select {
   background: none;
   border: none;
   outline: none;
-  display: none; 
+  display: none;
 }
 
 .role-container {
@@ -45,7 +48,7 @@ select {
   width: 100vw;
   background: $background-gray;
   font-family: 'Roboto', sans-serif;
-  position: relative; 
+  position: relative;
 }
 
 /* ✅ Card styling */
@@ -88,7 +91,7 @@ select {
       background: $student-color;
 
       &:hover {
-        background: darken($student-color, 10%);
+        background: color.adjust($student-color, $lightness: -10%);
       }
     }
 
@@ -96,7 +99,7 @@ select {
       background: $organization-color;
 
       &:hover {
-        background: darken($organization-color, 8%);
+        background: color.adjust($organization-color, $lightness: -8%);
       }
     }
   }
