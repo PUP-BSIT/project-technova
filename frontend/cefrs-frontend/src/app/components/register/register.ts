@@ -164,7 +164,7 @@ export class RegisterComponent implements OnInit {
     return passwordRegex.test(password);
   }
 
-  goToLogin() {
-    this.router.navigate(['/login']);
+  goToDashboard() {
+    this.router.navigate(['/student-dashboard/student-dashboard']);
   }
 }
