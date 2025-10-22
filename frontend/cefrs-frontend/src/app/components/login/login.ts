@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,8 @@ export class LoginComponent implements OnInit {
 
   showPassword: boolean = false;
   selectedRole: string = '';
+  isLoading: boolean = false;
+  errorMessage: string = '';
 
   credentials = {
     email: '',
@@ -26,7 +29,8 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -43,28 +47,46 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin(): void {
+    this.errorMessage = '';
+
     if (!this.credentials.email || !this.credentials.password) {
-      alert('Please fill in all fields');
+      this.errorMessage = 'Please fill in all fields.';
       return;
     }
 
+    this.isLoading = true;
     console.log('Login attempt:', this.credentials);
 
-    // Navigate to dashboard after login
-    this.goToDashboard();
+    this.authService.login(this.credentials.email, this.credentials.password).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        this.isLoading = false;
+
+        const role = this.authService.getUserRole();
+        // Both roles go to the same /dashboard path
+        if (role === 'STUDENT' || this.selectedRole.toUpperCase() === 'STUDENT') {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.errorMessage = `Logged in as ${role}. Please use the correct login page.`;
+          this.authService.logout();
+        }
+      },
+      error: (error) => {
+        console.error('Login error:', error);
+        this.isLoading = false;
+
+        const backendMessage = error.error?.message;
+        this.errorMessage = backendMessage || 'Login failed. Please check your credentials.';
+      }
+    });
   }
 
   onForgotPassword(event: Event): void {
     event.preventDefault();
-    alert('Forgot password functionality coming soon!');
+    this.errorMessage = 'Forgot password functionality coming soon!';
   }
 
   goToRegister(): void {
-    // Updated to pass role to register page
     this.router.navigate(['/register'], { queryParams: { role: this.selectedRole } });
-  }
-
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
   }
 }
