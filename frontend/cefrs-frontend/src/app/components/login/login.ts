@@ -86,6 +86,10 @@ export class LoginComponent implements OnInit {
     this.errorMessage = 'Forgot password functionality coming soon!';
   }
 
+  goToDashboard() {
+    this.router.navigate(['/student-dashboard/student-dashboard']);
+  }
+
   goToRegister(): void {
     this.router.navigate(['/register'], { queryParams: { role: this.selectedRole } });
   }
