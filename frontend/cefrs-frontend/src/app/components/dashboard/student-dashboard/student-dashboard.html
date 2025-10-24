@@ -1,111 +1,41 @@
 <div class="dashboard-container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo-section">
-      <div class="logo-text">System name<br>and logo</div>
-    </div>
-
-    <nav class="nav-menu">
-      <button
-        class="nav-item"
-        [class.active]="currentView === 'dashboard'"
-        (click)="currentView = 'dashboard'">
-        Dashboard
-      </button>
-      <button
-        class="nav-item"
-        [class.active]="currentView === 'facilities'"
-        (click)="currentView = 'facilities'">
-        Facilities
-      </button>
-      <button
-        class="nav-item"
-        [class.active]="currentView === 'equipment'"
-        (click)="currentView = 'equipment'">
-        Equipment
-      </button>
-      <button
-        class="nav-item"
-        [class.active]="currentView === 'requests'"
-        (click)="currentView = 'requests'">
-        My Request
-      </button>
-      <button class="nav-item" (click)="currentView = 'settings'">
-        Settings
-      </button>
-    </nav>
-
-    <!-- User Profile Section -->
-    @if (user) {
-      <div class="user-profile">
-        <div class="user-avatar">
-          <div class="avatar-circle"></div>
-        </div>
-        <div class="user-info">
-          <!-- Added safety check for user data loading -->
-          <div class="user-name">{{ user.name }}</div>
-          <div class="user-email">{{ user.email }}</div>
-        </div>
-        <button class="logout-btn" (click)="logout()">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-          </svg>
-        </button>
-      </div>
-    } @else {
-      <!-- Placeholder while user loads -->
-      <div class="user-profile skeleton-loading">
-        <div class="user-avatar"><div class="avatar-circle"></div></div>
-        <div class="user-info">
-          <div class="user-name">Loading...</div>
-        </div>
-      </div>
-    }
-  </aside>
+  <!-- Sidebar Component -->
+  <app-sidebar 
+    [currentView]="currentView" 
+    (viewChanged)="onSidebarViewChange($event)">
+  </app-sidebar>
 
   <!-- Main Content -->
   <main class="main-content">
+
+    <!-- ✅ NEW: Router outlet for Settings view -->
+    @if (currentView === 'settings') {
+      <router-outlet></router-outlet>
+    }
+
     <!-- Dashboard View -->
     @if (currentView === 'dashboard') {
-      <div class="page-header">
-        <h1>Dashboard</h1>
-      </div>
-
-      <!-- Added safety check for user data loading -->
+      <div class="page-header"><h1>Dashboard</h1></div>
       @if (user) {
         <div class="welcome-banner">
           <h2>Welcome back, {{ user.name }}!</h2>
           <p>Track your reservations and equipment requests here</p>
         </div>
       } @else {
-        <div class="welcome-banner skeleton-loading">
-          <h2>Welcome back, Loading...</h2>
-        </div>
+        <div class="welcome-banner skeleton-loading"><h2>Welcome back, Loading...</h2></div>
       }
 
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Active Reservations</div>
-          <div class="stat-value">{{ stats.activeReservations }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Borrowed Equipment</div>
-          <div class="stat-value">{{ stats.borrowedEquipment }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Pending Requests</div>
-          <div class="stat-value">{{ stats.pendingRequests }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Requests</div>
-          <div class="stat-value">{{ stats.totalRequests }}</div>
-        </div>
+        <div class="stat-card"><div class="stat-label">Active Reservations</div><div class="stat-value">{{ stats.activeReservations }}</div></div>
+        <div class="stat-card"><div class="stat-label">Borrowed Equipment</div><div class="stat-value">{{ stats.borrowedEquipment }}</div></div>
+        <div class="stat-card"><div class="stat-label">Pending Requests</div><div class="stat-value">{{ stats.pendingRequests }}</div></div>
+        <div class="stat-card"><div class="stat-label">Total Requests</div><div class="stat-value">{{ stats.totalRequests }}</div></div>
       </div>
 
       <div class="recent-section">
         <div class="section-header">
           <h3>My Recent Requests</h3>
-          <button class="see-all-btn" (click)="currentView = 'requests'">See All</button>
+          <button class="see-all-btn" (click)="setView('requests')">See All</button>
         </div>
 
         <div class="requests-list">
@@ -115,9 +45,7 @@
                 <div class="request-title">{{ request.title }}</div>
                 <div class="request-meta">{{ request.type }} • {{ request.requestDate }}</div>
               </div>
-              <span class="status-badge" [ngClass]="getStatusClass(request.status)">
-                {{ request.status }}
-              </span>
+              <span class="status-badge" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
             </div>
           } @empty {
             <div class="no-data-message">No recent requests found.</div>
@@ -132,34 +60,20 @@
         <h1>Facility Reservations</h1>
         <p class="page-subtitle">Reserve campus facilities for your events</p>
       </div>
-
-      <div class="search-bar">
-        <input
-          type="text"
-          placeholder="Search Equipment"
-          [(ngModel)]="searchQuery"
-          class="search-input">
-      </div>
-
+      <div class="search-bar"><input type="text" placeholder="Search Equipment" [(ngModel)]="searchQuery" class="search-input"></div>
       <div class="facilities-grid">
         @for (facility of facilities; track facility.id) {
           <div class="facility-card">
             <div class="facility-image">
               <img [src]="facility.image" [alt]="facility.name">
-              <span class="facility-badge" [ngClass]="getStatusClass(facility.status)">
-                {{ facility.status }}
-              </span>
+              <span class="facility-badge" [ngClass]="getStatusClass(facility.status)">{{ facility.status }}</span>
             </div>
             <div class="facility-content">
               <h3 class="facility-name">{{ facility.name }}</h3>
               <p class="facility-description">{{ facility.description }}</p>
               <div class="facility-capacity">Capacity: {{ facility.capacity }} People</div>
               <button class="request-btn" [disabled]="facility.status === 'Reserved'">
-                @if (facility.status === 'Reserved') {
-                  Not Available
-                } @else {
-                  Request Equipment
-                }
+                @if (facility.status === 'Reserved') { Not Available } @else { Request Equipment }
               </button>
             </div>
           </div>
@@ -171,33 +85,17 @@
 
     <!-- Equipment View -->
     @if (currentView === 'equipment') {
-      <div class="page-header">
-        <h1>Equipments Catalog</h1>
-        <p class="page-subtitle">Browse and request campus equipment</p>
-      </div>
-
+      <div class="page-header"><h1>Equipments Catalog</h1><p class="page-subtitle">Browse and request campus equipment</p></div>
       <div class="search-controls">
-        <input
-          type="text"
-          placeholder="Search Equipment"
-          [(ngModel)]="searchQuery"
-          class="search-input">
+        <input type="text" placeholder="Search Equipment" [(ngModel)]="searchQuery" class="search-input">
         <select [(ngModel)]="selectedCategory" class="filter-select">
-          <option>All Categories</option>
-          <option>Audio</option>
-          <option>Visual</option>
-          <option>Furniture</option>
-          <option>Lights</option>
+          <option>All Categories</option><option>Audio</option><option>Visual</option><option>Furniture</option><option>Lights</option>
         </select>
       </div>
-
       <div class="equipment-grid">
         @for (item of equipment; track item.id) {
           <div class="equipment-card">
-            <div class="equipment-image">
-              <img [src]="item.image" [alt]="item.name">
-              <span class="category-badge">{{ item.category }}</span>
-            </div>
+            <div class="equipment-image"><img [src]="item.image" [alt]="item.name"><span class="category-badge">{{ item.category }}</span></div>
             <div class="equipment-content">
               <h3 class="equipment-name">{{ item.name }}</h3>
               <p class="equipment-description">{{ item.description }}</p>
@@ -209,38 +107,23 @@
             </div>
           </div>
         } @empty {
-           <div class="no-data-message">No equipment matching your criteria.</div>
+          <div class="no-data-message">No equipment matching your criteria.</div>
         }
       </div>
     }
 
     <!-- My Requests View -->
     @if (currentView === 'requests') {
-      <div class="page-header">
-        <h1>My Requests</h1>
-        <p class="page-subtitle">Track your equipment and facility requests</p>
-      </div>
-
+      <div class="page-header"><h1>My Requests</h1><p class="page-subtitle">Track your equipment and facility requests</p></div>
       <div class="search-controls">
-        <input
-          type="text"
-          placeholder="Search your request"
-          [(ngModel)]="searchQuery"
-          class="search-input">
+        <input type="text" placeholder="Search your request" [(ngModel)]="searchQuery" class="search-input">
         <select [(ngModel)]="selectedStatus" class="filter-select">
-          <option>All Status</option>
-          <option>Pending</option>
-          <option>Approved</option>
-          <option>Rejected</option>
-          <option>Returned</option>
+          <option>All Status</option><option>Pending</option><option>Approved</option><option>Rejected</option><option>Returned</option>
         </select>
         <select [(ngModel)]="selectedType" class="filter-select">
-          <option>All Types</option>
-          <option>Equipment</option>
-          <option>Facility</option>
+          <option>All Types</option><option>Equipment</option><option>Facility</option>
         </select>
       </div>
-
       <div class="requests-detail-list">
         @for (request of allRequests; track request.id) {
           <div class="request-detail-card">
@@ -249,33 +132,17 @@
               <h3>{{ request.title }}</h3>
               <div class="request-badges">
                 <span class="type-badge">{{ request.type }}</span>
-                <span class="status-badge" [ngClass]="getStatusClass(request.status)">
-                  {{ request.status }}
-                </span>
+                <span class="status-badge" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
               </div>
             </div>
             <div class="request-details">
               @if (request.quantity) {
-                <div class="detail-row">
-                  <strong>Quantity:</strong> {{ request.quantity }}pc@if (request.quantity > 1) {s}
-                </div>
+                <div class="detail-row"><strong>Quantity:</strong> {{ request.quantity }}pc@if (request.quantity > 1) {s}</div>
               }
-              <div class="detail-row">
-                <strong>Request Date:</strong> {{ request.requestDate }}
-              </div>
-              @if (request.returnDate) {
-                <div class="detail-row">
-                  <strong>Return Date:</strong> {{ request.returnDate }}
-                </div>
-              }
-              @if (request.dayOfEvent) {
-                <div class="detail-row">
-                  <strong>Day of event:</strong> {{ request.dayOfEvent }}
-                </div>
-              }
-              <div class="detail-row">
-                <strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}
-              </div>
+              <div class="detail-row"><strong>Request Date:</strong> {{ request.requestDate }}</div>
+              @if (request.returnDate) { <div class="detail-row"><strong>Return Date:</strong> {{ request.returnDate }}</div> }
+              @if (request.dayOfEvent) { <div class="detail-row"><strong>Day of event:</strong> {{ request.dayOfEvent }}</div> }
+              <div class="detail-row"><strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}</div>
             </div>
           </div>
         } @empty {
