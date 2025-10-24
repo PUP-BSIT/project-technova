@@ -4,38 +4,38 @@ import { LoginComponent } from './components/login/login';
 import { OrgLoginComponent } from './components/org-login/org-login';
 import { RegisterComponent } from './components/register/register';
 import { DashboardComponent } from './components/dashboard/dashboard';
-import { ProfileComponent } from './components/profile/profile';
-
-// Import the student-specific components and the guard
 import { StudentDashboard } from './components/dashboard/student-dashboard/student-dashboard';
 import { AuthGuard } from './guards/auth-guard';
 
+import { StudentProfileComponent } from './components/profile/profile';
+import { StudentChangePasswordComponent } from './components/student-change-password/student-change-password';
+
 export const routes: Routes = [
-    { path: '', component: RoleSelectionComponent },
-    { path: 'login', component: LoginComponent },
-    { path: 'org-login', component: OrgLoginComponent },
-    { path: 'register', component: RegisterComponent },
+  { path: '', component: RoleSelectionComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'org-login', component: OrgLoginComponent },
+  { path: 'register', component: RegisterComponent },
 
-    // Protected Routes
-    // This dashboard is for Admin/Organization roles.
-    // The AuthGuard will check if the user is a STUDENT and redirect them to /student-dashboard.
-    {
-        path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [AuthGuard]
-    },
+  // Admin / Org Dashboard (Protected)
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard]
+  },
 
-    // Student Dashboard: The destination for the Student role.
-    {
-        path: 'student-dashboard',
-        component: StudentDashboard,
-        canActivate: [AuthGuard] // Requires login
-    },
+  // Student Dashboard (Protected)
+  {
+    path: 'student-dashboard',
+    component: StudentDashboard,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'settings/profile', component: StudentProfileComponent },
+      { path: 'settings/change-password', component: StudentChangePasswordComponent }
+    ]
+  },
 
-    // Profile Page: Requires login.
-    {
-        path: 'profile',
-        component: ProfileComponent,
-        canActivate: [AuthGuard]
-    }
+  // Optional: Keep old standalone profile routes
+  { path: 'profile', component: StudentProfileComponent, canActivate: [AuthGuard] },
+  { path: 'change-password', component: StudentChangePasswordComponent, canActivate: [AuthGuard] },
+  { path: 'student-change-password', component: StudentChangePasswordComponent },
 ];
