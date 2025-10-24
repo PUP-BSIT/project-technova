@@ -1,10 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth';
+import { SidebarComponent } from '../../sidebar/sidebar';
 
-// user interface matching the AuthService's UserProfile structure
+// --- INTERFACES ---
 interface User {
   id: number;
   email: string;
@@ -52,18 +53,15 @@ interface Equipment {
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule, SidebarComponent],
   templateUrl: './student-dashboard.html',
   styleUrls: ['./student-dashboard.scss']
 })
-
 export class StudentDashboard implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
   currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'settings' = 'dashboard';
-
-  // initialize user as null or undefined, and let ngOnInit populate it
   user: User | null = null;
 
   stats = {
@@ -73,7 +71,6 @@ export class StudentDashboard implements OnInit {
     totalRequests: 10
   };
 
-  // --- mock data ---
   recentRequests: Request[] = [
     { id: 'R1045', title: 'Conference Room', type: 'Facility', status: 'Approved', requestDate: '10/1/2025', adminNotes: 'Approved for testing purposes' },
     { id: 'R1046', title: 'Microphone', type: 'Equipment', status: 'Pending', quantity: 2, requestDate: '10/1/2025', returnDate: '10/4/2025', adminNotes: 'Pending stock check' },
@@ -107,23 +104,17 @@ export class StudentDashboard implements OnInit {
   selectedType = 'All Types';
 
   ngOnInit(): void {
-    // 1. ffetch the user profile data here from the backend using the AuthService
     this.fetchUserProfile();
   }
 
   fetchUserProfile(): void {
-    // calling the correct method name: getUserProfile()
     this.authService.getUserProfile().subscribe({
       next: (profile) => {
-        // assigning all profile properties
         this.user = profile;
-        // creating the display name for use in the template
         this.user.name = `${profile.firstName} ${profile.lastName}`;
-        console.log('User profile loaded:', this.user);
       },
       error: (err) => {
         console.error('Error fetching user profile:', err);
-        // fallback to a clear default/guest user if profile fetch fails
         this.user = {
           id: 0,
           email: 'guest@example.com',
@@ -141,24 +132,26 @@ export class StudentDashboard implements OnInit {
 
   setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'settings'): void {
     this.currentView = view;
+
+    // ✅ Route to profile when settings is clicked
+    if (view === 'settings') {
+      this.router.navigate(['/student-dashboard/settings/profile']);
+    }
+  }
+
+  onSidebarViewChange(view: string): void {
+    this.setView(view as 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'settings');
   }
 
   getStatusClass(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      'Approved': 'status-approved',
-      'Pending': 'status-pending',
-      'Rejected': 'status-rejected',
-      'Returned': 'status-returned',
-      'Available': 'status-available',
-      'Reserved': 'status-reserved'
+    const map: Record<string, string> = {
+      Approved: 'status-approved',
+      Pending: 'status-pending',
+      Rejected: 'status-rejected',
+      Returned: 'status-returned',
+      Available: 'status-available',
+      Reserved: 'status-reserved'
     };
-    return statusMap[status] || '';
-  }
-
-  logout(): void {
-    this.authService.logout();
-    // redirect to the login page after successful logout
-    this.router.navigate(['/login']);
-    console.log('User logged out successfully and redirected.');
+    return map[status] || '';
   }
 }

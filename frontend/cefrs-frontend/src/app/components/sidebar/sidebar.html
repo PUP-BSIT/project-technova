@@ -1,0 +1,36 @@
+<aside class="sidebar">
+  <div class="logo-section">
+    <div class="logo-text">System name<br>and logo</div>
+  </div>
+
+  <nav class="nav-menu">
+    <button class="nav-item" [class.active]="currentView === 'dashboard'" (click)="navigateTo('dashboard')">Dashboard</button>
+    <button class="nav-item" [class.active]="currentView === 'facilities'" (click)="navigateTo('facilities')">Facilities</button>
+    <button class="nav-item" [class.active]="currentView === 'equipment'" (click)="navigateTo('equipment')">Equipment</button>
+    <button class="nav-item" [class.active]="currentView === 'requests'" (click)="navigateTo('requests')">My Request</button>
+    <button class="nav-item" [class.active]="currentView === 'settings'" (click)="navigateTo('settings')">Settings</button>
+  </nav>
+
+  <div class="user-profile">
+    <div class="user-details">
+      @if (user) {
+        <div class="user-avatar"><div class="avatar-circle"></div></div>
+        <div class="user-info">
+          <div class="user-name">{{ user.name }}</div>
+          <div class="user-email">{{ user.email }}</div>
+        </div>
+      } @else {
+        <div class="user-avatar"><div class="avatar-circle"></div></div>
+        <div class="user-info">
+          <div class="user-name">Loading...</div>
+          <div class="user-email">Please wait...</div>
+        </div>
+      }
+    </div>
+    <button class="logout-btn" (click)="logout()" title="Logout">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+    </button>
+  </div>
+</aside>
