@@ -6,49 +6,61 @@
     </div>
 
     <nav class="nav-menu">
-      <button 
-        class="nav-item" 
+      <button
+        class="nav-item"
         [class.active]="currentView === 'dashboard'"
-        (click)="setView('dashboard')">
+        (click)="currentView = 'dashboard'">
         Dashboard
       </button>
-      <button 
-        class="nav-item" 
+      <button
+        class="nav-item"
         [class.active]="currentView === 'facilities'"
-        (click)="setView('facilities')">
+        (click)="currentView = 'facilities'">
         Facilities
       </button>
-      <button 
-        class="nav-item" 
+      <button
+        class="nav-item"
         [class.active]="currentView === 'equipment'"
-        (click)="setView('equipment')">
+        (click)="currentView = 'equipment'">
         Equipment
       </button>
-      <button 
-        class="nav-item" 
+      <button
+        class="nav-item"
         [class.active]="currentView === 'requests'"
-        (click)="setView('requests')">
+        (click)="currentView = 'requests'">
         My Request
       </button>
-      <button class="nav-item" (click)="setView('dashboard')">
+      <button class="nav-item" (click)="currentView = 'settings'">
         Settings
       </button>
     </nav>
 
-    <div class="user-profile">
-      <div class="user-avatar">
-        <div class="avatar-circle"></div>
+    <!-- User Profile Section -->
+    @if (user) {
+      <div class="user-profile">
+        <div class="user-avatar">
+          <div class="avatar-circle"></div>
+        </div>
+        <div class="user-info">
+          <!-- Added safety check for user data loading -->
+          <div class="user-name">{{ user.name }}</div>
+          <div class="user-email">{{ user.email }}</div>
+        </div>
+        <button class="logout-btn" (click)="logout()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+        </button>
       </div>
-      <div class="user-info">
-        <div class="user-name">{{ user.name }}</div>
-        <div class="user-email">{{ user.email }}</div>
+    } @else {
+      <!-- Placeholder while user loads -->
+      <div class="user-profile skeleton-loading">
+        <div class="user-avatar"><div class="avatar-circle"></div></div>
+        <div class="user-info">
+          <div class="user-name">Loading...</div>
+        </div>
       </div>
-      <button class="logout-btn" (click)="logout()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-        </svg>
-      </button>
-    </div>
+    }
   </aside>
 
   <!-- Main Content -->
@@ -59,10 +71,17 @@
         <h1>Dashboard</h1>
       </div>
 
-      <div class="welcome-banner">
-        <h2>Welcome back, {{ user.name }}!</h2>
-        <p>Track your reservations and equipment requests here</p>
-      </div>
+      <!-- Added safety check for user data loading -->
+      @if (user) {
+        <div class="welcome-banner">
+          <h2>Welcome back, {{ user.name }}!</h2>
+          <p>Track your reservations and equipment requests here</p>
+        </div>
+      } @else {
+        <div class="welcome-banner skeleton-loading">
+          <h2>Welcome back, Loading...</h2>
+        </div>
+      }
 
       <div class="stats-grid">
         <div class="stat-card">
@@ -86,7 +105,7 @@
       <div class="recent-section">
         <div class="section-header">
           <h3>My Recent Requests</h3>
-          <button class="see-all-btn" (click)="setView('requests')">See All</button>
+          <button class="see-all-btn" (click)="currentView = 'requests'">See All</button>
         </div>
 
         <div class="requests-list">
@@ -100,6 +119,8 @@
                 {{ request.status }}
               </span>
             </div>
+          } @empty {
+            <div class="no-data-message">No recent requests found.</div>
           }
         </div>
       </div>
@@ -113,8 +134,8 @@
       </div>
 
       <div class="search-bar">
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Search Equipment"
           [(ngModel)]="searchQuery"
           class="search-input">
@@ -142,6 +163,8 @@
               </button>
             </div>
           </div>
+        } @empty {
+          <div class="no-data-message">No facilities currently available.</div>
         }
       </div>
     }
@@ -154,8 +177,8 @@
       </div>
 
       <div class="search-controls">
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Search Equipment"
           [(ngModel)]="searchQuery"
           class="search-input">
@@ -185,6 +208,8 @@
               <button class="request-btn">Request Equipment</button>
             </div>
           </div>
+        } @empty {
+           <div class="no-data-message">No equipment matching your criteria.</div>
         }
       </div>
     }
@@ -197,8 +222,8 @@
       </div>
 
       <div class="search-controls">
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Search your request"
           [(ngModel)]="searchQuery"
           class="search-input">
@@ -249,10 +274,12 @@
                 </div>
               }
               <div class="detail-row">
-                <strong>Admin Notes:</strong> {{ request.adminNotes }}
+                <strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}
               </div>
             </div>
           </div>
+        } @empty {
+          <div class="no-data-message">You have no requests yet.</div>
         }
       </div>
     }
