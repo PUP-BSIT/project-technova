@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators'; // tap for token
+import { tap, catchError } from 'rxjs/operators';
 
 interface LoginResponse {
   accessToken: string;
@@ -81,6 +81,10 @@ export class AuthService {
 
   getUserProfile(): Observable<UserProfile> {
     console.log('Fetching user profile');
+    // Note: The ProfileService (which you also provided) calls the same endpoint.
+    // It's usually better to have only one service responsible for a resource (User/Profile).
+    // If you plan to use this one instead of ProfileService, ensure you update
+    // the Dashboard and Profile components to use this method.
     return this.http.get<UserProfile>(`${this.userApiUrl}/profile`).pipe(
       tap((profile: UserProfile) => {
         console.log('User profile fetched:', profile);
@@ -118,6 +122,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
+    // Correctly returns the access token key: 'accessToken'
     return localStorage.getItem('accessToken');
   }
 

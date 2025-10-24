@@ -210,7 +210,7 @@ body {
   font-size: 14px;
   cursor: pointer;
   font-family: 'Roboto', sans-serif;
-  
+
   &:hover {
     color: #333;
   }
@@ -568,6 +568,7 @@ body {
 
 // Responsive Design
 @media (max-width: 1400px) {
+
   .facilities-grid,
   .equipment-grid {
     grid-template-columns: repeat(2, 1fr);
