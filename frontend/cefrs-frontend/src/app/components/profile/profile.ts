@@ -1,146 +1,128 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../services/profile.service';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { SidebarComponent } from '../sidebar/sidebar';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-student-profile',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, SidebarComponent],
   templateUrl: './profile.html',
-  styleUrls: ['./profile.scss'],
-  imports: [CommonModule, ReactiveFormsModule],
+  styleUrls: ['./profile.scss']
 })
-export class ProfileComponent implements OnInit {
+export class StudentProfileComponent implements OnInit {
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private router = inject(Router);
 
   profileForm!: FormGroup;
-  alertMessage = '';
-  profileImageUrl: string | null = null;
-  isLoading = false;
+  user: any = null;
+  isEditing = false;
+  loading = true;
+  successMessage = '';
+  errorMessage = '';
 
   ngOnInit(): void {
-    this.initializeForm();
     this.loadProfile();
+    // Ensure proper display on component initialization
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
   }
 
-  private initializeForm(): void {
-    this.profileForm = this.fb.group({
-      studentNumber: [{ value: '', disabled: true }],
-      firstName: [{ value: '', disabled: true }],
-      lastName: [{ value: '', disabled: true }],
-      gender: [{ value: '', disabled: true }],
-      dateOfBirth: [{ value: '', disabled: true }],
-      mobileNumber: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
-      email: ['', [Validators.required, Validators.email]],
-      residentialAddress: ['', Validators.required],
-      permanentAddress: ['', Validators.required],
-      profileImage: [null],
-    });
-  }
-
-  /** Load user data from backend */
-  private loadProfile(): void {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      this.alertMessage = 'No user found. Please log in again.';
-      return;
-    }
-
-    this.isLoading = true;
-
+  loadProfile(): void {
     this.profileService.getProfile().subscribe({
-      next: (data: any) => {
-        this.isLoading = false;
-        this.profileForm.patchValue({
-          studentNumber: data.id,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          gender: 'Male',
-          dateOfBirth: '2000-08-18',
-          mobileNumber: data.phoneNumber,
-          email: data.email,
-          residentialAddress: data.organizationName || '',
-          permanentAddress: data.organizationName || '',
+      next: (res) => {
+        this.user = res;
+        this.profileForm = this.fb.group({
+          studentNumber: this.fb.control(res.studentNumber || '', { nonNullable: true }),
+          name: this.fb.control(`${res.firstName} ${res.lastName}` || '', { nonNullable: true }),
+          phoneNumber: this.fb.control(res.phoneNumber || '', {
+            nonNullable: true,
+            validators: [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]
+          }),
+          email: this.fb.control(res.email || '', {
+            nonNullable: true,
+            validators: [Validators.required, Validators.email]
+          }),
+          address: this.fb.control(res.address || '', {
+            nonNullable: true,
+            validators: [Validators.required]
+          })
         });
-
-        if (data.profileImageUrl) {
-          this.profileImageUrl = data.profileImageUrl;
-        }
+        this.loading = false;
       },
-      error: (err) => {
-        console.error('Error loading profile:', err);
-        this.alertMessage = 'Failed to load profile. Please check if your Spring Boot backend is running.';
-        this.isLoading = false;
-      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Profile load failed:', err);
+        this.loading = false;
+        this.errorMessage = 'Unable to load profile data.';
+      }
     });
   }
 
-  /** Save updates */
+  toggleEdit(): void {
+    this.isEditing = !this.isEditing;
+    if (!this.isEditing) this.profileForm.disable();
+    else this.profileForm.enable();
+  }
+
   saveProfile(): void {
     if (this.profileForm.invalid) {
-      this.alertMessage = 'Please fix form errors before saving.';
       this.profileForm.markAllAsTouched();
       return;
     }
 
-    const formData = this.profileForm.getRawValue();
+    this.successMessage = '';
+    this.errorMessage = '';
 
-    // Data Transfer Object (DTO) for the update
     const updateData = {
-      firstName: formData.firstName || '',
-      lastName: formData.lastName || '',
-      email: formData.email,
-      phoneNumber: formData.mobileNumber,
-      password: 'placeholder123', // backend needs a password field in DTO
-      role: 'STUDENT',
-      organizationName: formData.residentialAddress,
+      phoneNumber: this.profileForm.value.phoneNumber,
+      email: this.profileForm.value.email,
+      address: this.profileForm.value.address
     };
 
-    this.isLoading = true;
     this.profileService.updateProfile(updateData).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.alertMessage = 'Profile updated successfully!';
+      next: (res) => {
+        this.successMessage = res.message || 'Profile updated successfully.';
+        this.isEditing = false;
+        this.loadProfile();
       },
-      error: (err) => {
-        console.error('Profile update failed:', err);
-        this.alertMessage = 'Failed to update profile.';
-        this.isLoading = false;
-      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Error updating profile:', err);
+        this.errorMessage = err.error?.message || 'Failed to update profile.';
+      }
     });
   }
 
-  /** Upload photo preview */
-  uploadPhoto(): void {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.onchange = (event: Event) => {
-      const input = event.target as HTMLInputElement;
-      const file = input.files?.[0];
-      if (!file) return;
+ goToChangePassword(): void {
+  this.router.navigate(['/student-change-password']);
+ }
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.profileImageUrl = reader.result as string;
-        this.profileForm.patchValue({ profileImage: file });
-      };
-      reader.readAsDataURL(file);
-    };
-    fileInput.click();
-  }
-
-  /** Navigation */
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
-  }
-
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.router.navigate(['/login']);
-  }
+ onViewChanged(view: string): void {
+   // Handle view changes from sidebar
+   console.log('View changed to:', view);
+   
+   // Ensure proper display when navigating
+   setTimeout(() => {
+     window.scrollTo(0, 0);
+   }, 50);
+   
+   // Navigate based on the view
+   switch (view) {
+     case 'dashboard':
+       this.router.navigate(['/student-dashboard']);
+       break;
+     case 'facilities':
+     case 'equipment':
+     case 'requests':
+       this.router.navigate(['/student-dashboard']);
+       break;
+     case 'settings':
+       // Already on settings/profile, no need to navigate
+       break;
+   }
+ }
 }
