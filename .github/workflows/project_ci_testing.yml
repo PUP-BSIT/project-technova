@@ -58,13 +58,13 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: cd frontend && npm ci
+        run: cd frontend/cefrs-frontend && npm ci
 
       - name: Build Angular app
-        run: cd frontend && npm run build --if-present
+        run: cd frontend/cefrs-frontend && npm run build --if-present
 
       - name: Run tests
-        run: cd frontend && npm test --if-present
+        run: cd frontend/cefrs-frontend && npm test --if-present
 
   # Backend (Spring Boot w/ Maven)
   backend-check:
