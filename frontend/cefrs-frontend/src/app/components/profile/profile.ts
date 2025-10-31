@@ -38,7 +38,11 @@ export class StudentProfileComponent implements OnInit {
       next: (res) => {
         this.user = res;
         this.profileForm = this.fb.group({
-          studentNumber: this.fb.control(res.studentNumber || '', { nonNullable: true }),
+          studentId: this.fb.control(res.studentId || '', {
+            nonNullable: true,
+            // Student ID is required and should not change
+            validators: [Validators.required]
+          }),
           name: this.fb.control(`${res.firstName} ${res.lastName}` || '', { nonNullable: true }),
           phoneNumber: this.fb.control(res.phoneNumber || '', {
             nonNullable: true,
@@ -53,6 +57,10 @@ export class StudentProfileComponent implements OnInit {
             validators: [Validators.required]
           })
         });
+        // By default, the form should be disabled for viewing mode
+        if (!this.isEditing) {
+          this.profileForm.disable();
+        }
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -65,8 +73,15 @@ export class StudentProfileComponent implements OnInit {
 
   toggleEdit(): void {
     this.isEditing = !this.isEditing;
-    if (!this.isEditing) this.profileForm.disable();
-    else this.profileForm.enable();
+    // Only disable all controls if we are NOT editing
+    if (!this.isEditing) {
+      this.profileForm.disable();
+    } else {
+      this.profileForm.controls['phoneNumber'].enable();
+      this.profileForm.controls['email'].enable();
+      this.profileForm.controls['address'].enable();
+      this.profileForm.controls['studentId'].enable();
+    }
   }
 
   saveProfile(): void {
@@ -79,50 +94,58 @@ export class StudentProfileComponent implements OnInit {
     this.errorMessage = '';
 
     const updateData = {
+      studentId: this.profileForm.value.studentId,
       phoneNumber: this.profileForm.value.phoneNumber,
       email: this.profileForm.value.email,
       address: this.profileForm.value.address
     };
 
+    this.profileForm.disable();
+
     this.profileService.updateProfile(updateData).subscribe({
       next: (res) => {
         this.successMessage = res.message || 'Profile updated successfully.';
         this.isEditing = false;
-        this.loadProfile();
+        this.loadProfile(); // Reload data to show updated values
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error updating profile:', err);
         this.errorMessage = err.error?.message || 'Failed to update profile.';
+
+        this.profileForm.enable();
+        if (this.isEditing) {
+          this.toggleEdit();
+          this.toggleEdit(); // Call twice to re-enable
+        }
       }
     });
   }
 
- goToChangePassword(): void {
-  this.router.navigate(['/student-change-password']);
- }
+  goToChangePassword(): void {
+    this.router.navigate(['/student-change-password']);
+  }
 
- onViewChanged(view: string): void {
-   // Handle view changes from sidebar
-   console.log('View changed to:', view);
-   
-   // Ensure proper display when navigating
-   setTimeout(() => {
-     window.scrollTo(0, 0);
-   }, 50);
-   
-   // Navigate based on the view
-   switch (view) {
-     case 'dashboard':
-       this.router.navigate(['/student-dashboard']);
-       break;
-     case 'facilities':
-     case 'equipment':
-     case 'requests':
-       this.router.navigate(['/student-dashboard']);
-       break;
-     case 'settings':
-       // Already on settings/profile, no need to navigate
-       break;
-   }
- }
+  onViewChanged(view: string): void {
+    // Handle view changes from sidebar
+    console.log('View changed to:', view);
+
+    // Ensure proper display when navigating
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
+
+    // Navigate based on the view
+    switch (view) {
+      case 'dashboard':
+        this.router.navigate(['/student-dashboard']);
+        break;
+      case 'facilities':
+      case 'equipment':
+      case 'requests':
+        this.router.navigate(['/student-dashboard']);
+        break;
+      case 'settings':
+        break;
+    }
+  }
 }

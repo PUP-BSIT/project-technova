@@ -13,14 +13,14 @@
     <div class="profile-card">
       <h2 class="user-header">
         {{ user?.lastName | uppercase }}, {{ user?.firstName | uppercase }}
-        <span class="student-id">({{ user?.studentNumber }})</span>
+        <span class="student-id">({{ user?.studentId }})</span>
       </h2>
 
       <form [formGroup]="profileForm">
         <div class="form-grid">
           <div class="form-group">
             <label>Student Number</label>
-            <input type="text" formControlName="studentNumber" [disabled]="true" />
+            <input type="text" formControlName="studentId" [disabled]="!isEditing" />
           </div>
 
           <div class="form-group">
