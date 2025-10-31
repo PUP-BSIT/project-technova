@@ -1,0 +1,307 @@
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- Logo -->
+    <div class="logo-section">
+    <div class="logo-image">
+      <img src="assets/logo-white.png" alt="CEFRS Logo" />
+    </div>
+    <div class="logo-text">CEFRS</div>
+  </div>
+
+    <!-- Navigation -->
+    <nav class="navigation">
+      <button 
+        *ngFor="let item of navItems" 
+        [class.active]="currentView === item.id"
+        (click)="setCurrentView(item.id)"
+        class="nav-button">
+        {{ item.label }}
+      </button>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="user-profile">
+      <div class="user-avatar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <div class="user-info">
+        <div class="user-name">Admin</div>
+        <div class="user-email">youradmin@example.com</div>
+      </div>
+      <button class="logout-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Dashboard View -->
+    <div *ngIf="currentView === 'dashboard'" class="view-container">
+      <h1 class="page-title">Admin Dashboard</h1>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Active Request</div>
+          <div class="stat-value">3</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Reservations</div>
+          <div class="stat-value">24</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Equipment Borrowed Today</div>
+          <div class="stat-value">8</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Facilities in Use</div>
+          <div class="stat-value">3</div>
+        </div>
+      </div>
+
+      <!-- Pending Requests -->
+      <div class="pending-requests-card">
+        <div class="card-header">
+          <h2 class="card-title">Pending Requests</h2>
+          <button class="view-all-button">View all</button>
+        </div>
+        
+        <div class="request-list">
+          <div *ngFor="let request of pendingRequests" class="request-item">
+            <div class="request-info">
+              <span [class]="'request-badge ' + request.type">{{ request.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>
+              <span class="request-name">{{ request.name }}</span>
+              <div class="request-details">{{ request.details }} • {{ request.date }}</div>
+            </div>
+            <div class="request-actions">
+              <button class="approve-button">Approved</button>
+              <button class="decline-button">Decline</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage Request View -->
+    <div *ngIf="currentView === 'manage-request'" class="view-container">
+      <h1 class="page-title">Manage Request</h1>
+      
+      <div class="filter-section">
+        <div class="search-box">
+          <input type="text" placeholder="Search by requester, item, or ID..." [(ngModel)]="searchText">
+          <button class="search-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        </div>
+        <div class="filter-dropdowns">
+          <select class="filter-dropdown">
+            <option>All Types</option>
+            <option>Equipment</option>
+            <option>Facility</option>
+          </select>
+          <select class="filter-dropdown">
+            <option>All Status</option>
+            <option>Pending</option>
+            <option>Approved</option>
+            <option>Declined</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="requests-list">
+        <div *ngFor="let request of requests" class="request-card">
+          <div class="request-card-header">
+            <div>
+              <span class="request-id">{{ request.id }}</span>
+              <span [class]="'status-badge status-' + request.status">{{ request.status }}</span>
+            </div>
+            <div class="request-actions">
+              <button class="approve-button">Approved</button>
+              <button class="decline-button">Decline</button>
+            </div>
+          </div>
+          <h3 class="request-title">{{ request.name }}</h3>
+          <div class="request-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Requester:</span>
+              <span class="detail-value">{{ request.requester }}</span>
+            </div>
+            <div class="detail-item" *ngIf="request.dateTime">
+              <span class="detail-label">Date & Time:</span>
+              <span class="detail-value">{{ request.dateTime }}</span>
+            </div>
+            <div class="detail-item" *ngIf="request.burrow">
+              <span class="detail-label">Burrow:</span>
+              <span class="detail-value">{{ request.burrow }}</span>
+            </div>
+            <div class="detail-item" *ngIf="request.return">
+              <span class="detail-label">Return:</span>
+              <span class="detail-value">{{ request.return }}</span>
+            </div>
+          </div>
+          <div class="request-details-grid">
+            <div class="detail-item" *ngIf="request.capacity">
+              <span class="detail-label">Capacity:</span>
+              <span class="detail-value">{{ request.capacity }}</span>
+            </div>
+            <div class="detail-item" *ngIf="request.participants">
+              <span class="detail-label">Participants:</span>
+              <span class="detail-value">{{ request.participants }}</span>
+            </div>
+            <div class="detail-item" *ngIf="request.condition">
+              <span class="detail-label">Condition:</span>
+              <span class="detail-value">{{ request.condition }}</span>
+            </div>
+          </div>
+          <div class="detail-item" *ngIf="request.notes">
+            <span class="detail-label">Notes:</span>
+            <span class="detail-value">{{ request.notes }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Facilities View -->
+    <div *ngIf="currentView === 'facilities'" class="view-container">
+      <h1 class="page-title">Facilities</h1>
+      
+      <div class="filter-section">
+        <button class="add-button">+ Add New Facility</button>
+        <div class="search-box">
+          <input type="text" placeholder="Search by name or location..." [(ngModel)]="searchText">
+          <button class="search-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        </div>
+        <select class="filter-dropdown">
+          <option>All Status</option>
+          <option>Available</option>
+          <option>Under Maintenance</option>
+          <option>Unavailable</option>
+        </select>
+      </div>
+
+      <div class="items-list">
+        <div *ngFor="let facility of facilities" class="item-card">
+          <div class="item-card-header">
+            <div>
+              <span class="item-id">{{ facility.id }}</span>
+              <span [class]="'status-badge status-' + facility.status">{{ getStatusText(facility.status) }}</span>
+            </div>
+            <div class="item-actions">
+              <button class="edit-button">Edit</button>
+              <button class="delete-button">Delete</button>
+            </div>
+          </div>
+          <h3 class="item-title">{{ facility.name }}</h3>
+          <div class="item-details">
+            <div class="detail-item">
+              <span class="detail-label">Location:</span>
+              <span class="detail-value">{{ facility.location }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Capacity:</span>
+              <span class="detail-value">{{ facility.capacity }}</span>
+            </div>
+            <div class="detail-item" *ngIf="facility.description">
+              <span class="detail-label">Description:</span>
+              <span class="detail-value">{{ facility.description }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment View -->
+    <div *ngIf="currentView === 'equipment'" class="view-container">
+      <h1 class="page-title">Equipment</h1>
+      
+      <div class="filter-section">
+        <button class="add-button">+ Add New Equipment</button>
+        <div class="search-box">
+          <input type="text" placeholder="Search by name..." [(ngModel)]="searchText">
+          <button class="search-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        </div>
+        <div class="filter-dropdowns">
+          <select class="filter-dropdown">
+            <option>All Categories</option>
+            <option>Multimedia</option>
+            <option>Audio</option>
+          </select>
+          <select class="filter-dropdown">
+            <option>All Conditions</option>
+            <option>Good</option>
+            <option>Fair</option>
+            <option>Poor</option>
+          </select>
+          <select class="filter-dropdown">
+            <option>All Availability</option>
+            <option>Available</option>
+            <option>Borrowed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="items-list">
+        <div *ngFor="let item of equipment" class="item-card">
+          <div class="item-card-header">
+            <div>
+              <span class="item-id">{{ item.id }}</span>
+            </div>
+            <div class="item-actions">
+              <button class="edit-button">Edit</button>
+              <button class="delete-button">Delete</button>
+            </div>
+          </div>
+          <h3 class="item-title">{{ item.name }}</h3>
+          <div class="item-details">
+            <div class="detail-item">
+              <span class="detail-label">Category:</span>
+              <span class="detail-value">{{ item.category }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Condition:</span>
+              <span class="condition-badge condition-good">{{ item.condition }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Availability:</span>
+              <span [class]="'availability-badge availability-' + item.availability">{{ getStatusText(item.availability) }}</span>
+            </div>
+          </div>
+          <div *ngIf="item.availability === 'borrowed'" class="borrowed-info">
+            <div>Currently borrowed by: <strong>{{ item.borrowedBy }}</strong></div>
+            <div>Due: {{ item.dueDate }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report and Logs View -->
+    <div *ngIf="currentView === 'report-logs'" class="view-container">
+      <h1 class="page-title">Report and Logs</h1>
+      <div class="empty-state">
+        <p>Reports and logs section coming soon...</p>
+      </div>
+    </div>
+  </main>
+</div><p>admin-dashboard works!</p>
