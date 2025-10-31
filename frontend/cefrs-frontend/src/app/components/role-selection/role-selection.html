@@ -1,9 +1,19 @@
 <div class="role-container">
   <div class="role-card">
-    <h1>Welcome Back</h1>
-    <p class="subtitle">Please click or tap your destination.</p>
+    <h1>Welcome</h1>
+    <p class="subtitle">Please select your account type to continue</p>
 
-    <button class="btn student" (click)="goToStudentAuth()">Student</button>
-    <button class="btn organization" (click)="goToOrganizationAuth()">Organization</button>
+    <button class="btn student" (click)="goToStudentAuth()">
+      <span class="btn-content">
+        <span class="btn-title">Student</span>
+        <span class="btn-description">Log in or register as a student</span>
+      </span>
+    </button>
+    <button class="btn organization" (click)="goToOrganizationAuth()">
+      <span class="btn-content">
+        <span class="btn-title">Organization</span>
+        <span class="btn-description">Log in or register as an organization</span>
+      </span>
+    </button>
   </div>
 </div>
