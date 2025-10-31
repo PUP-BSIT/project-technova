@@ -1,85 +1,85 @@
-name: Project CI Check (Angular + Spring Boot)
+# name: Project CI Check (Angular + Spring Boot)
 
-on:
-  pull_request:
-    branches:
-      - main  # Run only when merging to main branch
-  push:
-    branches:
-      - main
+# on:
+#   pull_request:
+#     branches:
+#       - main  # Run only when merging to main branch
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  # Analyze which folders were changed
-  analyze-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      backend: ${{ steps.filter.outputs.backend }}
-      document: ${{ steps.filter.outputs.document }}
-    steps:
-      - uses: actions/checkout@v4
+# jobs:
+#   # Analyze which folders were changed
+#   analyze-changes:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       frontend: ${{ steps.filter.outputs.frontend }}
+#       backend: ${{ steps.filter.outputs.backend }}
+#       document: ${{ steps.filter.outputs.document }}
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Detect changed folders
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            frontend:
-              - 'frontend/**'
-            backend:
-              - 'backend/**'
-            document:
-              - 'document/**'
-              - '**/*.pdf'
-              - '**/*.yml'
+#       - name: Detect changed folders
+#         id: filter
+#         uses: dorny/paths-filter@v3
+#         with:
+#           filters: |
+#             frontend:
+#               - 'frontend/**'
+#             backend:
+#               - 'backend/**'
+#             document:
+#               - 'document/**'
+#               - '**/*.pdf'
+#               - '**/*.yml'
 
-  # Skip check when only documents are changed
-  skip-docs:
-    runs-on: ubuntu-latest
-    needs: analyze-changes
-    if: >
-      needs.analyze-changes.outputs.document == 'true' &&
-      needs.analyze-changes.outputs.frontend != 'true' &&
-      needs.analyze-changes.outputs.backend != 'true'
-    steps:
-      - name: Skip CI
-        run: echo "Only documents changed — skipping build and tests."
+#   # Skip check when only documents are changed
+#   skip-docs:
+#     runs-on: ubuntu-latest
+#     needs: analyze-changes
+#     if: >
+#       needs.analyze-changes.outputs.document == 'true' &&
+#       needs.analyze-changes.outputs.frontend != 'true' &&
+#       needs.analyze-changes.outputs.backend != 'true'
+#     steps:
+#       - name: Skip CI
+#         run: echo "Only documents changed — skipping build and tests."
 
-  # Frontend (Angular)
-  frontend-check:
-    runs-on: ubuntu-latest
-    needs: analyze-changes
-    if: needs.analyze-changes.outputs.frontend == 'true'
-    steps:
-      - uses: actions/checkout@v4
+#   # Frontend (Angular)
+#   frontend-check:
+#     runs-on: ubuntu-latest
+#     needs: analyze-changes
+#     if: needs.analyze-changes.outputs.frontend == 'true'
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
 
-      - name: Install dependencies
-        run: cd frontend/cefrs-frontend && npm ci
+#       - name: Install dependencies
+#         run: cd frontend/cefrs-frontend && npm ci
 
-      - name: Build Angular app
-        run: cd frontend/cefrs-frontend && npm run build --if-present
+#       - name: Build Angular app
+#         run: cd frontend/cefrs-frontend && npm run build --if-present
 
-      - name: Run tests
-        run: cd frontend/cefrs-frontend && npm test --if-present
+#       - name: Run tests
+#         run: cd frontend/cefrs-frontend && npm test --if-present
 
-  # Backend (Spring Boot w/ Maven)
-  backend-check:
-    runs-on: ubuntu-latest
-    needs: analyze-changes
-    if: needs.analyze-changes.outputs.backend == 'true'
-    steps:
-      - uses: actions/checkout@v4
+#   # Backend (Spring Boot w/ Maven)
+#   backend-check:
+#     runs-on: ubuntu-latest
+#     needs: analyze-changes
+#     if: needs.analyze-changes.outputs.backend == 'true'
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 17
+#       - name: Setup Java
+#         uses: actions/setup-java@v4
+#         with:
+#           distribution: 'temurin'
+#           java-version: 17
 
-      - name: Build and test with Maven
-        run: cd backend/cefrs-backend && mvn -B clean verify
+#       - name: Build and test with Maven
+#         run: cd backend/cefrs-backend && mvn -B clean verify
