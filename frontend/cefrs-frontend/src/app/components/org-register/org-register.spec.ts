@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SidebarComponent } from './sidebar';
+import { OrgRegisterComponent } from './org-register';
 
-describe('Sidebar', () => {
-  let component: SidebarComponent;
-  let fixture: ComponentFixture<SidebarComponent>;
+describe('OrgRegister', () => {
+  let component: OrgRegisterComponent;
+  let fixture: ComponentFixture<OrgRegisterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent]
+      imports: [OrgRegisterComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SidebarComponent);
+    fixture = TestBed.createComponent(OrgRegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

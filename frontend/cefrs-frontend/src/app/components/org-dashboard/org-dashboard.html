@@ -1,0 +1,109 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <h1>Organization Dashboard</h1>
+      <div class="user-info" *ngIf="user">
+        <span>{{ user.organizationName }}</span>
+        <button class="profile-btn" (click)="goToProfile()">Profile</button>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading dashboard...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content" *ngIf="!isLoading && !errorMessage">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'requests'" 
+          (click)="setActiveTab('requests')">
+          My Requests
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab === 'facilities'" 
+          (click)="setActiveTab('facilities')">
+          Available Facilities
+        </button>
+      </div>
+
+      <!-- Requests Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'requests'">
+        <div class="section-header">
+          <h2>My Requests</h2>
+          <button class="primary-btn" (click)="createNewRequest()">New Request</button>
+        </div>
+
+        <div class="requests-list" *ngIf="requests.length > 0">
+          <div class="request-card" *ngFor="let request of requests" (click)="viewRequestDetails(request.id)">
+            <div class="request-header">
+              <h3>{{ request.title }}</h3>
+              <span class="badge" [ngClass]="request.status.toLowerCase()">{{ request.status }}</span>
+            </div>
+            <div class="request-details">
+              <p><strong>Type:</strong> {{ request.type }}</p>
+              <p><strong>Requested:</strong> {{ request.requestDate }}</p>
+              <p *ngIf="request.type === 'Equipment'"><strong>Quantity:</strong> {{ request.quantity }}</p>
+              <p *ngIf="request.type === 'Equipment'"><strong>Return Date:</strong> {{ request.returnDate }}</p>
+              <p *ngIf="request.type === 'Facility'"><strong>Event Date:</strong> {{ request.dayOfEvent }}</p>
+              <p *ngIf="request.adminNotes"><strong>Notes:</strong> {{ request.adminNotes }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="requests.length === 0">
+          <p>You haven't made any requests yet.</p>
+          <button class="primary-btn" (click)="createNewRequest()">Create Your First Request</button>
+        </div>
+      </div>
+
+      <!-- Facilities Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'facilities'">
+        <div class="section-header">
+          <h2>Available Facilities</h2>
+        </div>
+
+        <div class="facilities-grid" *ngIf="facilities.length > 0">
+          <div class="facility-card" *ngFor="let facility of facilities">
+            <div class="facility-image">
+              <img [src]="facility.image" alt="{{ facility.name }}" onerror="this.src='assets/images/placeholder.jpg'">
+              <span class="status-badge" [ngClass]="facility.status.toLowerCase()">{{ facility.status }}</span>
+            </div>
+            <div class="facility-details">
+              <h3>{{ facility.name }}</h3>
+              <p><strong>Location:</strong> {{ facility.location }}</p>
+              <p><strong>Capacity:</strong> {{ facility.capacity }} people</p>
+              <p>{{ facility.description }}</p>
+              <button 
+                class="reserve-btn" 
+                [disabled]="facility.status !== 'Available'"
+                (click)="reserveFacility(facility.id)">
+                Reserve Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="facilities.length === 0">
+          <p>No facilities are currently available.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

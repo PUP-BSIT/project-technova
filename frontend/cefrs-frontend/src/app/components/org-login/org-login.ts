@@ -43,9 +43,9 @@ export class OrgLoginComponent {
         this.isLoading = false;
 
         const role = this.authService.getUserRole();
-        // Both roles go to the same /dashboard path
-        if (role === 'ORGANIZATION') {
-          this.router.navigate(['/dashboard']);
+        // Redirect to org-dashboard for organization users
+        if (role === 'STUDENT') {
+          this.router.navigate(['/org-dashboard']);
         } else {
           this.errorMessage = `Logged in as ${role}. Please use the correct login page.`;
           this.authService.logout();
@@ -67,6 +67,6 @@ export class OrgLoginComponent {
   }
 
   goToRegister(): void {
-    this.router.navigate(['/register'], { queryParams: { role: 'ORGANIZATION' } });
+    this.router.navigate(['/org-register']);
   }
 }

@@ -7,13 +7,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '../sidebar/sidebar';
 
 @Component({
-  selector: 'app-student-change-password',
+  selector: 'app-org-change-password',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, SidebarComponent],
-  templateUrl: './student-change-password.html',
-  styleUrls: ['./student-change-password.scss']
+  templateUrl: './org-change-password.html',
+  styleUrls: ['./org-change-password.scss']
 })
-export class StudentChangePasswordComponent implements OnInit {
+export class OrgChangePasswordComponent implements OnInit {
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private router = inject(Router);
@@ -86,7 +86,7 @@ export class StudentChangePasswordComponent implements OnInit {
         this.passwordForm.reset();
         this.isFormDirty = false;
         
-        // Auto-redirect after successful password change
+        // Auto-redirect after successful password change without logging out
         setTimeout(() => {
           this.goBackToProfile();
         }, 2000);
@@ -123,100 +123,76 @@ export class StudentChangePasswordComponent implements OnInit {
       this.passwordForm.reset();
       this.isFormDirty = false;
     }
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/org-profile']);
   }
 
+  // Handle view changes from sidebar
   onViewChanged(view: string): void {
-    // Handle view changes from sidebar
     console.log('View changed to:', view);
+    
+    // Ensure proper display when navigating
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
     
     // Navigate based on the view
     switch (view) {
       case 'dashboard':
-        this.router.navigate(['/student-dashboard']);
+        this.router.navigate(['/org-dashboard']);
         break;
       case 'facilities':
-      case 'equipment':
       case 'requests':
-        this.router.navigate(['/student-dashboard']);
+        this.router.navigate(['/org-dashboard']);
         break;
       case 'settings':
-        this.router.navigate(['/profile']);
+        this.router.navigate(['/org-profile']);
         break;
     }
   }
 
-  // Custom validators
-  passwordStrengthValidator(control: AbstractControl): {[key: string]: any} | null {
+  // Password validation
+  passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const value = control.value;
-    if (!value) return null;
-    
+    if (!value) {
+      return null;
+    }
+
     const hasUpperCase = /[A-Z]/.test(value);
     const hasLowerCase = /[a-z]/.test(value);
-    const hasNumbers = /\d/.test(value);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+    const hasNumeric = /[0-9]/.test(value);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(value);
     
-    const valid = hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
-    return valid ? null : { weakPassword: true };
+    const passwordValid = hasUpperCase && hasLowerCase && hasNumeric && hasSpecial;
+    
+    return !passwordValid ? { 'passwordStrength': true } : null;
   }
 
-  passwordMatchValidator(control: AbstractControl): {[key: string]: any} | null {
-    const newPassword = control.get('newPassword');
-    const confirmPassword = control.get('confirmPassword');
+  passwordMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
+    const newPassword = group.get('newPassword')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
     
-    if (!newPassword || !confirmPassword) return null;
-    
-    return newPassword.value === confirmPassword.value ? null : { passwordMismatch: true };
+    return newPassword === confirmPassword ? null : { 'passwordMismatch': true };
   }
 
-  // Error handling methods
   displayFormErrors(): void {
-    const errors = [];
+    const controls = this.passwordForm.controls;
     
-    if (this.passwordForm.get('currentPassword')?.hasError('required')) {
-      errors.push('Current password is required.');
+    for (const controlName in controls) {
+      if (controls[controlName].invalid) {
+        controls[controlName].markAsTouched();
+      }
     }
-    
-    if (this.passwordForm.get('newPassword')?.hasError('required')) {
-      errors.push('New password is required.');
-    } else if (this.passwordForm.get('newPassword')?.hasError('minlength')) {
-      errors.push('New password must be at least 6 characters.');
-    } else if (this.passwordForm.get('newPassword')?.hasError('weakPassword')) {
-      errors.push('Password must contain uppercase, lowercase, numbers, and special characters.');
-    }
-    
-    if (this.passwordForm.get('confirmPassword')?.hasError('required')) {
-      errors.push('Please confirm your password.');
-    }
-    
-    if (this.passwordForm.hasError('passwordMismatch')) {
-      errors.push('New password and confirmation do not match.');
-    }
-    
-    this.errorMessage = errors.join(' ');
   }
 
   handlePasswordChangeError(err: HttpErrorResponse): void {
-    console.error('Password change error:', err);
-    
-    switch (err.status) {
-      case 400:
-        this.errorMessage = err.error?.message || 'Invalid password data.';
-        break;
-      case 401:
-        this.errorMessage = 'Current password is incorrect.';
-        break;
-      case 403:
-        this.errorMessage = 'You do not have permission to change this password.';
-        break;
-      case 404:
-        this.errorMessage = 'User not found.';
-        break;
-      case 500:
-        this.errorMessage = 'Server error. Please try again later.';
-        break;
-      default:
-        this.errorMessage = err.error?.message || 'Failed to change password. Please try again.';
+    if (err.status === 401) {
+      this.errorMessage = 'Current password is incorrect.';
+    } else if (err.status === 403) {
+      this.errorMessage = 'You are not authorized to change this password.';
+    } else if (err.error?.message) {
+      this.errorMessage = err.error.message;
+    } else {
+      this.errorMessage = 'Failed to change password. Please try again later.';
     }
   }
 }
