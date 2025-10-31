@@ -10,7 +10,7 @@ export class ProfileService {
   private apiUrl = 'http://localhost:8080/api/user'; 
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('accessToken') || '';
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -41,7 +41,7 @@ export class ProfileService {
   }
 
   uploadProfileImage(userId: number, file: File): Observable<any> {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('accessToken') || '';
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
