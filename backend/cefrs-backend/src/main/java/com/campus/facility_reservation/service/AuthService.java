@@ -39,15 +39,13 @@ public class AuthService {
                 // 1. Retrieve and Clean the Role String
                 String roleString = request.getRole();
 
-                // 2. CHECK: Prevent Null/Empty Role from Causing Crash (The Fix for 'No enum
-                // constant')
+                // 2. CHECK: Prevent Null/Empty Role from Causing Crash
                 if (roleString == null || roleString.trim().isEmpty()) {
-                        // Throw an explicit error to indicate that the frontend needs to supply the
                         // role
                         throw new RuntimeException("Registration failed: Role type is missing.");
                 }
 
-                // 3. Clean the role string: Trim spaces and convert to ALL CAPS for safe enum
+                // 3. Clean the role string
                 roleString = roleString.trim().toUpperCase();
 
                 // 4. Convert to Enum and Find Role Entity
@@ -71,7 +69,11 @@ public class AuthService {
                 user.setFirstName(request.getFirstName());
                 user.setLastName(request.getLastName());
                 user.setPhoneNumber(request.getPhoneNumber());
-                user.setOrganizationName(request.getOrganizationName());
+
+                user.setAddress(request.getAddress());
+
+                // Student ID: Set the student ID from the DTO
+                user.setStudentId(request.getStudentId());
 
                 user.setRole(role);
                 user.setIsActive(true);
@@ -154,7 +156,13 @@ public class AuthService {
                 user.setFirstName(request.getFirstName());
                 user.setLastName(request.getLastName());
                 user.setPhoneNumber(request.getPhoneNumber());
-                user.setOrganizationName(request.getOrganizationName());
+
+                // Address
+                user.setAddress(request.getAddress());
+
+                // Student ID: Update the student ID for profile updates
+                user.setStudentId(request.getStudentId());
+
                 user.setUpdatedAt(LocalDateTime.now());
 
                 userRepository.save(user);

@@ -8,23 +8,24 @@ import jakarta.validation.constraints.Size;
 @Data
 public class RegisterRequest {
 
-    @NotBlank
-    private String firstName;
+  @NotBlank
+  private String firstName;
 
-    @NotBlank
-    private String lastName;
+  @NotBlank
+  private String lastName;
 
-    @NotBlank
-    @Email
-    private String email;
+  @NotBlank
+  @Email
+  private String email;
 
-    @NotBlank
-    private String phoneNumber;
+  private String phoneNumber;
 
-    @NotBlank
-    private String password;
+  @NotBlank
+  private String password;
 
-    private String role;
+  private String role;
 
-    private String organizationName;
+  private String address;
+
+  private String studentId;
 }
