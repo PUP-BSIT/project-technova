@@ -23,6 +23,11 @@ export class StudentChangePasswordComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
   isFormDirty = false;
+  
+  // Password visibility toggles
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
 
   ngOnInit(): void {
     this.passwordForm = this.fb.group({
@@ -65,18 +70,16 @@ export class StudentChangePasswordComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Get user ID dynamically
-    const userData = localStorage.getItem('user');
-    const user = userData ? JSON.parse(userData) : null;
-    
-    if (!user?.id) {
+    // Get user ID from stored auth info
+    const userIdStr = localStorage.getItem('userId');
+    const userId = userIdStr ? parseInt(userIdStr, 10) : NaN;
+    if (!userId || Number.isNaN(userId)) {
       this.isSubmitting = false;
-      this.errorMessage = 'User session expired. Please log in again.';
-      this.router.navigate(['/login']);
+      this.errorMessage = 'Unable to determine user. Please try again.';
       return;
     }
 
-    this.profileService.changePassword(user.id, currentPassword, newPassword).subscribe({
+    this.profileService.changePassword(userId, currentPassword, newPassword).subscribe({
       next: (res) => {
         this.isSubmitting = false;
         this.successMessage = res.message || 'Password changed successfully.';
@@ -93,6 +96,19 @@ export class StudentChangePasswordComponent implements OnInit {
         this.handlePasswordChangeError(err);
       }
     });
+  }
+
+  // Password visibility toggle methods
+  toggleCurrentPasswordVisibility(): void {
+    this.showCurrentPassword = !this.showCurrentPassword;
+  }
+
+  toggleNewPasswordVisibility(): void {
+    this.showNewPassword = !this.showNewPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   // getter for template readability
