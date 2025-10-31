@@ -48,7 +48,7 @@ export class SidebarComponent implements OnInit {
     });
   }
 
-  navigateTo(view: string): void {
+   navigateTo(view: string): void {
     this.currentView = view;
     this.viewChanged.emit(view);
     
@@ -69,7 +69,7 @@ export class SidebarComponent implements OnInit {
     // Reset user data
     this.user = null;
     
-    // Navigate to login
-    this.router.navigate(['/login']);
+    // Navigate to role selection
+    this.router.navigate(['./role-selection']);
   }
 }
