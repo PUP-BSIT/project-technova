@@ -3,7 +3,11 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['jasmine'],
 
-    // Explicitly require only the stable, top-level packages
+    files: [
+      'node_modules/zone.js/dist/zone.js',
+      'node_modules/zone.js/dist/zone-testing.js'
+    ],
+
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
