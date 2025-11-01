@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface NavItem {
   id: string;
@@ -49,7 +51,9 @@ interface Equipment {
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.html',
-  styleUrls: ['./admin-dashboard.scss']
+  styleUrls: ['./admin-dashboard.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class AdminDashboard {
   currentView: string = 'dashboard';

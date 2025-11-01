@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrgDashboardComponent } from './org-dashboard';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('OrgDashboard', () => {
   let component: OrgDashboardComponent;
@@ -8,9 +9,10 @@ describe('OrgDashboard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OrgDashboardComponent]
+      imports: [OrgDashboardComponent],
+      providers: [provideHttpClient()]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrgDashboardComponent);
     component = fixture.componentInstance;

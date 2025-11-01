@@ -61,13 +61,16 @@ jobs:
           cache-dependency-path: frontend/cefrs-frontend/package-lock.json
 
       - name: Install dependencies
-        run: cd frontend/cefrs-frontend && npm ci
+        run: cd frontend/cefrs-frontend && npm ci --legacy-peer-deps
 
       - name: Build Angular app
         run: cd frontend/cefrs-frontend && npm run build --if-present
 
       - name: Run tests
-        run: cd frontend/cefrs-frontend && npm test --if-present
+        # explicitly use ChromeHeadless for CI compatibility
+        run: |
+          cd frontend/cefrs-frontend
+          npx ng test --watch=false --browsers=ChromeHeadless
 
   # Backend (Spring Boot w/ Maven)
   backend-check:
