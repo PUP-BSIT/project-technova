@@ -1,8 +1,7 @@
 module.exports = function (config) {
   config.set({
     basePath: '',
-    // Use only standard frameworks that map to installed packages
-    frameworks: ['jasmine', 'karma-jasmine'],
+    frameworks: ['jasmine'],
 
     // Explicitly require only the stable, top-level packages
     plugins: [
@@ -10,7 +9,6 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-
     ],
 
     client: {
