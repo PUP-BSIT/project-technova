@@ -7,6 +7,7 @@ import com.campus.facility_reservation.repository.RoleRepository;
 import com.campus.facility_reservation.repository.UserRepository;
 import com.campus.facility_reservation.security.JwtTokenProvider;
 import com.campus.facility_reservation.dto.RegisterRequest;
+import com.campus.facility_reservation.dto.UpdateProfileRequest;
 import com.campus.facility_reservation.dto.AuthResponse;
 import com.campus.facility_reservation.dto.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,23 +150,17 @@ public class AuthService {
         }
 
         // Update user profile
-        public UserResponse updateUserProfile(Long userId, RegisterRequest request) {
-                User user = userRepository.findById(userId)
-                                .orElseThrow(() -> new RuntimeException("User not found"));
+        public UserResponse updateUserProfile(Long userId, UpdateProfileRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-                user.setFirstName(request.getFirstName());
-                user.setLastName(request.getLastName());
-                user.setPhoneNumber(request.getPhoneNumber());
+        // Only update the fields that are allowed to change
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setEmail(request.getEmail());
+        user.setAddress(request.getAddress());
+        user.setUpdatedAt(LocalDateTime.now());
 
-                // Address
-                user.setAddress(request.getAddress());
-
-                // Student ID: Update the student ID for profile updates
-                user.setStudentId(request.getStudentId());
-
-                user.setUpdatedAt(LocalDateTime.now());
-
-                userRepository.save(user);
-                return new UserResponse(user);
+        userRepository.save(user);
+        return new UserResponse(user);
         }
 }
