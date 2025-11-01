@@ -67,7 +67,10 @@ jobs:
         run: cd frontend/cefrs-frontend && npm run build --if-present
 
       - name: Run tests
-        run: cd frontend/cefrs-frontend && npm test --if-present
+        # explicitly use ChromeHeadless for CI compatibility
+        run: |
+          cd frontend/cefrs-frontend
+          npx ng test --watch=false --browsers=ChromeHeadless
 
   # Backend (Spring Boot w/ Maven)
   backend-check:
