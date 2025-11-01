@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrgRegisterComponent } from './org-register';
 import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 describe('OrgRegister', () => {
   let component: OrgRegisterComponent;
@@ -9,7 +10,10 @@ describe('OrgRegister', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [OrgRegisterComponent],
-      providers: [provideHttpClient()]
+      providers: [
+        provideHttpClient(),
+        provideRouter([])
+      ]
     })
       .compileComponents();
 
