@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrgChangePasswordComponent } from './org-change-password';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('OrgChangePassword', () => {
   let component: OrgChangePasswordComponent;
@@ -8,9 +9,10 @@ describe('OrgChangePassword', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OrgChangePasswordComponent]
+      imports: [OrgChangePasswordComponent],
+      providers: [provideHttpClient()]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrgChangePasswordComponent);
     component = fixture.componentInstance;

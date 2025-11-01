@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StudentDashboard } from './student-dashboard';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('StudentDashboard', () => {
   let component: StudentDashboard;
@@ -8,7 +9,8 @@ describe('StudentDashboard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StudentDashboard]
+      imports: [StudentDashboard],
+      providers: [provideHttpClient()]
     })
       .compileComponents();
 
