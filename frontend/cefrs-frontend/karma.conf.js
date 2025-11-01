@@ -1,24 +1,21 @@
 module.exports = function (config) {
   config.set({
     basePath: '',
-    // Frameworks must be listed by name, not internal path
+    // Use only standard frameworks that map to installed packages
     frameworks: ['jasmine', 'karma-jasmine'],
 
-    // Plugins must be required using the installed package names
+    // Explicitly require only the stable, top-level packages
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
 
-      // Load the Angular preprocessor directly using its package name
-      // This is the most stable method for CI environments
-      require('@angular/cli/plugins/karma')
     ],
 
     client: {
       jasmine: {
-        //jasmine options here
+        // jasmine options here
       },
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
