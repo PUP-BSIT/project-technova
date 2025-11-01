@@ -27,7 +27,6 @@ export class StudentProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
-    // Ensure proper display on component initialization
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 100);
@@ -40,10 +39,13 @@ export class StudentProfileComponent implements OnInit {
         this.profileForm = this.fb.group({
           studentId: this.fb.control(res.studentId || '', {
             nonNullable: true,
-            // Student ID is required and should not change
             validators: [Validators.required]
           }),
-          name: this.fb.control(`${res.firstName} ${res.lastName}` || '', { nonNullable: true }),
+          firstName: this.fb.control(res.firstName || '', { nonNullable: true }),
+          lastName: this.fb.control(res.lastName || '', { nonNullable: true }),
+          name: this.fb.control(`${res.firstName} ${res.lastName}` || '', {
+            nonNullable: true
+          }),
           phoneNumber: this.fb.control(res.phoneNumber || '', {
             nonNullable: true,
             validators: [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]
@@ -57,7 +59,10 @@ export class StudentProfileComponent implements OnInit {
             validators: [Validators.required]
           })
         });
-        // By default, the form should be disabled for viewing mode
+
+        this.profileForm.controls['firstName'].disable();
+        this.profileForm.controls['lastName'].disable();
+
         if (!this.isEditing) {
           this.profileForm.disable();
         }
@@ -73,14 +78,12 @@ export class StudentProfileComponent implements OnInit {
 
   toggleEdit(): void {
     this.isEditing = !this.isEditing;
-    // Only disable all controls if we are NOT editing
     if (!this.isEditing) {
       this.profileForm.disable();
     } else {
       this.profileForm.controls['phoneNumber'].enable();
       this.profileForm.controls['email'].enable();
       this.profileForm.controls['address'].enable();
-      this.profileForm.controls['studentId'].enable();
     }
   }
 
@@ -93,12 +96,18 @@ export class StudentProfileComponent implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';
 
+    const formValues = this.profileForm.getRawValue();
+
     const updateData = {
-      studentId: this.profileForm.value.studentId,
-      phoneNumber: this.profileForm.value.phoneNumber,
-      email: this.profileForm.value.email,
-      address: this.profileForm.value.address
+      firstName: formValues.firstName,
+      lastName: formValues.lastName,
+      phoneNumber: formValues.phoneNumber,
+      email: formValues.email,
+      address: formValues.address,
+      password: ''
     };
+
+    console.log('Sending update data:', updateData);
 
     this.profileForm.disable();
 
@@ -106,16 +115,17 @@ export class StudentProfileComponent implements OnInit {
       next: (res) => {
         this.successMessage = res.message || 'Profile updated successfully.';
         this.isEditing = false;
-        this.loadProfile(); // Reload data to show updated values
+        this.loadProfile();
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error updating profile:', err);
+        console.error('Error details:', err.error);
         this.errorMessage = err.error?.message || 'Failed to update profile.';
 
-        this.profileForm.enable();
         if (this.isEditing) {
-          this.toggleEdit();
-          this.toggleEdit(); // Call twice to re-enable
+          this.profileForm.controls['phoneNumber'].enable();
+          this.profileForm.controls['email'].enable();
+          this.profileForm.controls['address'].enable();
         }
       }
     });
@@ -126,15 +136,11 @@ export class StudentProfileComponent implements OnInit {
   }
 
   onViewChanged(view: string): void {
-    // Handle view changes from sidebar
     console.log('View changed to:', view);
-
-    // Ensure proper display when navigating
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 50);
 
-    // Navigate based on the view
     switch (view) {
       case 'dashboard':
         this.router.navigate(['/student-dashboard']);
