@@ -10,7 +10,7 @@ describe('OrgDashboard', () => {
     await TestBed.configureTestingModule({
       imports: [OrgDashboardComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrgDashboardComponent);
     component = fixture.componentInstance;
