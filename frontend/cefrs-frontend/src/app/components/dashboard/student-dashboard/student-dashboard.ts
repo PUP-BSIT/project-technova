@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth';
-import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
 import { EquipmentService } from '../../../services/equipment.service';
 import { FacilityService } from '../../../services/facility.service';
 import { SidebarComponent } from '../../sidebar/sidebar';
