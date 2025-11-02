@@ -8,7 +8,6 @@
   <!-- Main Content -->
   <main class="main-content">
 
-    <!-- ✅ NEW: Router outlet for Settings view -->
     @if (currentView === 'settings') {
       <router-outlet></router-outlet>
     }
@@ -60,20 +59,27 @@
         <h1>Facility Reservations</h1>
         <p class="page-subtitle">Reserve campus facilities for your events</p>
       </div>
-      <div class="search-bar"><input type="text" placeholder="Search Equipment" [(ngModel)]="searchQuery" class="search-input"></div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search Facilities" [(ngModel)]="searchQuery" class="search-input">
+      </div>
+
+      @if (isLoadingFacilities) {
+        <div class="loading-message">Loading facilities...</div>
+      }
+
       <div class="facilities-grid">
         @for (facility of facilities; track facility.id) {
           <div class="facility-card">
             <div class="facility-image">
-              <img [src]="facility.image" [alt]="facility.name">
+              <img [src]="facility.imageUrl" [alt]="facility.name">
               <span class="facility-badge" [ngClass]="getStatusClass(facility.status)">{{ facility.status }}</span>
             </div>
             <div class="facility-content">
               <h3 class="facility-name">{{ facility.name }}</h3>
               <p class="facility-description">{{ facility.description }}</p>
               <div class="facility-capacity">Capacity: {{ facility.capacity }} People</div>
-              <button class="request-btn" [disabled]="facility.status === 'Reserved'">
-                @if (facility.status === 'Reserved') { Not Available } @else { Request Equipment }
+              <button class="request-btn" [disabled]="facility.status !== 'AVAILABLE'">
+                @if (facility.status !== 'AVAILABLE') { Not Available } @else { Reserve Facility }
               </button>
             </div>
           </div>
@@ -92,18 +98,28 @@
           <option>All Categories</option><option>Audio</option><option>Visual</option><option>Furniture</option><option>Lights</option>
         </select>
       </div>
+
+      @if (isLoadingEquipment) {
+        <div class="loading-message">Loading equipment...</div>
+      }
+
       <div class="equipment-grid">
         @for (item of equipment; track item.id) {
           <div class="equipment-card">
-            <div class="equipment-image"><img [src]="item.image" [alt]="item.name"><span class="category-badge">{{ item.category }}</span></div>
+            <div class="equipment-image">
+              <img [src]="item.imageUrl" [alt]="item.name">
+              <span class="category-badge">{{ item.category }}</span>
+            </div>
             <div class="equipment-content">
               <h3 class="equipment-name">{{ item.name }}</h3>
               <p class="equipment-description">{{ item.description }}</p>
               <div class="equipment-availability">
-                <span>Available: {{ item.available }}/{{ item.total }}</span>
-                <span class="availability-badge">Available</span>
+                <span>Available: {{ item.quantityAvailable }}/{{ item.quantityTotal }}</span>
+                <span class="availability-badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
               </div>
-              <button class="request-btn">Request Equipment</button>
+              <button class="request-btn" [disabled]="item.quantityAvailable === 0">
+                @if (item.quantityAvailable === 0) { Out of Stock } @else { Request Equipment }
+              </button>
             </div>
           </div>
         } @empty {
@@ -149,6 +165,48 @@
           <div class="no-data-message">You have no requests yet.</div>
         }
       </div>
+    }
+
+    <!-- Transactions View -->
+    @if (currentView === 'transactions') {
+      <div class="page-header"><h1>Transaction History</h1><p class="page-subtitle">View all your system activities and transactions</p></div>
+      <div class="search-controls">
+        <input type="text" placeholder="Search transactions" [(ngModel)]="searchQuery" class="search-input">
+      </div>
+      <div class="transactions-list" *ngIf="!isLoadingLogs">
+        @for (log of auditLogs; track log.logId) {
+          <div class="transaction-card">
+            <div class="transaction-header">
+              <div class="transaction-info">
+                <div class="transaction-action">{{ log.actionType }}</div>
+                <div class="transaction-meta">{{ log.tableName }} • {{ log.createdAt | date:'MMM d, y h:mm a' }}</div>
+              </div>
+              @if (log.ipAddress) {
+                <span class="ip-badge">{{ log.ipAddress }}</span>
+              }
+            </div>
+            <div class="transaction-details">
+              @if (log.oldValues) {
+                <div class="detail-section">
+                  <strong>Old Values:</strong>
+                  <div class="values-box">{{ log.oldValues }}</div>
+                </div>
+              }
+              @if (log.newValues) {
+                <div class="detail-section">
+                  <strong>New Values:</strong>
+                  <div class="values-box">{{ log.newValues }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="no-data-message">No transaction logs found.</div>
+        }
+      </div>
+      @if (isLoadingLogs) {
+        <div class="loading-message">Loading transactions...</div>
+      }
     }
   </main>
 </div>
