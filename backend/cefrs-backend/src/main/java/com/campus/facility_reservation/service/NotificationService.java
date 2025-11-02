@@ -1,9 +1,12 @@
 package com.campus.facility_reservation.service;
 
 import com.campus.facility_reservation.dto.NotificationDTO;
-import com.campus.facility_reservation.entity.*;
-import com.campus.facility_reservation.entity.Notification.NotificationType;
-import com.campus.facility_reservation.entity.Notification.ReferenceType;
+import com.campus.facility_reservation.model.User;
+import com.campus.facility_reservation.model.FacilityReservation;
+import com.campus.facility_reservation.model.EquipmentBorrowing;
+import com.campus.facility_reservation.model.Notification;
+import com.campus.facility_reservation.model.Notification.NotificationType;
+import com.campus.facility_reservation.model.Notification.ReferenceType;
 import com.campus.facility_reservation.repository.NotificationRepository;
 import com.campus.facility_reservation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

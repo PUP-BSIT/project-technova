@@ -1,8 +1,10 @@
 package com.campus.facility_reservation.service;
 
-import com.campus.facility_reservation.dto.*;
-import com.campus.facility_reservation.entity.*;
-import com.campus.facility_reservation.entity.FacilityReservation.ReservationStatus;
+import com.campus.facility_reservation.model.*;
+import com.campus.facility_reservation.model.FacilityReservation.ReservationStatus;
+import com.campus.facility_reservation.dto.FacilityReservationDTO;
+import com.campus.facility_reservation.dto.FacilityReservationRequestDTO;
+import com.campus.facility_reservation.dto.ReservationApprovalDTO;
 import com.campus.facility_reservation.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,6 @@ public class FacilityReservationService {
     private final FacilityReservationRepository reservationRepository;
     private final FacilityRepository facilityRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
     
     public List<FacilityReservationDTO> getAllReservations() {
         return reservationRepository.findAll().stream()
@@ -57,10 +58,15 @@ public class FacilityReservationService {
         Facility facility = facilityRepository.findById(request.getFacilityId())
                 .orElseThrow(() -> new RuntimeException("Facility not found"));
         
-        LocalDate date = LocalDate.parse(request.getReservationDate());
-        LocalTime startTime = LocalTime.parse(request.getStartTime());
-        LocalTime endTime = LocalTime.parse(request.getEndTime());
+        // Parse the datetime strings
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime startDateTime = LocalDateTime.parse(request.getStartTime(), formatter);
+        LocalDateTime endDateTime = LocalDateTime.parse(request.getEndTime(), formatter);
         
+        LocalDate date = startDateTime.toLocalDate();
+        LocalTime startTime = startDateTime.toLocalTime();
+        LocalTime endTime = endDateTime.toLocalTime();
+
         // Check for conflicts
         List<FacilityReservation> conflicts = reservationRepository.findConflictingReservations(
             facility.getId(), date, startTime, endTime
@@ -80,10 +86,6 @@ public class FacilityReservationService {
         reservation.setStatus(ReservationStatus.PENDING);
         
         FacilityReservation saved = reservationRepository.save(reservation);
-        
-        // Send notification
-        notificationService.createReservationNotification(user, saved);
-        
         return convertToDTO(saved);
     }
     
@@ -101,10 +103,6 @@ public class FacilityReservationService {
         reservation.setApprovedAt(LocalDateTime.now());
         
         FacilityReservation updated = reservationRepository.save(reservation);
-        
-        // Send notification
-        notificationService.createReservationStatusNotification(reservation.getUser(), updated);
-        
         return convertToDTO(updated);
     }
     

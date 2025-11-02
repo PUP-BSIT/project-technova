@@ -1,12 +1,16 @@
 package com.campus.facility_reservation.service;
 
 import com.campus.facility_reservation.dto.*;
-import com.campus.facility_reservation.entity.*;
-import com.campus.facility_reservation.entity.EquipmentBorrowing.BorrowingStatus;
+import com.campus.facility_reservation.model.Equipment;
+import com.campus.facility_reservation.model.EquipmentBorrowing;
+import com.campus.facility_reservation.model.User;
+import com.campus.facility_reservation.model.EquipmentBorrowing.BorrowingStatus;
 import com.campus.facility_reservation.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.campus.facility_reservation.dto.EquipmentBorrowingRequestDTO;
+import com.campus.facility_reservation.dto.BorrowingApprovalDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

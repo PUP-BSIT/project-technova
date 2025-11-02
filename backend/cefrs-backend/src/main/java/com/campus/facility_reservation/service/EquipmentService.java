@@ -1,9 +1,10 @@
 package com.campus.facility_reservation.service;
 
-import com.campus.facility_reservation.dto.*;
-import com.campus.facility_reservation.entity.Equipment;
-import com.campus.facility_reservation.entity.Equipment.EquipmentCategory;
-import com.campus.facility_reservation.entity.Equipment.EquipmentStatus;
+import com.campus.facility_reservation.model.Equipment;
+import com.campus.facility_reservation.model.Equipment.EquipmentCategory;
+import com.campus.facility_reservation.model.Equipment.EquipmentStatus;
+import com.campus.facility_reservation.dto.EquipmentDTO;
+import com.campus.facility_reservation.dto.EquipmentRequestDTO;
 import com.campus.facility_reservation.repository.EquipmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,12 @@
 package com.campus.facility_reservation.controller;
 
-import com.campus.facility_reservation.dto.*;
+import com.campus.facility_reservation.dto.ApiResponse;
+import com.campus.facility_reservation.dto.ReservationApprovalDTO;
+import com.campus.facility_reservation.dto.FacilityReservationDTO;
+import com.campus.facility_reservation.dto.FacilityReservationRequestDTO;
 import com.campus.facility_reservation.service.FacilityReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,33 +16,33 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class FacilityReservationController {
-    
+
     private final FacilityReservationService reservationService;
-    
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<FacilityReservationDTO>>> getAllReservations() {
         List<FacilityReservationDTO> reservations = reservationService.getAllReservations();
         return ResponseEntity.ok(ApiResponse.success("Reservations retrieved", reservations));
     }
-    
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<List<FacilityReservationDTO>>> getUserReservations(@PathVariable Long userId) {
         List<FacilityReservationDTO> reservations = reservationService.getUserReservations(userId);
         return ResponseEntity.ok(ApiResponse.success("User reservations retrieved", reservations));
     }
-    
+
     @GetMapping("/pending")
     public ResponseEntity<ApiResponse<List<FacilityReservationDTO>>> getPendingReservations() {
         List<FacilityReservationDTO> reservations = reservationService.getPendingReservations();
         return ResponseEntity.ok(ApiResponse.success("Pending reservations retrieved", reservations));
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<FacilityReservationDTO>> getReservationById(@PathVariable Long id) {
         FacilityReservationDTO reservation = reservationService.getReservationById(id);
         return ResponseEntity.ok(ApiResponse.success("Reservation retrieved", reservation));
     }
-    
+
     @PostMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<FacilityReservationDTO>> createReservation(
             @PathVariable Long userId,
@@ -48,7 +50,7 @@ public class FacilityReservationController {
         FacilityReservationDTO reservation = reservationService.createReservation(userId, request);
         return ResponseEntity.ok(ApiResponse.success("Reservation created successfully", reservation));
     }
-    
+
     @PutMapping("/{id}/status")
     public ResponseEntity<ApiResponse<FacilityReservationDTO>> updateReservationStatus(
             @PathVariable Long id,
@@ -57,7 +59,7 @@ public class FacilityReservationController {
         FacilityReservationDTO reservation = reservationService.updateReservationStatus(id, adminId, approval);
         return ResponseEntity.ok(ApiResponse.success("Reservation status updated", reservation));
     }
-    
+
     @DeleteMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<Void>> cancelReservation(
             @PathVariable Long id,
