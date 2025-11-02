@@ -1,18 +1,22 @@
 package com.campus.facility_reservation.service;
 
-import com.campus.facility_reservation.dto.*;
-import com.campus.facility_reservation.entity.*;
-import com.campus.facility_reservation.entity.FacilityReservation.ReservationStatus;
-import com.campus.facility_reservation.entity.EquipmentBorrowing.BorrowingStatus;
-import com.campus.facility_reservation.repository.*;
+import com.campus.facility_reservation.dto.DashboardDTO;
+import com.campus.facility_reservation.dto.DashboardStatsDTO;
+import com.campus.facility_reservation.dto.RecentRequestDTO;
+import com.campus.facility_reservation.model.User;
+import com.campus.facility_reservation.model.FacilityReservation;
+import com.campus.facility_reservation.model.EquipmentBorrowing;
+import com.campus.facility_reservation.model.FacilityReservation.ReservationStatus;
+import com.campus.facility_reservation.model.EquipmentBorrowing.BorrowingStatus;
+import com.campus.facility_reservation.repository.EquipmentBorrowingRepository;
+import com.campus.facility_reservation.repository.FacilityReservationRepository;
+import com.campus.facility_reservation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -37,25 +41,19 @@ public class DashboardService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Active Reservations (Approved reservations)
-        Long activeReservations = reservationRepository.findByUserAndStatus(user, ReservationStatus.APPROVED)
-                .stream().count();
+        Long activeReservations = (long) reservationRepository.findByUserAndStatus(user, ReservationStatus.APPROVED).size();
         
         // Borrowed Equipment (Currently borrowed)
-        Long borrowedEquipment = borrowingRepository.findByUserAndStatus(user, BorrowingStatus.BORROWED)
-                .stream().count();
+        Long borrowedEquipment = (long) borrowingRepository.findByUserAndStatus(user, BorrowingStatus.BORROWED).size();
         
         // Pending Requests (Pending reservations + Pending borrowings)
-        Long pendingReservations = reservationRepository.findByUserAndStatus(user, ReservationStatus.PENDING)
-                .stream().count();
-        Long pendingBorrowings = borrowingRepository.findByUserAndStatus(user, BorrowingStatus.PENDING)
-                .stream().count();
+        Long pendingReservations = (long) reservationRepository.findByUserAndStatus(user, ReservationStatus.PENDING).size();
+        Long pendingBorrowings = (long) borrowingRepository.findByUserAndStatus(user, BorrowingStatus.PENDING).size();
         Long pendingRequests = pendingReservations + pendingBorrowings;
         
         // Total Requests (All reservations + All borrowings)
-        Long totalReservations = reservationRepository.findByUserOrderByReservationDateDescStartTimeDesc(user)
-                .stream().count();
-        Long totalBorrowings = borrowingRepository.findByUserOrderByBorrowDateDesc(user)
-                .stream().count();
+        Long totalReservations = (long) reservationRepository.findByUserOrderByReservationDateDescStartTimeDesc(user).size();
+        Long totalBorrowings = (long) borrowingRepository.findByUserOrderByBorrowDateDesc(user).size();
         Long totalRequests = totalReservations + totalBorrowings;
         
         return new DashboardStatsDTO(activeReservations, borrowedEquipment, pendingRequests, totalRequests);
@@ -64,7 +62,7 @@ public class DashboardService {
     private List<RecentRequestDTO> getRecentRequests(User user) {
         List<RecentRequestDTO> requests = new ArrayList<>();
         
-        // Get recent facility reservations (top 3)
+        // Get recent facility reservations (top 5)
         List<FacilityReservation> recentReservations = 
             reservationRepository.findTop5ByUserOrderByCreatedAtDesc(user);
         
@@ -79,7 +77,7 @@ public class DashboardService {
             ));
         }
         
-        // Get recent equipment borrowings (top 2)
+        // Get recent equipment borrowings (top 5)
         List<EquipmentBorrowing> recentBorrowings = 
             borrowingRepository.findTop5ByUserOrderByCreatedAtDesc(user);
         

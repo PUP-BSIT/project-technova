@@ -1,9 +1,9 @@
 package com.campus.facility_reservation.service;
 
-import com.campus.facility_reservation.dto.*;
-import com.campus.facility_reservation.entity.Facility;
-import com.campus.facility_reservation.entity.Facility.FacilityStatus;
-import com.campus.facility_reservation.entity.Facility.FacilityType;
+import com.campus.facility_reservation.model.Facility;
+import com.campus.facility_reservation.model.Facility.FacilityStatus;
+import com.campus.facility_reservation.model.Facility.FacilityType;
+import com.campus.facility_reservation.dto.FacilityDTO;
 import com.campus.facility_reservation.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,15 +50,15 @@ public class FacilityService {
     }
     
     @Transactional
-    public FacilityDTO createFacility(FacilityRequestDTO request) {
+    public FacilityDTO createFacility(FacilityDTO facilityDTO) {
         Facility facility = new Facility();
-        facility.setName(request.getName());
-        facility.setType(FacilityType.valueOf(request.getType().toUpperCase()));
-        facility.setBuilding(request.getBuilding());
-        facility.setFloor(request.getFloor());
-        facility.setCapacity(request.getCapacity());
-        facility.setDescription(request.getDescription());
-        facility.setImageUrl(request.getImageUrl());
+        facility.setName(facilityDTO.getName());
+        facility.setType(FacilityType.valueOf(facilityDTO.getType().toUpperCase()));
+        facility.setBuilding(facilityDTO.getBuilding());
+        facility.setFloor(facilityDTO.getFloor());
+        facility.setCapacity(facilityDTO.getCapacity());
+        facility.setDescription(facilityDTO.getDescription());
+        facility.setImageUrl(facilityDTO.getImageUrl());
         facility.setStatus(FacilityStatus.AVAILABLE);
         
         Facility saved = facilityRepository.save(facility);
@@ -66,17 +66,17 @@ public class FacilityService {
     }
     
     @Transactional
-    public FacilityDTO updateFacility(Long id, FacilityRequestDTO request) {
+    public FacilityDTO updateFacility(Long id, FacilityDTO facilityDTO) {
         Facility facility = facilityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facility not found"));
         
-        facility.setName(request.getName());
-        facility.setType(FacilityType.valueOf(request.getType().toUpperCase()));
-        facility.setBuilding(request.getBuilding());
-        facility.setFloor(request.getFloor());
-        facility.setCapacity(request.getCapacity());
-        facility.setDescription(request.getDescription());
-        facility.setImageUrl(request.getImageUrl());
+        facility.setName(facilityDTO.getName());
+        facility.setType(FacilityType.valueOf(facilityDTO.getType().toUpperCase()));
+        facility.setBuilding(facilityDTO.getBuilding());
+        facility.setFloor(facilityDTO.getFloor());
+        facility.setCapacity(facilityDTO.getCapacity());
+        facility.setDescription(facilityDTO.getDescription());
+        facility.setImageUrl(facilityDTO.getImageUrl());
         
         Facility updated = facilityRepository.save(facility);
         return convertToDTO(updated);

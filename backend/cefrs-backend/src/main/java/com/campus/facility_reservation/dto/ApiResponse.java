@@ -1,9 +1,13 @@
-// Response DTOs
+package com.campus.facility_reservation.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class ApiResponse<T> {
+public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
@@ -15,14 +19,4 @@ class ApiResponse<T> {
     public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>(false, message, null);
     }
-}
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class ErrorResponse {
-    private String error;
-    private String message;
-    private int status;
-    private String timestamp;
 }
