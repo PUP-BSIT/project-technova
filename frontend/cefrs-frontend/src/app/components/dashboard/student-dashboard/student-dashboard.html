@@ -168,14 +168,14 @@
     }
 
     <!-- Transactions View -->
-    @if (currentView === 'transactions') {
+    <!-- @if (currentView === 'transactions') {
       <div class="page-header"><h1>Transaction History</h1><p class="page-subtitle">View all your system activities and transactions</p></div>
       <div class="search-controls">
         <input type="text" placeholder="Search transactions" [(ngModel)]="searchQuery" class="search-input">
       </div>
       <div class="transactions-list" *ngIf="!isLoadingLogs">
-        @for (log of auditLogs; track log.logId) {
-          <div class="transaction-card">
+            @for (log of auditLogs; track log.logId) { -->
+          <!-- <div class="transaction-card">
             <div class="transaction-header">
               <div class="transaction-info">
                 <div class="transaction-action">{{ log.actionType }}</div>
@@ -199,14 +199,14 @@
                 </div>
               }
             </div>
-          </div>
-        } @empty {
+          </div> -->
+        <!-- } @empty {
           <div class="no-data-message">No transaction logs found.</div>
         }
       </div>
       @if (isLoadingLogs) {
         <div class="loading-message">Loading transactions...</div>
       }
-    }
+    } -->
   </main>
 </div>
