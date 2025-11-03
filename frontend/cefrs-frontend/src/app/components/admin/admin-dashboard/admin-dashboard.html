@@ -1,0 +1,53 @@
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- Logo -->
+    <div class="logo-section">
+      <div class="logo-image">
+        <img src="assets/logo-white.png" alt="CEFRS Logo" />
+      </div>
+      <div class="logo-text">CEFRS</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navigation">
+      <button 
+        *ngFor="let item of navItems" 
+        [class.active]="currentView === item.id"
+        (click)="setCurrentView(item.id)"
+        class="nav-button">
+        {{ item.label }}
+      </button>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="user-profile">
+      <div class="user-avatar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <div class="user-info">
+        <div class="user-name">Admin</div>
+        <div class="user-email">youradmin@example.com</div>
+      </div>
+      <button class="logout-button" (click)="logout()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <app-dashboard-view *ngIf="currentView === 'dashboard'"></app-dashboard-view>
+    <app-manage-request *ngIf="currentView === 'manage-request'"></app-manage-request>
+    <app-facilities *ngIf="currentView === 'facilities'"></app-facilities>
+    <app-equipment *ngIf="currentView === 'equipment'"></app-equipment>
+    <app-report-logs *ngIf="currentView === 'report-logs'"></app-report-logs>
+  </main>
+</div>

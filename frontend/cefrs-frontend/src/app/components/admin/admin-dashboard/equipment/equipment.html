@@ -1,0 +1,150 @@
+<div class="view-container">
+  <h1 class="page-title">Equipment</h1>
+  
+  <div class="filter-section">
+    <button class="add-button" (click)="addNewEquipment()">+ Add New Equipment</button>
+    <div class="search-box">
+      <input type="text" placeholder="Search by name..." [(ngModel)]="searchText">
+      <button class="search-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+    <div class="filter-dropdowns">
+      <select class="filter-dropdown">
+        <option>All Categories</option>
+        <option>Multimedia</option>
+        <option>Audio</option>
+      </select>
+      <select class="filter-dropdown">
+        <option>All Conditions</option>
+        <option>Good</option>
+        <option>Fair</option>
+        <option>Poor</option>
+      </select>
+      <select class="filter-dropdown">
+        <option>All Availability</option>
+        <option>Available</option>
+        <option>Borrowed</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="items-list">
+    <div *ngFor="let item of equipment" class="item-card">
+      <div class="item-card-header">
+        <div>
+          <span class="item-id">{{ item.id }}</span>
+        </div>
+        <div class="item-actions">
+          <button class="edit-button" (click)="editEquipment(item)">Edit</button>
+          <button class="delete-button" (click)="deleteEquipment(item)">Delete</button>
+        </div>
+      </div>
+      <h3 class="item-title">{{ item.name }}</h3>
+      <div class="item-details">
+        <div class="detail-item">
+          <span class="detail-label">Category:</span>
+          <span class="detail-value">{{ item.category }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Condition:</span>
+          <span class="condition-badge condition-good">{{ item.condition }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Availability:</span>
+          <span [class]="'availability-badge availability-' + item.availability">{{ getStatusText(item.availability) }}</span>
+        </div>
+      </div>
+      <div *ngIf="item.availability === 'borrowed'" class="borrowed-info">
+        <div>Currently borrowed by: <strong>{{ item.borrowedBy }}</strong></div>
+        <div>Due: {{ item.dueDate }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Equipment Modal -->
+<div class="modal-overlay" *ngIf="showAddEditModal" (click)="closeAddEditModal()">
+  <div class="modal-container modal-form-container" (click)="$event.stopPropagation()">
+    <h2 class="modal-title">{{ isEditMode ? 'Edit Equipment' : 'Add New Equipment' }}</h2>
+    
+    <div class="modal-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Equipment Name</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="equipmentForm.name"
+            placeholder="Enter equipment name">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" [(ngModel)]="equipmentForm.category">
+            <option value="Multimedia">Multimedia</option>
+            <option value="Audio">Audio</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Condition</label>
+          <select class="form-select" [(ngModel)]="equipmentForm.condition">
+            <option value="Good">Good</option>
+            <option value="Fair">Fair</option>
+            <option value="Poor">Poor</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Availability</label>
+          <select class="form-select" [(ngModel)]="equipmentForm.availability">
+            <option value="available">Available</option>
+            <option value="borrowed">Borrowed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group form-group-full">
+        <label class="form-label">Description (optional)</label>
+        <textarea 
+          class="form-textarea" 
+          [(ngModel)]="equipmentForm.description"
+          placeholder="Describe the equipment...">
+        </textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button 
+        class="modal-button modal-button-confirm" 
+        (click)="saveAddEdit()"
+        [disabled]="!isFormValid()">
+        {{ isEditMode ? 'Save Changes' : 'Add Equipment' }}
+      </button>
+      <button class="modal-button modal-button-cancel" (click)="closeAddEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal-container modal-delete-container" (click)="$event.stopPropagation()">
+    <h2 class="modal-title">Confirm Delete</h2>
+    
+    <div class="delete-message">
+      <p>Are you sure you want to delete <strong>{{ selectedEquipment?.name }}</strong>?</p>
+      <p>This action cannot be undone.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-button modal-button-confirm" (click)="confirmDelete()">Confirm</button>
+      <button class="modal-button modal-button-cancel" (click)="closeDeleteModal()">Cancel</button>
+    </div>
+  </div>
+</div>
