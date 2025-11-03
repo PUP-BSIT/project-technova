@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { LoginComponent } from './components/login/login';
 import { OrgLoginComponent } from './components/org-login/org-login';
+import { AdminLogin } from './components/admin/admin-login/admin-login';
 import { RegisterComponent } from './components/register/register';
 import { OrgRegisterComponent } from './components/org-register/org-register';
 import { DashboardComponent } from './components/dashboard/dashboard';
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'role-selection', redirectTo: '', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'org-login', component: OrgLoginComponent },
+  { path: 'admin-login', component: AdminLogin },
   { path: 'register', component: RegisterComponent },
   { path: 'org-register', component: OrgRegisterComponent },
 
@@ -54,7 +56,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Optional: Keep old standalone profile routes
   { path: 'profile', component: StudentProfileComponent, canActivate: [AuthGuard] },
   { path: 'change-password', component: StudentChangePasswordComponent, canActivate: [AuthGuard] },
   { path: 'student-change-password', component: StudentChangePasswordComponent },
