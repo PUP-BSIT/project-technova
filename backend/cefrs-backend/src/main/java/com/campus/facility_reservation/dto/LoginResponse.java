@@ -1,6 +1,3 @@
-public class LoginResponse {
-    
-}
 package com.campus.facility_reservation.dto;
 
 import lombok.AllArgsConstructor;
