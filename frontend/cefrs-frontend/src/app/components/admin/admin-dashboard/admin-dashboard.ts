@@ -16,8 +16,8 @@ interface NavItem {
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss'],
+  templateUrl: './admin-dashboard.html',
+  styleUrls: ['./admin-dashboard.scss'],
   standalone: true,
   imports: [
     CommonModule, 
