@@ -1,0 +1,187 @@
+// Variables
+$card-background: #ffffff;
+$text-primary: #333333;
+$text-secondary: #666666;
+$font-family: 'Roboto', sans-serif;
+
+// Mixins
+@mixin card-shadow {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@mixin button-reset {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+.view-container {
+  padding: 32px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 500;
+  margin-bottom: 32px;
+  color: $text-primary;
+}
+
+// Stats Grid
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: $card-background;
+  padding: 32px;
+  border-radius: 8px;
+  @include card-shadow;
+
+  .stat-label {
+    font-size: 16px;
+    color: $text-secondary;
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-size: 48px;
+    font-weight: 500;
+    color: $text-primary;
+  }
+}
+
+// Pending Requests Card
+.pending-requests-card {
+  background: $card-background;
+  padding: 32px;
+  border-radius: 8px;
+  @include card-shadow;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .view-all-button {
+      @include button-reset;
+      color: $text-primary;
+      font-size: 16px;
+      transition: color 0.2s;
+
+      &:hover {
+        color: #69040C;
+      }
+    }
+  }
+
+  .request-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    gap: 16px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .request-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .request-badge {
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+
+        &.equipment {
+          background: #7fe87f;
+          color: #1a5c1a;
+        }
+
+        &.facility {
+          background: #6db3f2;
+          color: #1a4d7a;
+        }
+      }
+
+      .request-name {
+        font-weight: 500;
+        font-size: 16px;
+      }
+
+      .request-details {
+        font-size: 14px;
+        color: $text-secondary;
+      }
+    }
+
+    .request-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Buttons
+.approve-button {
+  @include button-reset;
+  padding: 8px 24px;
+  background: #22c55e;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #16a34a;
+  }
+}
+
+.decline-button {
+  @include button-reset;
+  padding: 8px 24px;
+  background: #ef4444;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #dc2626;
+  }
+}
