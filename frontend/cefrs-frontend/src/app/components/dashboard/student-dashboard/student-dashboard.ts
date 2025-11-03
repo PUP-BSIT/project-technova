@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth';
+import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
 import { EquipmentService } from '../../../services/equipment.service';
 import { FacilityService } from '../../../services/facility.service';
 import { SidebarComponent } from '../../sidebar/sidebar';
@@ -62,6 +63,7 @@ interface Equipment {
 })
 export class StudentDashboard implements OnInit {
   private authService = inject(AuthService);
+  private auditLogService = inject(AuditLogService);
   private equipmentService = inject(EquipmentService);
   private facilityService = inject(FacilityService);
   private router = inject(Router);
@@ -69,6 +71,7 @@ export class StudentDashboard implements OnInit {
   currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' = 'dashboard';
   user: User | null = null;
 
+  auditLogs: AuditLog[] = [];
   isLoadingLogs = false;
   isLoadingEquipment = false;
   isLoadingFacilities = false;
@@ -102,7 +105,7 @@ export class StudentDashboard implements OnInit {
 
   ngOnInit(): void {
     this.fetchUserProfile();
-    // this.fetchAuditLogs();
+    this.fetchAuditLogs();
     this.fetchEquipment();
     this.fetchFacilities();
   }
@@ -139,19 +142,19 @@ export class StudentDashboard implements OnInit {
     });
   }
 
-  // fetchAuditLogs(): void {
-  //   this.isLoadingLogs = true;
-  //   this.auditLogService.getMyAuditLogs().subscribe({
-  //     next: (logs) => {
-  //       this.auditLogs = logs;
-  //       this.isLoadingLogs = false;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching audit logs:', err);
-  //       this.isLoadingLogs = false;
-  //     }
-  //   });
-  // }
+  fetchAuditLogs(): void {
+    this.isLoadingLogs = true;
+    this.auditLogService.getMyAuditLogs().subscribe({
+      next: (logs) => {
+        this.auditLogs = logs;
+        this.isLoadingLogs = false;
+      },
+      error: (err) => {
+        console.error('Error fetching audit logs:', err);
+        this.isLoadingLogs = false;
+      }
+    });
+  }
 
   fetchUserProfile(): void {
     this.authService.getUserProfile().subscribe({
@@ -185,9 +188,9 @@ export class StudentDashboard implements OnInit {
     }
 
     // Refresh data when switching views
-    // if (view === 'transactions') {
-    //   this.fetchAuditLogs();
-    // }
+    if (view === 'transactions') {
+      this.fetchAuditLogs();
+    }
     if (view === 'equipment') {
       this.fetchEquipment();
     }
