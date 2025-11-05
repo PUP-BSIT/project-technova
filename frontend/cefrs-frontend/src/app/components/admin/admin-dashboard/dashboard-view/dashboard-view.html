@@ -1,4 +1,3 @@
-<p>dashboard-view works!</p>
 <div class="view-container">
   <h1 class="page-title">Admin Dashboard</h1>
   
@@ -30,17 +29,19 @@
     </div>
     
     <div class="request-list">
-      <div *ngFor="let request of pendingRequests" class="request-item">
-        <div class="request-info">
-          <span [class]="'request-badge ' + request.type">{{ request.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>
-          <span class="request-name">{{ request.name }}</span>
-          <div class="request-details">{{ request.details }} • {{ request.date }}</div>
+      @for (request of pendingRequests; track $index) {
+        <div class="request-item">
+          <div class="request-info">
+            <span [class]="'request-badge ' + request.type">{{ request.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>
+            <span class="request-name">{{ request.name }}</span>
+            <div class="request-details">{{ request.details }} • {{ request.date }}</div>
+          </div>
+          <div class="request-actions">
+            <button class="approve-button" (click)="approveRequest(request)">Approved</button>
+            <button class="decline-button" (click)="declineRequest(request)">Decline</button>
+          </div>
         </div>
-        <div class="request-actions">
-          <button class="approve-button" (click)="approveRequest(request)">Approved</button>
-          <button class="decline-button" (click)="declineRequest(request)">Decline</button>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </div>
