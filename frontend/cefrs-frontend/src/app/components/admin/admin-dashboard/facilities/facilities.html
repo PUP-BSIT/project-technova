@@ -21,118 +21,126 @@
   </div>
 
   <div class="items-list">
-    <div *ngFor="let facility of facilities" class="item-card">
-      <div class="item-card-header">
-        <div>
-          <span class="item-id">{{ facility.id }}</span>
-          <span [class]="'status-badge status-' + facility.status">{{ getStatusText(facility.status) }}</span>
+    @for (facility of facilities; track facility.id) {
+      <div class="item-card">
+        <div class="item-card-header">
+          <div>
+            <span class="item-id">{{ facility.id }}</span>
+            <span [class]="'status-badge status-' + facility.status">{{ getStatusText(facility.status) }}</span>
+          </div>
+          <div class="item-actions">
+            <button class="edit-button" (click)="editFacility(facility)">Edit</button>
+            <button class="delete-button" (click)="deleteFacility(facility)">Delete</button>
+          </div>
         </div>
-        <div class="item-actions">
-          <button class="edit-button" (click)="editFacility(facility)">Edit</button>
-          <button class="delete-button" (click)="deleteFacility(facility)">Delete</button>
+        <h3 class="item-title">{{ facility.name }}</h3>
+        <div class="item-details">
+          <div class="detail-item">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value">{{ facility.location }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Capacity:</span>
+            <span class="detail-value">{{ facility.capacity }}</span>
+          </div>
+          @if (facility.description) {
+            <div class="detail-item">
+              <span class="detail-label">Description:</span>
+              <span class="detail-value">{{ facility.description }}</span>
+            </div>
+          }
         </div>
       </div>
-      <h3 class="item-title">{{ facility.name }}</h3>
-      <div class="item-details">
-        <div class="detail-item">
-          <span class="detail-label">Location:</span>
-          <span class="detail-value">{{ facility.location }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Capacity:</span>
-          <span class="detail-value">{{ facility.capacity }}</span>
-        </div>
-        <div class="detail-item" *ngIf="facility.description">
-          <span class="detail-label">Description:</span>
-          <span class="detail-value">{{ facility.description }}</span>
-        </div>
-      </div>
-    </div>
+    }
   </div>
 </div>
 
 <!-- Add/Edit Facility Modal -->
-<div class="modal-overlay" *ngIf="showAddEditModal" (click)="closeAddEditModal()">
-  <div class="modal-container modal-form-container" (click)="$event.stopPropagation()">
-    <h2 class="modal-title">{{ isEditMode ? 'Edit Facility' : 'Add New Facility' }}</h2>
-    
-    <div class="modal-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Add New Facility</label>
-          <input 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="facilityForm.name"
-            placeholder="Enter facility name">
+@if (showAddEditModal) {
+  <div class="modal-overlay" (click)="closeAddEditModal()">
+    <div class="modal-container modal-form-container" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">{{ isEditMode ? 'Edit Facility' : 'Add New Facility' }}</h2>
+      
+      <div class="modal-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Add New Facility</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              [(ngModel)]="facilityForm.name"
+              placeholder="Enter facility name">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              [(ngModel)]="facilityForm.location"
+              placeholder="Enter location">
+          </div>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label">Location</label>
-          <input 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="facilityForm.location"
-            placeholder="Enter location">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Capacity</label>
+            <input 
+              type="number" 
+              class="form-input" 
+              [(ngModel)]="facilityForm.capacity"
+              placeholder="Enter capacity"
+              min="1">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" [(ngModel)]="facilityForm.status">
+              <option value="available">Available</option>
+              <option value="maintenance">Under Maintenance</option>
+              <option value="unavailable">Unavailable</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label class="form-label">Description (optional)</label>
+          <textarea 
+            class="form-textarea" 
+            [(ngModel)]="facilityForm.description"
+            placeholder="Describe the facility...">
+          </textarea>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Capacity</label>
-          <input 
-            type="number" 
-            class="form-input" 
-            [(ngModel)]="facilityForm.capacity"
-            placeholder="Enter capacity"
-            min="1">
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-select" [(ngModel)]="facilityForm.status">
-            <option value="available">Available</option>
-            <option value="maintenance">Under Maintenance</option>
-            <option value="unavailable">Unavailable</option>
-          </select>
-        </div>
+      <div class="modal-actions">
+        <button 
+          class="modal-button modal-button-confirm" 
+          (click)="saveAddEdit()"
+          [disabled]="!isFormValid()">
+          {{ isEditMode ? 'Save Changes' : 'Add Facility' }}
+        </button>
+        <button class="modal-button modal-button-cancel" (click)="closeAddEditModal()">Cancel</button>
       </div>
-
-      <div class="form-group form-group-full">
-        <label class="form-label">Description (optional)</label>
-        <textarea 
-          class="form-textarea" 
-          [(ngModel)]="facilityForm.description"
-          placeholder="Describe the facility...">
-        </textarea>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button 
-        class="modal-button modal-button-confirm" 
-        (click)="saveAddEdit()"
-        [disabled]="!isFormValid()">
-        {{ isEditMode ? 'Save Changes' : 'Add Facility' }}
-      </button>
-      <button class="modal-button modal-button-cancel" (click)="closeAddEditModal()">Cancel</button>
     </div>
   </div>
-</div>
+}
 
 <!-- Delete Confirmation Modal -->
-<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
-  <div class="modal-container modal-delete-container" (click)="$event.stopPropagation()">
-    <h2 class="modal-title">Confirm Delete</h2>
-    
-    <div class="delete-message">
-      <p>Are you sure you want to delete <strong>{{ selectedFacility?.name }}</strong>?</p>
-      <p>This action cannot be undone.</p>
-    </div>
+@if (showDeleteModal) {
+  <div class="modal-overlay" (click)="closeDeleteModal()">
+    <div class="modal-container modal-delete-container" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Confirm Delete</h2>
+      
+      <div class="delete-message">
+        <p>Are you sure you want to delete <strong>{{ selectedFacility?.name }}</strong>?</p>
+        <p>This action cannot be undone.</p>
+      </div>
 
-    <div class="modal-actions">
-      <button class="modal-button modal-button-confirm" (click)="confirmDelete()">Confirm</button>
-      <button class="modal-button modal-button-cancel" (click)="closeDeleteModal()">Cancel</button>
+      <div class="modal-actions">
+        <button class="modal-button modal-button-confirm" (click)="confirmDelete()">Confirm</button>
+        <button class="modal-button modal-button-cancel" (click)="closeDeleteModal()">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
+}
