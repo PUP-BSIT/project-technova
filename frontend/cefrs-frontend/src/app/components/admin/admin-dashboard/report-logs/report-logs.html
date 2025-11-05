@@ -1,6 +1,308 @@
 <div class="view-container">
-  <h1 class="page-title">Report and Logs</h1>
-  <div class="empty-state">
-    <p>Reports and logs section coming soon...</p>
+  <div class="header-section">
+    <h1 class="page-title">Reports and Logs</h1>
+    <button class="refresh-button" (click)="refreshData()" [disabled]="isLoading()">
+      <span class="refresh-icon">↻</span>
+      Refresh
+    </button>
   </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'facility'"
+      (click)="setActiveTab('facility')">
+      Facility Usage
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'equipment'"
+      (click)="setActiveTab('equipment')">
+      Equipment Usage
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'user'"
+      (click)="setActiveTab('user')">
+      User Activity
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading data...</p>
+    </div>
+  }
+
+  <!-- Facility Usage Tab -->
+  @if (activeTab === 'facility' && !isLoadingFacility) {
+    <div class="tab-content">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        @for (stat of facilityStats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        }
+      </div>
+
+      <!-- Booking Trends Chart -->
+      @if (bookingTrendsData.labels.length > 0) {
+        <div class="chart-container">
+          <h3 class="chart-title">Booking Trends Over Time</h3>
+          <div class="chart-placeholder">
+            <div class="chart-legend">
+              <span class="legend-item">
+                <span class="legend-color"></span>
+                Reservations
+              </span>
+            </div>
+            <!-- Chart will be rendered based on bookingTrendsData -->
+            <svg class="line-chart" viewBox="0 0 800 300">
+              <!-- Dynamic chart rendering here -->
+            </svg>
+          </div>
+        </div>
+      }
+
+      <!-- Top 3 Most Booked Facilities -->
+      @if (topFacilities.length > 0) {
+        <div class="table-container">
+          <h3 class="table-title">Top 3 Most Booked Facilities</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Facility Name</th>
+                <th>Total Bookings</th>
+                <th>Occupancy Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (facility of topFacilities; track facility.rank) {
+                <tr>
+                  <td>
+                    <span class="rank-badge">{{ facility.rank }}</span>
+                  </td>
+                  <td>{{ facility.name }}</td>
+                  <td>{{ facility.totalBookings }}</td>
+                  <td>
+                    <div class="progress-cell">
+                      <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="facility.occupancyRate"></div>
+                      </div>
+                      <span class="progress-text">{{ facility.occupancyRate }}%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span [class]="'status-badge status-' + facility.status">
+                      {{ facility.status === 'high-demand' ? 'High Demand' : 'Available' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (topFacilities.length === 0 && !isLoadingFacility) {
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <h3>No Facility Data Available</h3>
+          <p>There are no facility bookings to display at this time.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Equipment Usage Tab -->
+  @if (activeTab === 'equipment' && !isLoadingEquipment) {
+    <div class="tab-content">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        @for (stat of equipmentStats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        }
+      </div>
+
+      <!-- Charts Row -->
+      @if (topEquipment.length > 0) {
+        <div class="charts-row">
+          <!-- Equipment Availability Pie Chart -->
+          <div class="chart-container half-width">
+            <h3 class="chart-title">Equipment Availability</h3>
+            <div class="chart-placeholder">
+              <svg viewBox="0 0 400 300">
+                <!-- Dynamic pie chart based on equipmentAvailability -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Borrowing Trends Bar Chart -->
+          <div class="chart-container half-width">
+            <h3 class="chart-title">Borrowing Trends</h3>
+            <div class="chart-placeholder">
+              <div class="chart-legend">
+                <span class="legend-item">
+                  <span class="legend-color"></span>
+                  Items Borrowed
+                </span>
+              </div>
+              <svg viewBox="0 0 400 250">
+                <!-- Dynamic bar chart based on borrowingTrendsData -->
+              </svg>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Top 5 Most Borrowed Equipment -->
+      @if (topEquipment.length > 0) {
+        <div class="table-container">
+          <h3 class="table-title">Top 5 Most Borrowed Equipment</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Equipment Name</th>
+                <th>Times Borrowed</th>
+                <th>Available/Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (equipment of topEquipment; track equipment.rank) {
+                <tr>
+                  <td>
+                    <span class="rank-badge">{{ equipment.rank }}</span>
+                  </td>
+                  <td>{{ equipment.name }}</td>
+                  <td>{{ equipment.timesBorrowed }}</td>
+                  <td>{{ equipment.available }}/{{ equipment.total }}</td>
+                  <td>
+                    <span [class]="'status-badge status-' + equipment.status">
+                      {{ equipment.status === 'low-stock' ? 'Low Stock' : 
+                         equipment.status === 'available' ? 'Available' : 'Unavailable' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (topEquipment.length === 0 && !isLoadingEquipment) {
+        <div class="empty-state">
+          <div class="empty-icon">🔧</div>
+          <h3>No Equipment Data Available</h3>
+          <p>There are no equipment borrowing records to display at this time.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- User Activity Tab -->
+  @if (activeTab === 'user' && !isLoadingUser) {
+    <div class="tab-content">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        @for (stat of userStats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        }
+      </div>
+
+      <!-- Charts Row -->
+      @if (topUsers.length > 0) {
+        <div class="charts-row">
+          <!-- User Distribution Pie Chart -->
+          <div class="chart-container half-width">
+            <h3 class="chart-title">User Distribution by Role</h3>
+            <div class="chart-placeholder">
+              <svg viewBox="0 0 400 300">
+                <!-- Dynamic pie chart based on userDistribution -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Monthly Active Users Line Chart -->
+          <div class="chart-container half-width">
+            <h3 class="chart-title">Monthly Active Users</h3>
+            <div class="chart-placeholder">
+              <div class="chart-legend">
+                <span class="legend-item">
+                  <span class="legend-color"></span>
+                  Active Users
+                </span>
+              </div>
+              <svg viewBox="0 0 400 250">
+                <!-- Dynamic line chart based on monthlyActiveUsersData -->
+              </svg>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Most Active Users/Organizations -->
+      @if (topUsers.length > 0) {
+        <div class="table-container">
+          <h3 class="table-title">Most Active Users / Organizations</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>User / Organization</th>
+                <th>Type</th>
+                <th>Total Activities</th>
+                <th>Last Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of topUsers; track user.rank) {
+                <tr>
+                  <td>
+                    <span class="rank-badge">{{ user.rank }}</span>
+                  </td>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.type }}</td>
+                  <td>
+                    <div class="progress-cell">
+                      <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="user.totalActivities / 2"></div>
+                      </div>
+                      <span class="progress-text">{{ user.totalActivities }} activities</span>
+                    </div>
+                  </td>
+                  <td>{{ user.lastActive }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (topUsers.length === 0 && !isLoadingUser) {
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <h3>No User Data Available</h3>
+          <p>There are no user activity records to display at this time.</p>
+        </div>
+      }
+    </div>
+  }
 </div>
