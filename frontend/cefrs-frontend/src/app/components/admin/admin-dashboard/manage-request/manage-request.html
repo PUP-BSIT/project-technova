@@ -27,139 +27,159 @@
   </div>
 
   <div class="requests-list">
-    <div *ngFor="let request of requests" class="request-card">
-      <div class="request-card-header">
-        <div>
-          <span class="request-id">{{ request.id }}</span>
-          <span [class]="'status-badge status-' + request.status">{{ request.status }}</span>
+    @for (request of requests; track request.id) {
+      <div class="request-card">
+        <div class="request-card-header">
+          <div>
+            <span class="request-id">{{ request.id }}</span>
+            <span [class]="'status-badge status-' + request.status">{{ request.status }}</span>
+          </div>
+          <div class="request-actions">
+            <button class="approve-button" (click)="approveRequest(request)">Approved</button>
+            <button class="decline-button" (click)="declineRequest(request)">Decline</button>
+          </div>
         </div>
-        <div class="request-actions">
-          <button class="approve-button" (click)="approveRequest(request)">Approved</button>
-          <button class="decline-button" (click)="declineRequest(request)">Decline</button>
+        <h3 class="request-title">{{ request.name }}</h3>
+        <div class="request-details-grid">
+          <div class="detail-item">
+            <span class="detail-label">Requester:</span>
+            <span class="detail-value">{{ request.requester }}</span>
+          </div>
+          @if (request.dateTime) {
+            <div class="detail-item">
+              <span class="detail-label">Date & Time:</span>
+              <span class="detail-value">{{ request.dateTime }}</span>
+            </div>
+          }
+          @if (request.burrow) {
+            <div class="detail-item">
+              <span class="detail-label">Burrow:</span>
+              <span class="detail-value">{{ request.burrow }}</span>
+            </div>
+          }
+          @if (request.return) {
+            <div class="detail-item">
+              <span class="detail-label">Return:</span>
+              <span class="detail-value">{{ request.return }}</span>
+            </div>
+          }
         </div>
+        <div class="request-details-grid">
+          @if (request.capacity) {
+            <div class="detail-item">
+              <span class="detail-label">Capacity:</span>
+              <span class="detail-value">{{ request.capacity }}</span>
+            </div>
+          }
+          @if (request.participants) {
+            <div class="detail-item">
+              <span class="detail-label">Participants:</span>
+              <span class="detail-value">{{ request.participants }}</span>
+            </div>
+          }
+          @if (request.condition) {
+            <div class="detail-item">
+              <span class="detail-label">Condition:</span>
+              <span class="detail-value">{{ request.condition }}</span>
+            </div>
+          }
+        </div>
+        @if (request.notes) {
+          <div class="detail-item">
+            <span class="detail-label">Notes:</span>
+            <span class="detail-value">{{ request.notes }}</span>
+          </div>
+        }
       </div>
-      <h3 class="request-title">{{ request.name }}</h3>
-      <div class="request-details-grid">
-        <div class="detail-item">
-          <span class="detail-label">Requester:</span>
-          <span class="detail-value">{{ request.requester }}</span>
-        </div>
-        <div class="detail-item" *ngIf="request.dateTime">
-          <span class="detail-label">Date & Time:</span>
-          <span class="detail-value">{{ request.dateTime }}</span>
-        </div>
-        <div class="detail-item" *ngIf="request.burrow">
-          <span class="detail-label">Burrow:</span>
-          <span class="detail-value">{{ request.burrow }}</span>
-        </div>
-        <div class="detail-item" *ngIf="request.return">
-          <span class="detail-label">Return:</span>
-          <span class="detail-value">{{ request.return }}</span>
-        </div>
-      </div>
-      <div class="request-details-grid">
-        <div class="detail-item" *ngIf="request.capacity">
-          <span class="detail-label">Capacity:</span>
-          <span class="detail-value">{{ request.capacity }}</span>
-        </div>
-        <div class="detail-item" *ngIf="request.participants">
-          <span class="detail-label">Participants:</span>
-          <span class="detail-value">{{ request.participants }}</span>
-        </div>
-        <div class="detail-item" *ngIf="request.condition">
-          <span class="detail-label">Condition:</span>
-          <span class="detail-value">{{ request.condition }}</span>
-        </div>
-      </div>
-      <div class="detail-item" *ngIf="request.notes">
-        <span class="detail-label">Notes:</span>
-        <span class="detail-value">{{ request.notes }}</span>
-      </div>
-    </div>
+    }
   </div>
 </div>
 
 <!-- Approve Request Modal -->
-<div class="modal-overlay" *ngIf="showApproveModal" (click)="closeApproveModal()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
-    <h2 class="modal-title">Approve Request</h2>
-    
-    <div class="modal-info">
-      <div class="info-row">
-        <span class="info-label">Request ID:</span>
-        <span class="info-value">{{ selectedRequest?.id }}</span>
+@if (showApproveModal) {
+  <div class="modal-overlay" (click)="closeApproveModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Approve Request</h2>
+      
+      <div class="modal-info">
+        <div class="info-row">
+          <span class="info-label">Request ID:</span>
+          <span class="info-value">{{ selectedRequest?.id }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
+          <span class="info-value">{{ selectedRequest?.name }}</span>
+        </div>
       </div>
-      <div class="info-row">
-        <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
-        <span class="info-value">{{ selectedRequest?.name }}</span>
+
+      <div class="modal-form-group">
+        <label class="modal-label">Approval Notes (Optional)</label>
+        <textarea 
+          class="modal-textarea" 
+          [(ngModel)]="approvalNotes"
+          placeholder="Add any notes for the requester...">
+        </textarea>
       </div>
-    </div>
 
-    <div class="modal-form-group">
-      <label class="modal-label">Approval Notes (Optional)</label>
-      <textarea 
-        class="modal-textarea" 
-        [(ngModel)]="approvalNotes"
-        placeholder="Add any notes for the requester...">
-      </textarea>
-    </div>
+      <div class="modal-checkbox">
+        <input 
+          type="checkbox" 
+          id="approveNotify" 
+          [(ngModel)]="sendNotification">
+        <label for="approveNotify">Send notification to requester</label>
+      </div>
 
-    <div class="modal-checkbox">
-      <input 
-        type="checkbox" 
-        id="approveNotify" 
-        [(ngModel)]="sendNotification">
-      <label for="approveNotify">Send notification to requester</label>
-    </div>
-
-    <div class="modal-actions">
-      <button class="modal-button modal-button-confirm" (click)="confirmApproval()">Confirm</button>
-      <button class="modal-button modal-button-cancel" (click)="closeApproveModal()">Cancel</button>
+      <div class="modal-actions">
+        <button class="modal-button modal-button-confirm" (click)="confirmApproval()">Confirm</button>
+        <button class="modal-button modal-button-cancel" (click)="closeApproveModal()">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
+}
 
 <!-- Decline Request Modal -->
-<div class="modal-overlay" *ngIf="showDeclineModal" (click)="closeDeclineModal()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
-    <h2 class="modal-title">Decline Request</h2>
-    
-    <div class="modal-info">
-      <div class="info-row">
-        <span class="info-label">Request ID:</span>
-        <span class="info-value">{{ selectedRequest?.id }}</span>
+@if (showDeclineModal) {
+  <div class="modal-overlay" (click)="closeDeclineModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Decline Request</h2>
+      
+      <div class="modal-info">
+        <div class="info-row">
+          <span class="info-label">Request ID:</span>
+          <span class="info-value">{{ selectedRequest?.id }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
+          <span class="info-value">{{ selectedRequest?.name }}</span>
+        </div>
       </div>
-      <div class="info-row">
-        <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
-        <span class="info-value">{{ selectedRequest?.name }}</span>
+
+      <div class="modal-form-group">
+        <label class="modal-label">Reason for Decline (Required)</label>
+        <textarea 
+          class="modal-textarea" 
+          [(ngModel)]="declineReason"
+          placeholder="Please provide a reason for declining this request...">
+        </textarea>
       </div>
-    </div>
 
-    <div class="modal-form-group">
-      <label class="modal-label">Reason for Decline (Required)</label>
-      <textarea 
-        class="modal-textarea" 
-        [(ngModel)]="declineReason"
-        placeholder="Please provide a reason for declining this request...">
-      </textarea>
-    </div>
+      <div class="modal-checkbox">
+        <input 
+          type="checkbox" 
+          id="declineNotify" 
+          [(ngModel)]="sendNotification">
+        <label for="declineNotify">Send notification to requester</label>
+      </div>
 
-    <div class="modal-checkbox">
-      <input 
-        type="checkbox" 
-        id="declineNotify" 
-        [(ngModel)]="sendNotification">
-      <label for="declineNotify">Send notification to requester</label>
-    </div>
-
-    <div class="modal-actions">
-      <button 
-        class="modal-button modal-button-confirm" 
-        (click)="confirmDecline()"
-        [disabled]="!declineReason.trim()">
-        Confirm
-      </button>
-      <button class="modal-button modal-button-cancel" (click)="closeDeclineModal()">Cancel</button>
+      <div class="modal-actions">
+        <button 
+          class="modal-button modal-button-confirm" 
+          (click)="confirmDecline()"
+          [disabled]="!declineReason.trim()">
+          Confirm
+        </button>
+        <button class="modal-button modal-button-cancel" (click)="closeDeclineModal()">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
+}
