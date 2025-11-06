@@ -43,8 +43,9 @@ export class OrgLoginComponent {
         this.isLoading = false;
 
         const role = this.authService.getUserRole();
+        console.log('User role:', role);
         // Redirect to org-dashboard for organization users
-        if (role === 'STUDENT') {
+        if (role === 'CAMPUS_ORGANIZATION') {
           this.router.navigate(['/org-dashboard']);
         } else {
           this.errorMessage = `Logged in as ${role}. Please use the correct login page.`;

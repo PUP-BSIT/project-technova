@@ -9,6 +9,7 @@ $text: #000;
 $placeholder: #b8b8b8;
 $radius: 20px;
 
+/* ✅ Remove default spacing */
 :host {
   display: block;
   height: 100vh;
@@ -71,6 +72,7 @@ $radius: 20px;
 
     input {
       width: 100%;
+      box-sizing: border-box;
       padding: 14px 16px;
       border: 1px solid #d1d5db;
       border-radius: 8px;
@@ -91,10 +93,13 @@ $radius: 20px;
 
     .input-with-icon {
       position: relative;
-      padding-right: 45px;
+      width: 100%;
+      display: block;
       
       input {
         padding-right: 45px;
+        width: 100%;
+        box-sizing: border-box;
       }
       
       .toggle-password {

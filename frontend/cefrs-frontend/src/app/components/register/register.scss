@@ -273,11 +273,21 @@ html {
   display: flex;
   justify-content: flex-end;
   margin-top: 2.5rem;
+
+  &.single-action {
+    justify-content: flex-end;
+  }
+
+  &.multiple-actions {
+    justify-content: space-between;
+    gap: 1rem;
+  }
 }
 
 .btn-next,
 .btn-submit,
-.btn-continue {
+.btn-continue,
+.btn-prev {
   padding: 0.875rem 3rem;
   font-size: 1rem;
   font-weight: 600;
@@ -297,6 +307,21 @@ html {
     background: $color-primary-dark;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba($color-primary, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-prev {
+  background: white;
+  color: $color-primary;
+  border: 2px solid $color-primary;
+
+  &:hover {
+    background: $color-card-bg;
+    transform: translateY(-1px);
   }
 
   &:active {
