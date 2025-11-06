@@ -62,12 +62,13 @@ export class LoginComponent implements OnInit {
         console.log('Login successful:', response);
         this.isLoading = false;
 
-        const role = this.authService.getUserRole();
-        // Redirect based on role
-        if (role === 'STUDENT' || this.selectedRole.toUpperCase() === 'STUDENT') {
+        const role = response.role; // Get role from backend response
+
+        // Only allow STUDENT role on this login page
+        if (role === 'STUDENT') {
           this.router.navigate(['/student-dashboard']);
         } else {
-          this.errorMessage = `Logged in as ${role}. Please use the correct login page.`;
+          this.errorMessage = `This login page is for students only. Your account is registered as ${role}. Please use the correct login page.`;
           this.authService.logout();
         }
       },
