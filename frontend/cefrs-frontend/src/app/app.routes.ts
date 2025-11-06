@@ -5,7 +5,6 @@ import { OrgLoginComponent } from './components/org-login/org-login';
 import { AdminLogin } from './components/admin/admin-login/admin-login';
 import { RegisterComponent } from './components/register/register';
 import { OrgRegisterComponent } from './components/org-register/org-register';
-import { DashboardComponent } from './components/dashboard/dashboard';
 import { StudentDashboard } from './components/dashboard/student-dashboard/student-dashboard';
 import { OrgDashboardComponent } from './components/org-dashboard/org-dashboard';
 import { AuthGuard } from './guards/auth-guard';
@@ -25,19 +24,19 @@ export const routes: Routes = [
   { path: 'org-register', component: OrgRegisterComponent },
 
   // Admin / Org Dashboard (Protected)
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [AuthGuard]
-  },
-  
+  // {
+  //   path: 'dashboard',
+  //   component: DashboardComponent,
+  //   canActivate: [AuthGuard]
+  // },
+
   // Organization Dashboard (Protected)
   {
     path: 'org-dashboard',
     component: OrgDashboardComponent,
     canActivate: [AuthGuard]
   },
-  
+
   // Organization Profile (Protected)
   {
     path: 'org-profile',
