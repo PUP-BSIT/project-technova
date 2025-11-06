@@ -49,18 +49,35 @@ public class AuthService {
                 // 3. Clean the role string
                 roleString = roleString.trim().toUpperCase();
 
-                // 4. Convert to Enum and Find Role Entity
-                RoleType roleType;
-                try {
-                        roleType = RoleType.valueOf(roleString);
-                } catch (IllegalArgumentException e) {
-                        // Catch the specific error thrown by RoleType.valueOf() if the string is
-                        // invalid
-                        throw new RuntimeException("Registration failed: Invalid role type specified.", e);
-                }
+                // 4. Resolve role by numeric id OR alias mapping -> enum -> entity
+                Role role;
 
-                Role role = roleRepository.findByName(roleType)
-                                .orElseThrow(() -> new RuntimeException("Role not found: " + roleType.toString()));
+                // 4a. If numeric, treat as role_id
+                if (roleString.matches("\\d+")) {
+                        Long roleId = Long.parseLong(roleString);
+                        role = roleRepository.findById(roleId)
+                                        .orElseThrow(() -> new RuntimeException("Role not found by id: " + roleId));
+                } else {
+                        // 4b. Map common aliases to enum names
+                        String normalizedRole = roleString;
+                        if ("ADMIN".equals(normalizedRole)) {
+                                normalizedRole = "ADMINISTRATOR";
+                        } else if ("ORGANIZATION".equals(normalizedRole)) {
+                                normalizedRole = "CAMPUS_ORGANIZATION";
+                        }
+
+                        RoleType roleType;
+                        try {
+                                roleType = RoleType.valueOf(normalizedRole);
+                        } catch (IllegalArgumentException e) {
+                                throw new RuntimeException(
+                                                "Registration failed: Invalid role type specified.");
+                        }
+
+                        role = roleRepository.findByName(roleType)
+                                        .orElseThrow(() -> new RuntimeException(
+                                                        "Role not found: " + roleType.toString()));
+                }
 
                 // --- User Object Creation ---
                 User user = new User();
@@ -72,9 +89,8 @@ public class AuthService {
                 user.setPhoneNumber(request.getPhoneNumber());
 
                 user.setAddress(request.getAddress());
-
-                // Student ID: Set the student ID from the DTO
                 user.setStudentId(request.getStudentId());
+                user.setOrganizationName(request.getOrganizationName());
 
                 user.setRole(role);
                 user.setIsActive(true);
@@ -151,16 +167,16 @@ public class AuthService {
 
         // Update user profile
         public UserResponse updateUserProfile(Long userId, UpdateProfileRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Only update the fields that are allowed to change
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setEmail(request.getEmail());
-        user.setAddress(request.getAddress());
-        user.setUpdatedAt(LocalDateTime.now());
+                // Only update the fields that are allowed to change
+                user.setPhoneNumber(request.getPhoneNumber());
+                user.setEmail(request.getEmail());
+                user.setAddress(request.getAddress());
+                user.setUpdatedAt(LocalDateTime.now());
 
-        userRepository.save(user);
-        return new UserResponse(user);
+                userRepository.save(user);
+                return new UserResponse(user);
         }
 }

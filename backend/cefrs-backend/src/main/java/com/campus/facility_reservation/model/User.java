@@ -7,151 +7,162 @@ import com.campus.facility_reservation.model.Role;
 @Entity
 @Table(name = "users")
 public class User {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(unique = true, nullable = false)
-  private String email;
+    @Column(unique = true, nullable = false)
+    private String email;
 
-  @Column(nullable = false)
-  private String password;
+    @Column(nullable = false)
+    private String password;
 
-  @Column(nullable = false)
-  private String firstName;
+    @Column(nullable = false)
+    private String firstName;
 
-  @Column(nullable = false)
-  private String lastName;
+    @Column(nullable = false)
+    private String lastName;
 
-  @Column(unique = true)
-  private String phoneNumber;
+    @Column(unique = true)
+    private String phoneNumber;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "role_id", nullable = false)
-  private Role role;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
-  @Column(nullable = false)
-  private String address;
+    @Column(nullable = false)
+    private String address;
 
-  @Column(name = "student_id", unique = true)
-  private String studentId;
+    @Column(name = "student_id", unique = true)
+    private String studentId;
 
-  @Column(nullable = false)
-  private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "organization_name")
+    private String organizationName;
 
-  @Column(nullable = false)
-  private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-  private LocalDateTime lastLogin;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-  @Column(nullable = false)
-  private Boolean isActive = true;
+    private LocalDateTime lastLogin;
 
-  public User() {
-  }
+    @Column(nullable = false)
+    private Boolean isActive = true;
 
-  // Getters and Setters
-  public Long getId() {
-    return id;
-  }
+    public User() {
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-  public String getEmail() {
-    return email;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
+    public String getEmail() {
+        return email;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public String getFirstName() {
-    return firstName;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
+    public String getFirstName() {
+        return firstName;
+    }
 
-  public String getLastName() {
-    return lastName;
-  }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
+    public String getLastName() {
+        return lastName;
+    }
 
-  public String getPhoneNumber() {
-    return phoneNumber;
-  }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-  public void setPhoneNumber(String phoneNumber) {
-    this.phoneNumber = phoneNumber;
-  }
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-  public Role getRole() {
-    return role;
-  }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-  public void setRole(Role role) {
-    this.role = role;
-  }
+    public Role getRole() {
+        return role;
+    }
 
-  public String getAddress() {
-    return address;
-  }
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
-  public void setAddress(String address) {
-    this.address = address;
-  }
+    public String getAddress() {
+        return address;
+    }
 
-  public String getStudentId() {
-    return studentId;
-  }
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-  public void setStudentId(String studentId) {
-    this.studentId = studentId;
-  }
+    public String getStudentId() {
+        return studentId;
+    }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
 
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
+    public String getOrganizationName() {
+        return organizationName;
+    }
 
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
 
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-  public LocalDateTime getLastLogin() {
-    return lastLogin;
-  }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-  public void setLastLogin(LocalDateTime lastLogin) {
-    this.lastLogin = lastLogin;
-  }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
-  public Boolean getIsActive() {
-    return isActive;
-  }
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
-  public void setIsActive(Boolean isActive) {
-    this.isActive = isActive;
-  }
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 }
