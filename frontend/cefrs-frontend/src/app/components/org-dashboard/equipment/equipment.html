@@ -1,0 +1,38 @@
+<div class="equipment-view">
+  <div class="page-header">
+    <h1>Equipments Catalog</h1>
+    <p class="page-subtitle">Browse and request campus equipment</p>
+  </div>
+  <div class="search-controls">
+    <input type="text" placeholder="Search Equipment" [(ngModel)]="searchQuery" class="search-input">
+    <select [(ngModel)]="selectedCategory" class="filter-select">
+      <option>All Categories</option>
+      <option>Audio</option>
+      <option>Visual</option>
+      <option>Furniture</option>
+      <option>Lights</option>
+    </select>
+  </div>
+  <div class="equipment-grid">
+    @for (item of filteredEquipment; track item.id) {
+      <div class="equipment-card">
+        <div class="equipment-image">
+          <img [src]="item.image" [alt]="item.name">
+          <span class="category-badge">{{ item.category }}</span>
+        </div>
+        <div class="equipment-content">
+          <h3 class="equipment-name">{{ item.name }}</h3>
+          <p class="equipment-description">{{ item.description }}</p>
+          <div class="equipment-availability">
+            <span>Available: {{ item.available }}/{{ item.total }}</span>
+            <span class="availability-badge">Available</span>
+          </div>
+          <button class="request-btn">Request Equipment</button>
+        </div>
+      </div>
+    } @empty {
+      <div class="no-data-message">No equipment matching your criteria.</div>
+    }
+  </div>
+</div>
+
