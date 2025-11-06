@@ -11,6 +11,7 @@ interface EquipmentItem {
   description?: string;
   borrowedBy?: string;
   dueDate?: string;
+  photoUrl?: string;
 }
 
 @Component({
@@ -26,22 +27,25 @@ export class Equipment {
   showDeleteModal: boolean = false;
   isEditMode: boolean = false;
   selectedEquipment: EquipmentItem | null = null;
+  selectedFile: File | null = null;
+  photoPreview: string | null = null;
 
   // Form fields
   equipmentForm = {
     id: '',
     name: '',
-    category: 'Multimedia',
+    category: 'Audio',
     condition: 'Good',
     availability: 'available' as 'available' | 'borrowed',
-    description: ''
+    description: '',
+    photoUrl: ''
   };
 
   equipment: EquipmentItem[] = [
     {
       id: 'E001',
       name: 'Projector',
-      category: 'Multimedia',
+      category: 'Facilites',
       condition: 'Good',
       availability: 'available',
       description: ''
@@ -49,7 +53,7 @@ export class Equipment {
     {
       id: 'E002',
       name: 'Speaker',
-      category: 'Audio',
+      category: 'Equipments',
       condition: 'Good',
       availability: 'borrowed',
       description: '',
@@ -67,11 +71,14 @@ export class Equipment {
     this.equipmentForm = {
       id: '',
       name: '',
-      category: 'Multimedia',
+      category: 'Facilites',
       condition: 'Good',
       availability: 'available',
-      description: ''
+      description: '',
+      photoUrl: ''
     };
+    this.selectedFile = null;
+    this.photoPreview = null;
     this.showAddEditModal = true;
   }
 
@@ -84,8 +91,11 @@ export class Equipment {
       category: item.category,
       condition: item.condition,
       availability: item.availability,
-      description: item.description || ''
+      description: item.description || '',
+      photoUrl: item.photoUrl || ''
     };
+    this.selectedFile = null;
+    this.photoPreview = item.photoUrl || null;
     this.showAddEditModal = true;
   }
 
@@ -94,7 +104,47 @@ export class Equipment {
     this.showDeleteModal = true;
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.photoPreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removePhoto(): void {
+    this.selectedFile = null;
+    this.photoPreview = null;
+    this.equipmentForm.photoUrl = '';
+  }
+
   saveAddEdit(): void {
+    // In a real application, you would upload the file to a server here
+    // For now, we'll store the preview URL
+    if (this.photoPreview && !this.equipmentForm.photoUrl) {
+      this.equipmentForm.photoUrl = this.photoPreview;
+    }
+
     if (this.isEditMode && this.selectedEquipment) {
       // Update existing equipment
       const index = this.equipment.findIndex(e => e.id === this.selectedEquipment!.id);
@@ -132,6 +182,8 @@ export class Equipment {
     this.showAddEditModal = false;
     this.selectedEquipment = null;
     this.isEditMode = false;
+    this.selectedFile = null;
+    this.photoPreview = null;
   }
 
   closeDeleteModal(): void {
