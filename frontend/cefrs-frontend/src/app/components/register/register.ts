@@ -26,6 +26,8 @@ export class RegisterComponent implements OnInit {
   showRoleError = false;
   showEmailError = false;
   showPhoneError = false;
+  showStudentIdError = false;
+  showAddressError = false;
 
   formData = {
     firstName: '',
@@ -52,6 +54,13 @@ export class RegisterComponent implements OnInit {
       const roleFromUrl = params['role'];
 
       if (roleFromUrl) {
+        // Redirect to org-register if user selected ORGANIZATION
+        if (roleFromUrl === 'ORGANIZATION') {
+          console.log('Redirecting to org-register');
+          this.router.navigate(['/org-register']);
+          return;
+        }
+        
         // Assign the role to the formData object which is used in submitForm()
         this.formData.role = roleFromUrl;
         console.log('Successfully set role from URL:', this.formData.role);
@@ -68,8 +77,9 @@ export class RegisterComponent implements OnInit {
     if (this.currentStep === 1) {
       this.showFirstNameError = !this.formData.firstName.trim();
       this.showLastNameError = !this.formData.lastName.trim();
+      this.showStudentIdError = !this.formData.studentId.trim();
 
-      if (this.showFirstNameError || this.showLastNameError) {
+      if (this.showFirstNameError || this.showLastNameError || this.showStudentIdError) {
         return;
       }
     }
@@ -78,8 +88,9 @@ export class RegisterComponent implements OnInit {
     if (this.currentStep === 2) {
       this.showEmailError = !this.formData.email.trim() || !this.isValidEmail(this.formData.email);
       this.showPhoneError = !this.formData.phone.trim();
+      this.showAddressError = !this.formData.address.trim();
 
-      if (this.showEmailError || this.showPhoneError) {
+      if (this.showEmailError || this.showPhoneError || this.showAddressError) {
         return;
       }
     }
@@ -139,7 +150,9 @@ export class RegisterComponent implements OnInit {
       phoneNumber: this.formData.phone,
       password: this.formData.password,
       role: this.formData.role,
-      organizationName: this.formData.address || 'Computer Society' // Default value if address is empty
+      organizationName: 'Computer Society', // Default for students
+      address: this.formData.address,
+      studentId: this.formData.studentId
     };
 
     console.log('Sending registration data:', registerData);
@@ -165,6 +178,6 @@ export class RegisterComponent implements OnInit {
   }
 
   goToDashboard() {
-    this.router.navigate(['/student-dashboard/student-dashboard']);
+    this.router.navigate(['/student-dashboard']);
   }
 }
