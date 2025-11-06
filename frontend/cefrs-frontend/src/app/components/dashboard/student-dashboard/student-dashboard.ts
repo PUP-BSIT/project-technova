@@ -36,9 +36,11 @@ interface Request {
 interface Facility {
   id: number;
   name: string;
-  location: string;
-  description: string;
+  type: string;
+  building: string;
+  floor: string;
   capacity: number;
+  description: string;
   imageUrl: string;
   status: string;
 }
@@ -121,7 +123,6 @@ export class StudentDashboard implements OnInit {
       error: (err) => {
         console.error('Error fetching equipment:', err);
         this.isLoadingEquipment = false;
-        // Keep empty array or show error message
       }
     });
   }
@@ -129,15 +130,14 @@ export class StudentDashboard implements OnInit {
   fetchFacilities(): void {
     this.isLoadingFacilities = true;
     this.facilityService.getAvailableFacilities().subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.facilities = response.data;
         this.isLoadingFacilities = false;
-        console.log('Facilities loaded:', this.facilities);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error fetching facilities:', err);
         this.isLoadingFacilities = false;
-        // Keep empty array or show error message
+        this.facilities = [];
       }
     });
   }
@@ -179,15 +179,20 @@ export class StudentDashboard implements OnInit {
     });
   }
 
+  // KEEP ONLY THIS ONE setView METHOD
   setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings'): void {
+    // Reset search filters when switching views
+    this.searchQuery = '';
+    this.selectedCategory = 'All Categories';
+    this.selectedStatus = 'All Status';
+    this.selectedType = 'All Types';
+
     this.currentView = view;
 
-    // ✅ Route to profile when settings is clicked
     if (view === 'settings') {
       this.router.navigate(['/student-dashboard/settings/profile']);
     }
 
-    // Refresh data when switching views
     if (view === 'transactions') {
       this.fetchAuditLogs();
     }
@@ -214,5 +219,85 @@ export class StudentDashboard implements OnInit {
       Reserved: 'status-reserved'
     };
     return map[status] || '';
+  }
+
+  // Filter facilities
+  get filteredFacilities(): Facility[] {
+    if (!this.searchQuery.trim()) {
+      return this.facilities;
+    }
+
+    const query = this.searchQuery.toLowerCase();
+    return this.facilities.filter(facility =>
+      facility.name?.toLowerCase().includes(query) ||
+      facility.building?.toLowerCase().includes(query) ||
+      facility.floor?.toLowerCase().includes(query) ||
+      facility.description?.toLowerCase().includes(query) ||
+      facility.type?.toLowerCase().includes(query)
+    );
+  }
+
+  // Filter equipment
+  get filteredEquipment(): Equipment[] {
+    let filtered = this.equipment;
+
+    // Filter by category
+    if (this.selectedCategory !== 'All Categories') {
+      filtered = filtered.filter(item => item.category === this.selectedCategory);
+    }
+
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(item =>
+        item.name.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }
+
+  // Filter requests
+  get filteredRequests(): Request[] {
+    let filtered = this.allRequests;
+
+    // Filter by status
+    if (this.selectedStatus !== 'All Status') {
+      filtered = filtered.filter(req => req.status === this.selectedStatus);
+    }
+
+    // Filter by type
+    if (this.selectedType !== 'All Types') {
+      filtered = filtered.filter(req => req.type === this.selectedType);
+    }
+
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(req =>
+        req.title.toLowerCase().includes(query) ||
+        req.id.toLowerCase().includes(query) ||
+        req.adminNotes.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }
+
+  // Filter audit logs/transactions
+  get filteredAuditLogs(): AuditLog[] {
+    if (!this.searchQuery.trim()) {
+      return this.auditLogs;
+    }
+
+    const query = this.searchQuery.toLowerCase();
+    return this.auditLogs.filter(log =>
+      log.actionType?.toLowerCase().includes(query) ||
+      log.tableName?.toLowerCase().includes(query) ||
+      log.oldValues?.toLowerCase().includes(query) ||
+      log.newValues?.toLowerCase().includes(query)
+    );
   }
 }
