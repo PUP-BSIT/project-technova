@@ -63,9 +63,9 @@ export class LoginComponent implements OnInit {
         this.isLoading = false;
 
         const role = this.authService.getUserRole();
-        // Both roles go to the same /dashboard path
+        // Redirect based on role
         if (role === 'STUDENT' || this.selectedRole.toUpperCase() === 'STUDENT') {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/student-dashboard']);
         } else {
           this.errorMessage = `Logged in as ${role}. Please use the correct login page.`;
           this.authService.logout();
