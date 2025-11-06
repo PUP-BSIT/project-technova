@@ -243,16 +243,18 @@ export class StudentDashboard implements OnInit {
 
     // Filter by category
     if (this.selectedCategory !== 'All Categories') {
-      filtered = filtered.filter(item => item.category === this.selectedCategory);
+      filtered = filtered.filter(item =>
+        item.category?.toUpperCase() === this.selectedCategory.toUpperCase()
+      );
     }
 
     // Filter by search query
     if (this.searchQuery.trim()) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(item =>
-        item.name.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query)
+        item.name?.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query) ||
+        item.category?.toLowerCase().includes(query)
       );
     }
 
