@@ -34,6 +34,7 @@ export class OrgRegisterComponent implements OnInit {
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required]],
+      address: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
@@ -82,11 +83,13 @@ export class OrgRegisterComponent implements OnInit {
     if (this.currentStep === 2) {
       const email = this.registerForm.get('email');
       const phone = this.registerForm.get('phoneNumber');
+      const address = this.registerForm.get('address');
 
       email?.markAsTouched();
       phone?.markAsTouched();
+      address?.markAsTouched();
 
-      if (email?.invalid || phone?.invalid) {
+      if (email?.invalid || phone?.invalid || address?.invalid) {
         return;
       }
     }
@@ -139,8 +142,9 @@ export class OrgRegisterComponent implements OnInit {
       lastName: this.registerForm.value.lastName,
       email: this.registerForm.value.email,
       phoneNumber: this.registerForm.value.phoneNumber,
+      address: this.registerForm.value.address,
       password: this.registerForm.value.password,
-      role: 'STUDENT'
+      role: 'CAMPUS_ORGANIZATION'
     };
 
     console.log('Sending organization registration data:', registerData);
@@ -160,7 +164,7 @@ export class OrgRegisterComponent implements OnInit {
   }
 
   goToDashboard() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/org-dashboard']);
   }
 
   // Helper methods to check field validity
