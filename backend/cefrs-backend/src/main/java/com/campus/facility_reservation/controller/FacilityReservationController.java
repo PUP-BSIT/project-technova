@@ -7,6 +7,8 @@ import com.campus.facility_reservation.dto.FacilityReservationRequestDTO;
 import com.campus.facility_reservation.service.FacilityReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +27,14 @@ public class FacilityReservationController {
         return ResponseEntity.ok(ApiResponse.success("Reservations retrieved", reservations));
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<FacilityReservationDTO>>> getMyReservations(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        List<FacilityReservationDTO> reservations = reservationService.getUserReservations(userId);
+        return ResponseEntity.ok(ApiResponse.success("My reservations retrieved", reservations));
+    }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<List<FacilityReservationDTO>>> getUserReservations(@PathVariable Long userId) {
         List<FacilityReservationDTO> reservations = reservationService.getUserReservations(userId);
@@ -41,6 +51,16 @@ public class FacilityReservationController {
     public ResponseEntity<ApiResponse<FacilityReservationDTO>> getReservationById(@PathVariable Long id) {
         FacilityReservationDTO reservation = reservationService.getReservationById(id);
         return ResponseEntity.ok(ApiResponse.success("Reservation retrieved", reservation));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('STUDENT','ORGANIZATION')")
+    public ResponseEntity<ApiResponse<FacilityReservationDTO>> createReservationForMe(
+            Authentication authentication,
+            @RequestBody FacilityReservationRequestDTO request) {
+        Long userId = (Long) authentication.getPrincipal();
+        FacilityReservationDTO reservation = reservationService.createReservation(userId, request);
+        return ResponseEntity.ok(ApiResponse.success("Reservation created successfully", reservation));
     }
 
     @PostMapping("/user/{userId}")
@@ -66,5 +86,13 @@ public class FacilityReservationController {
             @RequestParam Long userId) {
         reservationService.cancelReservation(id, userId);
         return ResponseEntity.ok(ApiResponse.success("Reservation cancelled", null));
+    }
+
+    @GetMapping("/availability")
+    public ResponseEntity<ApiResponse<List<FacilityReservationDTO>>> getAvailability(
+            @RequestParam Long facilityId,
+            @RequestParam String date) {
+        List<FacilityReservationDTO> reservations = reservationService.getFacilityReservationsByDate(facilityId, date);
+        return ResponseEntity.ok(ApiResponse.success("Facility availability retrieved", reservations));
     }
 }
