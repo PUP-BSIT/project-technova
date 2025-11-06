@@ -186,4 +186,22 @@ $radius: 20px;
       cursor: not-allowed;
     }
   }
+
+  .signup-link {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: $text;
+
+    a {
+      color: $primary;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 }

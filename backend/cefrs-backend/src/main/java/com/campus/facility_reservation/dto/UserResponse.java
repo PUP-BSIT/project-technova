@@ -15,6 +15,8 @@ public class UserResponse {
 
   private String studentId;
 
+  private String organizationName;
+
   private LocalDateTime createdAt;
   private LocalDateTime lastLogin;
   private Boolean isActive;
@@ -31,6 +33,7 @@ public class UserResponse {
     this.role = user.getRole().getName().toString();
     this.address = user.getAddress();
     this.studentId = user.getStudentId();
+    this.organizationName = user.getOrganizationName();
 
     this.createdAt = user.getCreatedAt();
     this.lastLogin = user.getLastLogin();
@@ -100,6 +103,14 @@ public class UserResponse {
 
   public void setStudentId(String studentId) {
     this.studentId = studentId;
+  }
+
+  public String getOrganizationName() {
+    return organizationName;
+  }
+
+  public void setOrganizationName(String organizationName) {
+    this.organizationName = organizationName;
   }
 
   public LocalDateTime getCreatedAt() {

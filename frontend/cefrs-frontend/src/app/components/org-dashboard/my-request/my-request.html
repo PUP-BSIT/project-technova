@@ -1,0 +1,51 @@
+<div class="my-request-view">
+  <div class="page-header">
+    <h1>My Requests</h1>
+    <p class="page-subtitle">Track your equipment and facility requests</p>
+  </div>
+  <div class="search-controls">
+    <input type="text" placeholder="Search your request" [(ngModel)]="searchQuery" class="search-input">
+    <select [(ngModel)]="selectedStatus" class="filter-select">
+      <option>All Status</option>
+      <option>Pending</option>
+      <option>Approved</option>
+      <option>Rejected</option>
+      <option>Returned</option>
+    </select>
+    <select [(ngModel)]="selectedType" class="filter-select">
+      <option>All Types</option>
+      <option>Equipment</option>
+      <option>Facility</option>
+    </select>
+  </div>
+  <div class="requests-detail-list">
+    @for (request of filteredRequests; track request.id) {
+      <div class="request-detail-card">
+        <div class="request-id">{{ request.id }}</div>
+        <div class="request-header">
+          <h3>{{ request.title }}</h3>
+          <div class="request-badges">
+            <span class="type-badge">{{ request.type }}</span>
+            <span class="status-badge" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
+          </div>
+        </div>
+        <div class="request-details">
+          @if (request.quantity) {
+            <div class="detail-row"><strong>Quantity:</strong> {{ request.quantity }}pc@if (request.quantity > 1) {s}</div>
+          }
+          <div class="detail-row"><strong>Request Date:</strong> {{ request.requestDate }}</div>
+          @if (request.returnDate) {
+            <div class="detail-row"><strong>Return Date:</strong> {{ request.returnDate }}</div>
+          }
+          @if (request.dayOfEvent) {
+            <div class="detail-row"><strong>Day of event:</strong> {{ request.dayOfEvent }}</div>
+          }
+          <div class="detail-row"><strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}</div>
+        </div>
+      </div>
+    } @empty {
+      <div class="no-data-message">You have no requests yet.</div>
+    }
+  </div>
+</div>
+

@@ -1,0 +1,30 @@
+<div class="facilities-view">
+  <div class="page-header">
+    <h1>Facility Reservations</h1>
+    <p class="page-subtitle">Reserve campus facilities for your events</p>
+  </div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search Facilities" [(ngModel)]="searchQuery" class="search-input">
+  </div>
+  <div class="facilities-grid">
+    @for (facility of facilities; track facility.id) {
+      <div class="facility-card">
+        <div class="facility-image">
+          <img [src]="facility.image" [alt]="facility.name">
+          <span class="facility-badge" [ngClass]="getStatusClass(facility.status)">{{ facility.status }}</span>
+        </div>
+        <div class="facility-content">
+          <h3 class="facility-name">{{ facility.name }}</h3>
+          <p class="facility-description">{{ facility.description }}</p>
+          <div class="facility-capacity">Capacity: {{ facility.capacity }} People</div>
+          <button class="request-btn" [disabled]="facility.status === 'Reserved'">
+            @if (facility.status === 'Reserved') { Not Available } @else { Request Facility }
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="no-data-message">No facilities currently available.</div>
+    }
+  </div>
+</div>
+
