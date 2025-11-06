@@ -9,6 +9,7 @@ interface Facility {
   capacity: number;
   description: string;
   status: 'available' | 'maintenance' | 'unavailable';
+  photoUrl?: string;
 }
 
 @Component({
@@ -24,6 +25,8 @@ export class Facilities {
   showDeleteModal: boolean = false;
   isEditMode: boolean = false;
   selectedFacility: Facility | null = null;
+  selectedFile: File | null = null;
+  photoPreview: string | null = null;
 
   // Form fields
   facilityForm = {
@@ -32,7 +35,8 @@ export class Facilities {
     location: '',
     capacity: 0,
     description: '',
-    status: 'available' as 'available' | 'maintenance' | 'unavailable'
+    status: 'available' as 'available' | 'maintenance' | 'unavailable',
+    photoUrl: ''
   };
 
   facilities: Facility[] = [
@@ -77,8 +81,11 @@ export class Facilities {
       location: '',
       capacity: 0,
       description: '',
-      status: 'available'
+      status: 'available',
+      photoUrl: ''
     };
+    this.selectedFile = null;
+    this.photoPreview = null;
     this.showAddEditModal = true;
   }
 
@@ -91,8 +98,11 @@ export class Facilities {
       location: facility.location,
       capacity: facility.capacity,
       description: facility.description,
-      status: facility.status
+      status: facility.status,
+      photoUrl: facility.photoUrl || ''
     };
+    this.selectedFile = null;
+    this.photoPreview = facility.photoUrl || null;
     this.showAddEditModal = true;
   }
 
@@ -101,7 +111,47 @@ export class Facilities {
     this.showDeleteModal = true;
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.photoPreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removePhoto(): void {
+    this.selectedFile = null;
+    this.photoPreview = null;
+    this.facilityForm.photoUrl = '';
+  }
+
   saveAddEdit(): void {
+    // In a real application, you would upload the file to a server here
+    // For now, we'll store the preview URL
+    if (this.photoPreview && !this.facilityForm.photoUrl) {
+      this.facilityForm.photoUrl = this.photoPreview;
+    }
+
     if (this.isEditMode && this.selectedFacility) {
       // Update existing facility
       const index = this.facilities.findIndex(f => f.id === this.selectedFacility!.id);
@@ -136,6 +186,8 @@ export class Facilities {
     this.showAddEditModal = false;
     this.selectedFacility = null;
     this.isEditMode = false;
+    this.selectedFile = null;
+    this.photoPreview = null;
   }
 
   closeDeleteModal(): void {
