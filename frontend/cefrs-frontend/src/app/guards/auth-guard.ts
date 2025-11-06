@@ -1,71 +1,47 @@
-import { Routes } from '@angular/router';
-import { RoleSelectionComponent } from './components/role-selection/role-selection';
-import { LoginComponent } from './components/login/login';
-import { OrgLoginComponent } from './components/org-login/org-login';
-import { AdminLogin } from './components/admin/login/admin-login';
-import { RegisterComponent } from './components/register/register';
-import { AdminRegister } from './components/admin/admin-register/admin-register';
-import { OrgRegisterComponent } from './components/org-register/org-register';
-import { StudentDashboard } from './components/dashboard/student-dashboard/student-dashboard';
-import { OrgDashboardComponent } from './components/org-dashboard/org-dashboard';
-import { AdminDashboard } from './components/admin/admin-dashboard/admin-dashboard';
-import { AuthGuard } from './guards/auth-guard';
-import { AdminProfileComponent } from './components/admin/admin-profile/admin-profile';
-import { AdminChangePasswordComponent } from './components/admin/admin-change-password/admin-change-password';
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { AuthService } from '../services/auth';
 
-import { StudentProfileComponent } from './components/profile/profile';
-import { OrgProfileComponent } from './components/org-profile/org-profile';
-import { StudentChangePasswordComponent } from './components/student-change-password/student-change-password';
-import { OrgChangePasswordComponent } from './components/org-change-password/org-change-password';
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
-export const routes: Routes = [
-  { path: '', component: RoleSelectionComponent },
-  { path: 'role-selection', redirectTo: '', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'org-login', component: OrgLoginComponent },
-  { path: 'admin-login', component: AdminLogin },
-  { path: 'register', component: RegisterComponent },
-  { path: 'org-register', component: OrgRegisterComponent },
-  { path: 'admin-register', component: AdminRegister },
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean {
+    // 1. Authentication Check
+    if (!this.authService.isLoggedIn()) {
+      console.log('Access denied - redirecting to login');
+      this.router.navigate(['/login']);
+      return false;
+    }
 
-  // Admin Dashboard (Protected)
-  {
-    path: 'admin-dashboard',
-    component: AdminDashboard,
-    canActivate: [AuthGuard],
-    children: [
-      { path: 'settings/profile', component: AdminProfileComponent },
-      { path: 'settings/change-password', component: AdminChangePasswordComponent }
-    ]
-  },
-  
-  // Organization Dashboard (Protected)
-  {
-    path: 'org-dashboard',
-    component: OrgDashboardComponent,
-    canActivate: [AuthGuard]
-  },
-  
-  // Organization Profile (Protected)
-  {
-    path: 'org-profile',
-    component: OrgProfileComponent,
-    canActivate: [AuthGuard]
-  },
+    // 2. Role-Based Redirection Check (Only runs if logged in)
+    const userRole = this.authService.getUserRole();
 
-  // Student Dashboard (Protected)
-  {
-    path: 'student-dashboard',
-    component: StudentDashboard,
-    canActivate: [AuthGuard],
-    children: [
-      { path: 'settings/profile', component: StudentProfileComponent },
-      { path: 'settings/change-password', component: StudentChangePasswordComponent }
-    ]
-  },
+    // Redirect based on role to appropriate dashboard
+    if (userRole === 'STUDENT' && state.url === '/dashboard') {
+      console.log('STUDENT detected. Redirecting to student-dashboard.');
+      this.router.navigate(['/student-dashboard']);
+      return false;
+    } else if (userRole === 'CAMPUS_ORGANIZATION' && state.url === '/dashboard') {
+      console.log('ORGANIZATION detected. Redirecting to org-dashboard.');
+      this.router.navigate(['/org-dashboard']);
+      return false;
+    } else if ((userRole === 'ADMIN' || userRole === 'ADMINISTRATOR' || userRole === 'SUPER_ADMIN') && state.url === '/dashboard') {
+      console.log('ADMIN detected. Redirecting to admin-dashboard.');
+      this.router.navigate(['/admin-dashboard']);
+      return false;
+    }
 
-  { path: 'profile', component: StudentProfileComponent, canActivate: [AuthGuard] },
-  { path: 'change-password', component: StudentChangePasswordComponent, canActivate: [AuthGuard] },
-  { path: 'student-change-password', component: StudentChangePasswordComponent },
-  { path: 'org-change-password', component: OrgChangePasswordComponent, canActivate: [AuthGuard] },
-];
+    // For all other cases, grant access.
+    console.log(`Access granted for role ${userRole} to:`, state.url);
+    return true;
+  }
+}
