@@ -1,0 +1,109 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h1 class="register-title">Admin Registration</h1>
+      <p class="register-subtitle">Create an administrator account</p>
+    </div>
+
+    <div class="stepper">
+      <div class="stepper-item" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+        <div class="stepper-circle"><span *ngIf="currentStep === 1">1</span><span *ngIf="currentStep > 1">✓</span></div>
+        <span class="stepper-label">Personal</span>
+      </div>
+      <div class="stepper-line" [class.completed]="currentStep > 1"></div>
+      <div class="stepper-item" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+        <div class="stepper-circle"><span *ngIf="currentStep <= 2">2</span><span *ngIf="currentStep > 2">✓</span></div>
+        <span class="stepper-label">Contact</span>
+      </div>
+      <div class="stepper-line" [class.completed]="currentStep > 2"></div>
+      <div class="stepper-item" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3" [class.error]="currentStep === 3 && errorMessage">
+        <div class="stepper-circle"><span>3</span></div>
+        <span class="stepper-label">Security</span>
+      </div>
+      <div class="stepper-line" [class.completed]="currentStep > 3"></div>
+      <div class="stepper-item" [class.active]="currentStep === 4" [class.completed]="currentStep === 4">
+        <div class="stepper-circle"><span *ngIf="currentStep < 4">4</span><span *ngIf="currentStep === 4">✓</span></div>
+        <span class="stepper-label">Success</span>
+      </div>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="submitForm()">
+      <div class="form-step" *ngIf="currentStep === 1">
+        <h2 class="section-title">PERSONAL INFORMATION</h2>
+        <div class="form-group">
+          <label class="form-label">First Name <span class="required">*</span></label>
+          <input type="text" class="form-input" placeholder="Enter First Name" formControlName="firstName" [class.error]="isFieldInvalid('firstName')" />
+          <span class="error-message" *ngIf="isFieldInvalid('firstName')">{{ getFieldError('firstName') || 'Please enter first name' }}</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name <span class="required">*</span></label>
+          <input type="text" class="form-input" placeholder="Enter Last Name" formControlName="lastName" [class.error]="isFieldInvalid('lastName')" />
+          <span class="error-message" *ngIf="isFieldInvalid('lastName')">{{ getFieldError('lastName') || 'Please enter last name' }}</span>
+        </div>
+        <div class="form-actions single-action">
+          <button type="button" class="btn-next" (click)="nextStep()">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step" *ngIf="currentStep === 2">
+        <h2 class="section-title">CONTACT INFORMATION</h2>
+        <div class="form-group">
+          <label class="form-label">Email <span class="required">*</span></label>
+          <input type="email" class="form-input" placeholder="Enter Email Address" formControlName="email" [class.error]="isFieldInvalid('email')" />
+          <span class="error-message" *ngIf="isFieldInvalid('email')">{{ getFieldError('email') || 'Please enter a valid email' }}</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone <span class="required">*</span></label>
+          <input type="tel" class="form-input" placeholder="Enter Phone Number" formControlName="phoneNumber" [class.error]="isFieldInvalid('phoneNumber')" />
+          <span class="error-message" *ngIf="isFieldInvalid('phoneNumber')">{{ getFieldError('phoneNumber') || 'Please enter phone number' }}</span>
+        </div>
+        <div class="form-actions multiple-actions">
+          <button type="button" class="btn-prev" (click)="previousStep()">Previous</button>
+          <button type="button" class="btn-next" (click)="nextStep()">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step" *ngIf="currentStep === 3">
+        <h2 class="section-title">ACCOUNT SECURITY</h2>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <p class="form-hint">Password must be at least 8 characters with uppercase, lowercase, number, and special character.</p>
+          <div class="input-with-icon">
+            <input [type]="showPassword ? 'text' : 'password'" class="form-input" placeholder="Enter your password" formControlName="password" [class.error]="isFieldInvalid('password')" />
+            <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">👁</button>
+          </div>
+          <span class="error-message" *ngIf="isFieldInvalid('password')">{{ getFieldError('password') }}</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="input-with-icon">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-input" placeholder="Confirm password" formControlName="confirmPassword" [class.error]="isFieldInvalid('confirmPassword') || registerForm.errors?.['passwordMismatch']" />
+            <button type="button" class="toggle-password" (click)="toggleConfirmPasswordVisibility()">👁</button>
+          </div>
+          <span class="error-message" *ngIf="isFieldInvalid('confirmPassword')">{{ getFieldError('confirmPassword') }}</span>
+          <span class="error-message" *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.dirty">Passwords do not match</span>
+        </div>
+
+        <div class="registration-error" *ngIf="errorMessage">
+          <p class="error-message">{{ errorMessage }}</p>
+        </div>
+
+        <div class="form-actions multiple-actions">
+          <button type="button" class="btn-prev" (click)="previousStep()">Previous</button>
+          <button type="submit" class="btn-submit" [disabled]="isLoading">{{ isLoading ? 'Submitting...' : 'Submit' }}</button>
+        </div>
+      </div>
+
+      <div class="form-step success-step" *ngIf="currentStep === 4">
+        <div class="success-content">
+          <p class="success-message">
+            <span class="success-text">Admin account created successfully.</span>
+          </p>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-continue" (click)="goToDashboard()">Continue</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
