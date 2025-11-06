@@ -7,6 +7,8 @@ import com.campus.facility_reservation.dto.EquipmentBorrowingRequestDTO;
 import com.campus.facility_reservation.service.EquipmentBorrowingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,6 +24,15 @@ public class EquipmentBorrowingController {
     public ResponseEntity<ApiResponse<List<EquipmentBorrowingDTO>>> getAllBorrowings() {
         List<EquipmentBorrowingDTO> borrowings = borrowingService.getAllBorrowings();
         return ResponseEntity.ok(ApiResponse.success("Borrowings retrieved", borrowings));
+    }
+
+    // GET /api/equipment-borrowing/me
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<List<EquipmentBorrowingDTO>>> getMyBorrowings(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        List<EquipmentBorrowingDTO> borrowings = borrowingService.getUserBorrowings(userId);
+        return ResponseEntity.ok(ApiResponse.success("My borrowings retrieved", borrowings));
     }
 
     // GET /api/equipment-borrowing/user/{userId}
@@ -50,6 +61,17 @@ public class EquipmentBorrowingController {
     public ResponseEntity<ApiResponse<EquipmentBorrowingDTO>> createBorrowing(
             @PathVariable Long userId,
             @RequestBody EquipmentBorrowingRequestDTO request) {
+        EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
+        return ResponseEntity.ok(ApiResponse.success("Borrowing request created", borrowing));
+    }
+
+    // POST /api/equipment-borrowing (for current user)
+    @PostMapping
+    @PreAuthorize("hasAnyRole('STUDENT','ORGANIZATION')")
+    public ResponseEntity<ApiResponse<EquipmentBorrowingDTO>> createBorrowingForMe(
+            Authentication authentication,
+            @RequestBody EquipmentBorrowingRequestDTO request) {
+        Long userId = (Long) authentication.getPrincipal();
         EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
         return ResponseEntity.ok(ApiResponse.success("Borrowing request created", borrowing));
     }
