@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { OrgMyTransactionComponent } from './my-transaction';
 
 describe('OrgMyTransactionComponent', () => {
@@ -7,7 +8,8 @@ describe('OrgMyTransactionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OrgMyTransactionComponent]
+      imports: [OrgMyTransactionComponent],
+      providers: [provideHttpClient()]
     })
     .compileComponents();
 
