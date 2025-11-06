@@ -7,7 +7,7 @@
     <input type="text" placeholder="Search Facilities" [(ngModel)]="searchQuery" class="search-input">
   </div>
   <div class="facilities-grid">
-    @for (facility of facilities; track facility.id) {
+    @for (facility of filteredFacilities; track facility.id) {
       <div class="facility-card">
         <div class="facility-image">
           <img [src]="facility.image" [alt]="facility.name">
@@ -23,8 +23,7 @@
         </div>
       </div>
     } @empty {
-      <div class="no-data-message">No facilities currently available.</div>
+      <div class="no-data-message">No facilities found matching your search.</div>
     }
   </div>
 </div>
-
