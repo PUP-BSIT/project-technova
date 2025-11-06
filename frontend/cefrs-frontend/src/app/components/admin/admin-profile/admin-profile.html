@@ -1,0 +1,70 @@
+<div class="profile-layout">
+  <div class="main-content">
+    <div class="profile-container">
+      <div class="nav-header">
+        <h1 class="page-title">Admin Profile</h1>
+      </div>
+
+      @if (loading) {
+        <p>Loading profile...</p>
+      } @else {
+        <div class="profile-card">
+          <h2 class="admin-header">
+            {{ user?.lastName | uppercase }}, {{ user?.firstName | uppercase }}
+          </h2>
+
+          <form [formGroup]="profileForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" formControlName="firstName" [disabled]="!isEditing" />
+              </div>
+
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" formControlName="lastName" [disabled]="!isEditing" />
+              </div>
+
+              <div class="form-group">
+                <label>Mobile No.</label>
+                <input
+                  type="text"
+                  formControlName="phoneNumber"
+                  [disabled]="!isEditing"
+                  [class.invalid]="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.invalid"
+                />
+                @if (profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.invalid) {
+                  <small class="error">Enter a valid mobile number.</small>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" formControlName="email" [disabled]="true" />
+              </div>
+            </div>
+          </form>
+
+          <div class="action-buttons">
+            @if (!isEditing) {
+              <button class="btn-edit" (click)="toggleEdit()">Edit Profile</button>
+              <button class="btn-password" (click)="goToChangePassword()">Change Password</button>
+            } @else {
+              <button class="btn-save" (click)="saveProfile()">Save Changes</button>
+              <button class="btn-cancel" (click)="toggleEdit()">Cancel</button>
+            }
+          </div>
+
+          @if (successMessage) {
+            <div class="success-message">{{ successMessage }}</div>
+          }
+          @if (errorMessage) {
+            <div class="error-message">{{ errorMessage }}</div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+
