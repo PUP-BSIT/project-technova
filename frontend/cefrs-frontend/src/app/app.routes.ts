@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { LoginComponent } from './components/login/login';
 import { OrgLoginComponent } from './components/org-login/org-login';
-import { AdminLogin } from './components/admin/login/admin-login';
+// import { AdminLogin } from './components/admin/login/admin-login';
 import { RegisterComponent } from './components/register/register';
 import { AdminRegister } from './components/admin/admin-register/admin-register';
 import { OrgRegisterComponent } from './components/org-register/org-register';
@@ -22,15 +22,15 @@ import { ReservationRequestComponent } from './components/reservation-request/re
 import { EquipmentBorrowingRequestComponent } from './components/equipment-borrowing-request/equipment-borrowing-request';
 import { MyReservationsComponent } from './components/my-reservations/my-reservations';
 import { MyBorrowingsComponent } from './components/my-borrowings/my-borrowings';
-import { ReservationApprovalComponent } from './components/admin/reservation-approval/reservation-approval';
-import { EquipmentApprovalComponent } from './components/admin/equipment-approval/equipment-approval';
+// import { ReservationApprovalComponent } from './components/admin/reservation-approval/reservation-approval';
+// import { EquipmentApprovalComponent } from './components/admin/equipment-approval/equipment-approval';
 
 export const routes: Routes = [
   { path: '', component: RoleSelectionComponent },
   { path: 'role-selection', redirectTo: '', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'org-login', component: OrgLoginComponent },
-  { path: 'admin-login', component: AdminLogin },
+  // { path: 'admin-login', component: AdminLogin },
   { path: 'register', component: RegisterComponent },
   { path: 'org-register', component: OrgRegisterComponent },
   { path: 'admin-register', component: AdminRegister },
@@ -44,8 +44,8 @@ export const routes: Routes = [
       { path: 'calendar', component: CalendarView },
       { path: 'settings/profile', component: AdminProfileComponent },
       { path: 'settings/change-password', component: AdminChangePasswordComponent },
-      { path: 'reservations/approve', component: ReservationApprovalComponent },
-      { path: 'equipment/approve', component: EquipmentApprovalComponent }
+      // { path: 'reservations/approve', component: ReservationApprovalComponent },
+      // { path: 'equipment/approve', component: EquipmentApprovalComponent }
     ]
   },
 
