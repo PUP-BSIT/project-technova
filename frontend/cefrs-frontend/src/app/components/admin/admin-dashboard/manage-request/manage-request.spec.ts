@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ManageRequest } from './manage-request';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+
 
 describe('ManageRequest', () => {
   let component: ManageRequest;
@@ -10,7 +11,7 @@ describe('ManageRequest', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ManageRequest],
-      providers: [provideHttpClientTesting()]
+      providers: [provideHttpClient()]
     })
     .compileComponents();
 
