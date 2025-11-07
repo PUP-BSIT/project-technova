@@ -266,6 +266,8 @@ $font-family: 'Roboto', sans-serif;
   padding: 32px;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow-y: auto;
 
   &.modal-form-container {
     max-width: 800px;
@@ -319,6 +321,12 @@ $font-family: 'Roboto', sans-serif;
   color: $text-primary;
 }
 
+.form-helper-text {
+  font-size: 13px;
+  color: $text-secondary;
+  margin: -4px 0 12px 0;
+}
+
 .form-input,
 .form-select {
   padding: 12px;
@@ -361,6 +369,103 @@ $font-family: 'Roboto', sans-serif;
 
   &::placeholder {
     color: #999999;
+  }
+}
+
+// File Upload Styles
+.file-upload-container {
+  position: relative;
+}
+
+.file-upload-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: 8px;
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: white;
+
+  &:hover {
+    border-color: #94A3B8;
+    background: #F8FAFC;
+  }
+
+  .upload-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    
+    svg {
+      opacity: 0.7;
+    }
+  }
+
+  .upload-text {
+    font-size: 16px;
+    color: $text-primary;
+    margin: 0 0 8px 0;
+    font-weight: 500;
+  }
+
+  .upload-or {
+    font-size: 14px;
+    color: $text-secondary;
+    margin: 12px 0;
+  }
+
+  .browse-button {
+    @include button-reset;
+    padding: 10px 24px;
+    background: #6366F1;
+    color: white;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #4F46E5;
+    }
+  }
+}
+
+.photo-preview {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+
+  img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    display: block;
+    border: 1px solid $border-color;
+  }
+
+  .remove-photo-button {
+    @include button-reset;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #dc2626;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 }
 
@@ -443,5 +548,9 @@ $font-family: 'Roboto', sans-serif;
     .modal-button {
       width: 100%;
     }
+  }
+
+  .file-upload-area {
+    padding: 32px 24px;
   }
 }

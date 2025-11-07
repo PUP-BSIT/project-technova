@@ -64,7 +64,7 @@
       <div class="modal-form">
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Add New Facility</label>
+            <label class="form-label">Facility Name</label>
             <input 
               type="text" 
               class="form-input" 
@@ -100,6 +100,46 @@
               <option value="maintenance">Under Maintenance</option>
               <option value="unavailable">Unavailable</option>
             </select>
+          </div>
+        </div>
+
+        <!-- Photo Upload Section -->
+        <div class="form-group form-group-full">
+          <label class="form-label">Upload Photo</label>
+          
+          <div class="file-upload-container">
+            <input 
+              type="file" 
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none;">
+            
+            @if (!photoPreview) {
+              <div class="file-upload-area" (click)="fileInput.click()">
+                <div class="upload-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 18C4.23858 18 2 15.7614 2 13C2 10.2386 4.23858 8 7 8C7.36064 8 7.71474 8.02951 8.05848 8.08582C8.02169 7.7308 8 7.36905 8 7C8 4.23858 10.2386 2 13 2C15.4193 2 17.4403 3.71825 17.9163 6C20.1608 6.18684 22 8.16229 22 10.5C22 12.9853 19.9853 15 17.5 15H16" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 12V21M12 12L9 15M12 12L15 15" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <p class="upload-text">Drag & Drop your files here</p>
+                <p class="upload-or">OR</p>
+                <button type="button" class="browse-button">Browse Files</button>
+              </div>
+            }
+
+            @if (photoPreview) {
+              <div class="photo-preview">
+                <img [src]="photoPreview" alt="Preview">
+                <button type="button" class="remove-photo-button" (click)="removePhoto()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            }
           </div>
         </div>
 
