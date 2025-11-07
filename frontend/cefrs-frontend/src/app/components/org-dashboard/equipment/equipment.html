@@ -6,28 +6,41 @@
   <div class="search-controls">
     <input type="text" placeholder="Search Equipment" [(ngModel)]="searchQuery" class="search-input">
     <select [(ngModel)]="selectedCategory" class="filter-select">
-      <option>All Categories</option>
-      <option>Audio</option>
-      <option>Visual</option>
-      <option>Furniture</option>
-      <option>Lights</option>
+      <option value="All Categories">All Categories</option>
+      <option value="AUDIO">Audio</option>
+      <option value="VIDEO">Video</option>
+      <option value="COMPUTER">Computer</option>
+      <option value="PROJECTOR">Projector</option>
+      <option value="MICROPHONE">Microphone</option>
+      <option value="SPEAKER">Speaker</option>
+      <option value="OTHER">Other</option>
     </select>
   </div>
+
+  @if (isLoadingEquipment) {
+    <div class="loading-message">Loading equipment...</div>
+  }
+
   <div class="equipment-grid">
     @for (item of filteredEquipment; track item.id) {
       <div class="equipment-card">
         <div class="equipment-image">
-          <img [src]="item.image" [alt]="item.name">
+          <img [src]="item.imageUrl" [alt]="item.name">
           <span class="category-badge">{{ item.category }}</span>
         </div>
         <div class="equipment-content">
           <h3 class="equipment-name">{{ item.name }}</h3>
           <p class="equipment-description">{{ item.description }}</p>
           <div class="equipment-availability">
-            <span>Available: {{ item.available }}/{{ item.total }}</span>
-            <span class="availability-badge">Available</span>
+            <span>Available: {{ item.quantityAvailable }}/{{ item.quantityTotal }}</span>
+            <span class="availability-badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
           </div>
-          <button class="request-btn">Request Equipment</button>
+          <button 
+            class="request-btn" 
+            [disabled]="item.quantityAvailable === 0"
+            (click)="requestEquipment(item.id)">
+            @if (item.quantityAvailable === 0) { Out of Stock } @else { Request Equipment }
+          </button>
         </div>
       </div>
     } @empty {
@@ -35,4 +48,123 @@
     }
   </div>
 </div>
+
+<!-- Equipment Borrowing Request Modal -->
+@if (showEquipmentModal && selectedEquipment) {
+  <div class="modal-overlay" (click)="closeEquipmentModal()">
+    <div class="modal-container reservation-modal" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Request: {{ selectedEquipment.name }}</h2>
+      
+      <form (ngSubmit)="submitBorrowing()" #borrowingFormRef="ngForm">
+        <!-- Request Date -->
+        <div class="modal-form-group">
+          <label class="modal-label">Request Date *</label>
+          <input
+            type="date"
+            class="modal-input"
+            [(ngModel)]="borrowingForm.borrowDate"
+            name="borrowDate"
+            [min]="getMinDate()"
+            required>
+        </div>
+
+        <!-- Expected Return Date -->
+        <div class="modal-form-group">
+          <label class="modal-label">Expected Return Date *</label>
+          <input
+            type="date"
+            class="modal-input"
+            [(ngModel)]="borrowingForm.expectedReturnDate"
+            name="expectedReturnDate"
+            [min]="borrowingForm.borrowDate || getMinDate()"
+            placeholder="Select return date"
+            required>
+        </div>
+
+        <!-- Quantity -->
+        <div class="modal-form-group">
+          <label class="modal-label">Quantity *</label>
+          <input
+            type="number"
+            class="modal-input"
+            [(ngModel)]="borrowingForm.quantity"
+            name="quantity"
+            [min]="1"
+            [max]="getMaxBorrowingQuantity()"
+            required>
+          <small class="form-text" style="display: block; margin-top: 4px; color: #666; font-size: 12px;">
+            Maximum available: {{ getMaxBorrowingQuantity() }}
+          </small>
+        </div>
+
+        <!-- Purpose -->
+        <div class="modal-form-group">
+          <label class="modal-label">Purpose *</label>
+          <textarea
+            class="modal-textarea"
+            [(ngModel)]="borrowingForm.purpose"
+            name="purpose"
+            rows="4"
+            placeholder="Describe the purpose of your equipment request..."
+            required></textarea>
+        </div>
+
+        <!-- Admin Review Note -->
+        <div class="modal-note">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+            <path d="M12 8v4"></path>
+            <path d="M12 16h.01"></path>
+          </svg>
+          <span>Note: Your equipment request will be reviewed by an administrator.</span>
+        </div>
+
+        <!-- Error Message -->
+        @if (borrowingError) {
+          <div class="modal-error">
+            {{ borrowingError }}
+          </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="modal-btn modal-btn-cancel"
+            (click)="closeEquipmentModal()"
+            [disabled]="borrowingLoading">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="modal-btn modal-btn-submit"
+            [disabled]="borrowingLoading || !borrowingFormRef.valid">
+            {{ borrowingLoading ? 'Submitting...' : 'Submit Request' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Equipment Success Modal -->
+@if (showEquipmentSuccessModal) {
+  <div class="modal-overlay" (click)="closeEquipmentSuccessModal()">
+    <div class="modal-container success-modal" (click)="$event.stopPropagation()">
+      <div class="success-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <h2 class="success-message" style="color: #27ae60;">Equipment request submitted successfully!</h2>
+      <button
+        type="button"
+        class="modal-btn modal-btn-done"
+        (click)="closeEquipmentSuccessModal()">
+        Done
+      </button>
+    </div>
+  </div>
+}
 

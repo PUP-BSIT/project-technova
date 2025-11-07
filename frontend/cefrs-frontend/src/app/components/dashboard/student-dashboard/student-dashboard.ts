@@ -6,6 +6,8 @@ import { AuthService } from '../../../services/auth';
 import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
 import { EquipmentService } from '../../../services/equipment.service';
 import { FacilityService } from '../../../services/facility.service';
+import { ReservationService, ReservationRequest } from '../../../services/reservation.service';
+import { EquipmentBorrowingService, BorrowingRequest } from '../../../services/equipment-borrowing.service';
 import { SidebarComponent } from '../../sidebar/sidebar';
 
 // --- INTERFACES ---
@@ -68,6 +70,8 @@ export class StudentDashboard implements OnInit {
   private auditLogService = inject(AuditLogService);
   private equipmentService = inject(EquipmentService);
   private facilityService = inject(FacilityService);
+  private reservationService = inject(ReservationService);
+  private borrowingService = inject(EquipmentBorrowingService);
   private router = inject(Router);
 
   currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' = 'dashboard';
@@ -104,6 +108,32 @@ export class StudentDashboard implements OnInit {
   selectedCategory = 'All Categories';
   selectedStatus = 'All Status';
   selectedType = 'All Types';
+
+  // Modal state
+  showReservationModal = false;
+  showSuccessModal = false;
+  showEquipmentModal = false;
+  showEquipmentSuccessModal = false;
+  selectedFacility: Facility | null = null;
+  selectedEquipment: Equipment | null = null;
+  reservationForm = {
+    facilityId: null as number | null,
+    reservationDate: '',
+    startTime: '',
+    endTime: '',
+    purpose: ''
+  };
+  borrowingForm = {
+    equipmentId: null as number | null,
+    quantity: 1,
+    borrowDate: '',
+    expectedReturnDate: '',
+    purpose: ''
+  };
+  reservationLoading = false;
+  reservationError: string | null = null;
+  borrowingLoading = false;
+  borrowingError: string | null = null;
 
   ngOnInit(): void {
     this.fetchUserProfile();
@@ -301,5 +331,216 @@ export class StudentDashboard implements OnInit {
       log.oldValues?.toLowerCase().includes(query) ||
       log.newValues?.toLowerCase().includes(query)
     );
+  }
+
+  // Open equipment borrowing modal
+  requestEquipment(equipmentId: number): void {
+    const equipment = this.equipment.find(e => e.id === equipmentId);
+    if (equipment && equipment.quantityAvailable > 0) {
+      this.selectedEquipment = equipment;
+      this.borrowingForm.equipmentId = equipmentId;
+      this.borrowingForm.quantity = 1;
+      this.borrowingForm.borrowDate = '';
+      this.borrowingForm.expectedReturnDate = '';
+      this.borrowingForm.purpose = '';
+      this.borrowingError = null;
+      this.showEquipmentModal = true;
+    }
+  }
+
+  // Open facility reservation modal
+  requestFacility(facilityId: number): void {
+    const facility = this.facilities.find(f => f.id === facilityId);
+    if (facility && facility.status === 'AVAILABLE') {
+      this.selectedFacility = facility;
+      this.reservationForm.facilityId = facilityId;
+      this.reservationForm.reservationDate = '';
+      this.reservationForm.startTime = '';
+      this.reservationForm.endTime = '';
+      this.reservationForm.purpose = '';
+      this.reservationError = null;
+      this.showReservationModal = true;
+    }
+  }
+
+  // Close reservation modal
+  closeReservationModal(): void {
+    this.showReservationModal = false;
+    this.selectedFacility = null;
+    this.reservationForm = {
+      facilityId: null,
+      reservationDate: '',
+      startTime: '',
+      endTime: '',
+      purpose: ''
+    };
+    this.reservationError = null;
+  }
+
+  // Submit reservation request
+  submitReservation(): void {
+    if (!this.validateReservationForm()) {
+      return;
+    }
+
+    this.reservationLoading = true;
+    this.reservationError = null;
+
+    const request: ReservationRequest = {
+      facilityId: this.reservationForm.facilityId!,
+      startTime: `${this.reservationForm.reservationDate} ${this.reservationForm.startTime}:00`,
+      endTime: `${this.reservationForm.reservationDate} ${this.reservationForm.endTime}:00`,
+      purpose: this.reservationForm.purpose
+    };
+
+    this.reservationService.createReservation(request).subscribe({
+      next: (response) => {
+        this.reservationLoading = false;
+        if (response.success) {
+          this.closeReservationModal();
+          this.showSuccessModal = true;
+          // Refresh facilities list
+          this.fetchFacilities();
+        }
+      },
+      error: (err) => {
+        this.reservationLoading = false;
+        this.reservationError = err.error?.message || 'Failed to submit reservation request';
+        console.error('Error creating reservation:', err);
+      }
+    });
+  }
+
+  // Validate reservation form
+  validateReservationForm(): boolean {
+    if (!this.reservationForm.facilityId) {
+      this.reservationError = 'Please select a facility';
+      return false;
+    }
+    if (!this.reservationForm.reservationDate) {
+      this.reservationError = 'Please select a date';
+      return false;
+    }
+    if (!this.reservationForm.startTime) {
+      this.reservationError = 'Please select a start time';
+      return false;
+    }
+    if (!this.reservationForm.endTime) {
+      this.reservationError = 'Please select an end time';
+      return false;
+    }
+    if (this.reservationForm.startTime >= this.reservationForm.endTime) {
+      this.reservationError = 'End time must be after start time';
+      return false;
+    }
+    if (!this.reservationForm.purpose.trim()) {
+      this.reservationError = 'Please provide a purpose';
+      return false;
+    }
+    return true;
+  }
+
+  // Get minimum date for date picker
+  getMinDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
+  // Close success modal
+  closeSuccessModal(): void {
+    this.showSuccessModal = false;
+  }
+
+  // Close equipment borrowing modal
+  closeEquipmentModal(): void {
+    this.showEquipmentModal = false;
+    this.selectedEquipment = null;
+    this.borrowingForm = {
+      equipmentId: null,
+      quantity: 1,
+      borrowDate: '',
+      expectedReturnDate: '',
+      purpose: ''
+    };
+    this.borrowingError = null;
+  }
+
+  // Submit equipment borrowing request
+  submitBorrowing(): void {
+    if (!this.validateBorrowingForm()) {
+      return;
+    }
+
+    this.borrowingLoading = true;
+    this.borrowingError = null;
+
+    const request: BorrowingRequest = {
+      equipmentId: this.borrowingForm.equipmentId!,
+      quantity: this.borrowingForm.quantity,
+      borrowDate: this.borrowingForm.borrowDate,
+      expectedReturnDate: this.borrowingForm.expectedReturnDate,
+      purpose: this.borrowingForm.purpose
+    };
+
+    this.borrowingService.createBorrowing(request).subscribe({
+      next: (response) => {
+        this.borrowingLoading = false;
+        if (response.success) {
+          this.closeEquipmentModal();
+          this.showEquipmentSuccessModal = true;
+          // Refresh equipment list
+          this.fetchEquipment();
+        }
+      },
+      error: (err) => {
+        this.borrowingLoading = false;
+        this.borrowingError = err.error?.message || 'Failed to submit borrowing request';
+        console.error('Error creating borrowing:', err);
+      }
+    });
+  }
+
+  // Validate borrowing form
+  validateBorrowingForm(): boolean {
+    if (!this.borrowingForm.equipmentId) {
+      this.borrowingError = 'Please select equipment';
+      return false;
+    }
+    const selected = this.selectedEquipment;
+    if (this.borrowingForm.quantity > (selected?.quantityAvailable || 0)) {
+      this.borrowingError = `Only ${selected?.quantityAvailable} items available`;
+      return false;
+    }
+    if (this.borrowingForm.quantity < 1) {
+      this.borrowingError = 'Quantity must be at least 1';
+      return false;
+    }
+    if (!this.borrowingForm.borrowDate) {
+      this.borrowingError = 'Please select a borrow date';
+      return false;
+    }
+    if (!this.borrowingForm.expectedReturnDate) {
+      this.borrowingError = 'Please select an expected return date';
+      return false;
+    }
+    if (this.borrowingForm.expectedReturnDate <= this.borrowingForm.borrowDate) {
+      this.borrowingError = 'Return date must be after borrow date';
+      return false;
+    }
+    if (!this.borrowingForm.purpose.trim()) {
+      this.borrowingError = 'Please provide a purpose';
+      return false;
+    }
+    return true;
+  }
+
+  // Get max quantity for selected equipment
+  getMaxBorrowingQuantity(): number {
+    return this.selectedEquipment?.quantityAvailable || 0;
+  }
+
+  // Close equipment success modal
+  closeEquipmentSuccessModal(): void {
+    this.showEquipmentSuccessModal = false;
   }
 }

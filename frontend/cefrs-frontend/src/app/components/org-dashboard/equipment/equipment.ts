@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { EquipmentService } from '../../../services/equipment.service';
+import { EquipmentBorrowingService, BorrowingRequest } from '../../../services/equipment-borrowing.service';
 
 interface Equipment {
-  id: string;
+  id: number;
   name: string;
   description: string;
   category: string;
-  available: number;
-  total: number;
-  image: string;
+  quantityAvailable: number;
+  quantityTotal: number;
+  imageUrl: string;
+  status: string;
 }
 
 @Component({
@@ -20,39 +23,199 @@ interface Equipment {
   styleUrls: ['./equipment.scss']
 })
 export class OrgEquipmentComponent implements OnInit {
+  private equipmentService = inject(EquipmentService);
+  private borrowingService = inject(EquipmentBorrowingService);
+
   searchQuery = '';
   selectedCategory = 'All Categories';
+  isLoadingEquipment = false;
 
-  equipment: Equipment[] = [
-    { id: '1', name: 'Microphone', description: 'High-quality microphone system perfect for presentations', category: 'Audio', available: 5, total: 5, image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=400' },
-    { id: '2', name: 'Speaker', description: 'Powerful portable speaker system for events and presentations', category: 'Audio', available: 3, total: 3, image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400' },
-    { id: '3', name: 'Folding Tables', description: 'Folding tables perfect for events and meetings', category: 'Furniture', available: 10, total: 10, image: 'https://images.unsplash.com/photo-1617325247661-675ab4b64ae2?w=400' },
-    { id: '4', name: 'Stackable Chairs', description: 'Comfortable stackable chairs for events and meetings', category: 'Furniture', available: 50, total: 50, image: 'https://images.unsplash.com/photo-1503602642458-232111445657?w=400' },
-    { id: '5', name: 'Projector', description: 'For displaying presentations, videos, and other visual content.', category: 'Visual', available: 5, total: 5, image: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=400' },
-    { id: '6', name: 'LED Par Light', description: 'Crucial for creating the right atmosphere and mood.', category: 'Lights', available: 5, total: 5, image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400' }
-  ];
+  equipment: Equipment[] = [];
+
+  // Modal state
+  showEquipmentModal = false;
+  showEquipmentSuccessModal = false;
+  selectedEquipment: Equipment | null = null;
+  borrowingForm = {
+    equipmentId: null as number | null,
+    quantity: 1,
+    borrowDate: '',
+    expectedReturnDate: '',
+    purpose: ''
+  };
+  borrowingLoading = false;
+  borrowingError: string | null = null;
 
   ngOnInit(): void {
-    // Load equipment data if needed
+    this.fetchEquipment();
+  }
+
+  fetchEquipment(): void {
+    this.isLoadingEquipment = true;
+    this.equipmentService.getAvailableEquipment().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.equipment = response.data;
+        }
+        this.isLoadingEquipment = false;
+      },
+      error: (err) => {
+        console.error('Error fetching equipment:', err);
+        this.isLoadingEquipment = false;
+        this.equipment = [];
+      }
+    });
   }
 
   get filteredEquipment(): Equipment[] {
     let filtered = this.equipment;
 
-    // Filter by search query
-    if (this.searchQuery) {
+    // Filter by category
+    if (this.selectedCategory !== 'All Categories') {
       filtered = filtered.filter(item =>
-        item.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+        item.category?.toUpperCase() === this.selectedCategory.toUpperCase()
       );
     }
 
-    // Filter by category
-    if (this.selectedCategory !== 'All Categories') {
-      filtered = filtered.filter(item => item.category === this.selectedCategory);
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(item =>
+        item.name?.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query) ||
+        item.category?.toLowerCase().includes(query)
+      );
     }
 
     return filtered;
+  }
+
+  // Open equipment borrowing modal
+  requestEquipment(equipmentId: number): void {
+    const equipment = this.equipment.find(e => e.id === equipmentId);
+    if (equipment && equipment.quantityAvailable > 0) {
+      this.selectedEquipment = equipment;
+      this.borrowingForm.equipmentId = equipmentId;
+      this.borrowingForm.quantity = 1;
+      this.borrowingForm.borrowDate = '';
+      this.borrowingForm.expectedReturnDate = '';
+      this.borrowingForm.purpose = '';
+      this.borrowingError = null;
+      this.showEquipmentModal = true;
+    }
+  }
+
+  // Close equipment borrowing modal
+  closeEquipmentModal(): void {
+    this.showEquipmentModal = false;
+    this.selectedEquipment = null;
+    this.borrowingForm = {
+      equipmentId: null,
+      quantity: 1,
+      borrowDate: '',
+      expectedReturnDate: '',
+      purpose: ''
+    };
+    this.borrowingError = null;
+  }
+
+  // Submit equipment borrowing request
+  submitBorrowing(): void {
+    if (!this.validateBorrowingForm()) {
+      return;
+    }
+
+    this.borrowingLoading = true;
+    this.borrowingError = null;
+
+    const request: BorrowingRequest = {
+      equipmentId: this.borrowingForm.equipmentId!,
+      quantity: this.borrowingForm.quantity,
+      borrowDate: this.borrowingForm.borrowDate,
+      expectedReturnDate: this.borrowingForm.expectedReturnDate,
+      purpose: this.borrowingForm.purpose
+    };
+
+    this.borrowingService.createBorrowing(request).subscribe({
+      next: (response) => {
+        this.borrowingLoading = false;
+        if (response.success) {
+          this.closeEquipmentModal();
+          this.showEquipmentSuccessModal = true;
+          // Refresh equipment list
+          this.fetchEquipment();
+        }
+      },
+      error: (err) => {
+        this.borrowingLoading = false;
+        this.borrowingError = err.error?.message || 'Failed to submit borrowing request';
+        console.error('Error creating borrowing:', err);
+      }
+    });
+  }
+
+  // Validate borrowing form
+  validateBorrowingForm(): boolean {
+    if (!this.borrowingForm.equipmentId) {
+      this.borrowingError = 'Please select equipment';
+      return false;
+    }
+    const selected = this.selectedEquipment;
+    if (this.borrowingForm.quantity > (selected?.quantityAvailable || 0)) {
+      this.borrowingError = `Only ${selected?.quantityAvailable} items available`;
+      return false;
+    }
+    if (this.borrowingForm.quantity < 1) {
+      this.borrowingError = 'Quantity must be at least 1';
+      return false;
+    }
+    if (!this.borrowingForm.borrowDate) {
+      this.borrowingError = 'Please select a borrow date';
+      return false;
+    }
+    if (!this.borrowingForm.expectedReturnDate) {
+      this.borrowingError = 'Please select an expected return date';
+      return false;
+    }
+    if (this.borrowingForm.expectedReturnDate <= this.borrowingForm.borrowDate) {
+      this.borrowingError = 'Return date must be after borrow date';
+      return false;
+    }
+    if (!this.borrowingForm.purpose.trim()) {
+      this.borrowingError = 'Please provide a purpose';
+      return false;
+    }
+    return true;
+  }
+
+  // Get max quantity for selected equipment
+  getMaxBorrowingQuantity(): number {
+    return this.selectedEquipment?.quantityAvailable || 0;
+  }
+
+  // Get minimum date for date picker
+  getMinDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
+  // Get status class
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      Approved: 'status-approved',
+      Pending: 'status-pending',
+      Rejected: 'status-rejected',
+      Returned: 'status-returned',
+      Available: 'status-available',
+      AVAILABLE: 'status-available',
+      Reserved: 'status-reserved'
+    };
+    return map[status] || '';
+  }
+
+  // Close equipment success modal
+  closeEquipmentSuccessModal(): void {
+    this.showEquipmentSuccessModal = false;
   }
 }
 
