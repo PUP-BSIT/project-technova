@@ -11,14 +11,13 @@
 
     <!-- Navigation -->
     <nav class="navigation">
-      @for (item of navItems; track item.id) {
-        <button 
-          [class.active]="currentView === item.id"
-          (click)="setCurrentView(item.id)"
-          class="nav-button">
-          {{ item.label }}
-        </button>
-      }
+      <button
+        *ngFor="let item of navItems"
+        [class.active]="currentView === item.id"
+        (click)="setCurrentView(item.id)"
+        class="nav-button">
+        {{ item.label }}
+      </button>
     </nav>
 
     <!-- User Profile -->
@@ -45,20 +44,12 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    @if (currentView === 'dashboard') {
-      <app-dashboard-view></app-dashboard-view>
-    }
-    @if (currentView === 'manage-request') {
-      <app-manage-request></app-manage-request>
-    }
-    @if (currentView === 'facilities') {
-      <app-facilities></app-facilities>
-    }
-    @if (currentView === 'equipment') {
-      <app-equipment></app-equipment>
-    }
-    @if (currentView === 'report-logs') {
-      <app-report-logs></app-report-logs>
-    }
+    <app-dashboard-view *ngIf="currentView === 'dashboard'"></app-dashboard-view>
+    <app-manage-request *ngIf="currentView === 'manage-request'"></app-manage-request>
+    <app-calendar-view *ngIf="currentView === 'calendar'"></app-calendar-view>
+    <app-facilities *ngIf="currentView === 'facilities'"></app-facilities>
+    <app-equipment *ngIf="currentView === 'equipment'"></app-equipment>
+    <app-report-logs *ngIf="currentView === 'report-logs'"></app-report-logs>
+    <router-outlet *ngIf="currentView === 'settings'"></router-outlet>
   </main>
 </div>

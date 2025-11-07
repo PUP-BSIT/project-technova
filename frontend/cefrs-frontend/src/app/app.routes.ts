@@ -2,12 +2,17 @@ import { Routes } from '@angular/router';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { LoginComponent } from './components/login/login';
 import { OrgLoginComponent } from './components/org-login/org-login';
-import { AdminLogin } from './components/admin/admin-login/admin-login';
+import { AdminLogin } from './components/admin/login/admin-login';
 import { RegisterComponent } from './components/register/register';
+import { AdminRegister } from './components/admin/admin-register/admin-register';
 import { OrgRegisterComponent } from './components/org-register/org-register';
 import { StudentDashboard } from './components/dashboard/student-dashboard/student-dashboard';
 import { OrgDashboardComponent } from './components/org-dashboard/org-dashboard';
+import { AdminDashboard } from './components/admin/admin-dashboard/admin-dashboard';
 import { AuthGuard } from './guards/auth-guard';
+import { AdminProfileComponent } from './components/admin/admin-profile/admin-profile';
+import { AdminChangePasswordComponent } from './components/admin/admin-change-password/admin-change-password';
+import { CalendarView } from './components/admin/admin-dashboard/calendar/calendar-view/calendar-view';
 
 import { StudentProfileComponent } from './components/profile/profile';
 import { OrgProfileComponent } from './components/org-profile/org-profile';
@@ -22,13 +27,19 @@ export const routes: Routes = [
   { path: 'admin-login', component: AdminLogin },
   { path: 'register', component: RegisterComponent },
   { path: 'org-register', component: OrgRegisterComponent },
+  { path: 'admin-register', component: AdminRegister },
 
-  // Admin / Org Dashboard (Protected)
-  // {
-  //   path: 'dashboard',
-  //   component: DashboardComponent,
-  //   canActivate: [AuthGuard]
-  // },
+  // Admin Dashboard (Protected)
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboard,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'calendar', component: CalendarView },
+      { path: 'settings/profile', component: AdminProfileComponent },
+      { path: 'settings/change-password', component: AdminChangePasswordComponent }
+    ]
+  },
 
   // Organization Dashboard (Protected)
   {

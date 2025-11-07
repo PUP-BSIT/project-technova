@@ -1,0 +1,139 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h1 class="page-title">Reservation Calendar</h1>
+    <p class="page-subtitle">View and manage all facility reservations and equipment borrowing</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="calendar-filters">
+    <div class="filter-group">
+      <label>Type:</label>
+      <select [(ngModel)]="filterType" (change)="onFilterTypeChange(filterType)" class="filter-select">
+        <option value="all">All</option>
+        <option value="facility">Facilities Only</option>
+        <option value="equipment">Equipment Only</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Status:</label>
+      <select [(ngModel)]="filterStatus" (change)="onFilterStatusChange(filterStatus)" class="filter-select">
+        <option value="all">All Status</option>
+        <option value="PENDING">Pending</option>
+        <option value="APPROVED">Approved</option>
+        <option value="REJECTED">Rejected</option>
+        <option value="BORROWED">Borrowed</option>
+        <option value="RETURNED">Returned</option>
+        <option value="OVERDUE">Overdue</option>
+      </select>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <span class="legend-item">
+        <span class="legend-dot" style="background: #10b981;"></span>
+        Approved
+      </span>
+      <span class="legend-item">
+        <span class="legend-dot" style="background: #f59e0b;"></span>
+        Pending
+      </span>
+      <span class="legend-item">
+        <span class="legend-dot" style="background: #3b82f6;"></span>
+        Borrowed
+      </span>
+      <span class="legend-item">
+        <span class="legend-dot" style="background: #ef4444;"></span>
+        Overdue/Rejected
+      </span>
+    </div>
+  </div>
+
+  <!-- Calendar -->
+  <div class="calendar-wrapper">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+  </div>
+
+  <!-- Event Details Modal -->
+  @if (showEventModal && selectedEvent) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ selectedEvent.type === 'facility' ? 'Facility Reservation' : 'Equipment Borrowing' }}</h2>
+          <button class="close-button" (click)="closeModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="detail-row">
+            <strong>ID:</strong>
+            <span>{{ selectedEvent.id }}</span>
+          </div>
+
+          <div class="detail-row">
+            <strong>Title:</strong>
+            <span>{{ selectedEvent.title }}</span>
+          </div>
+
+          <div class="detail-row">
+            <strong>User:</strong>
+            <span>{{ selectedEvent.extendedProps.userName }}</span>
+          </div>
+
+          <div class="detail-row">
+            <strong>Email:</strong>
+            <span>{{ selectedEvent.extendedProps.userEmail }}</span>
+          </div>
+
+          <div class="detail-row">
+            <strong>Start:</strong>
+            <span>{{ selectedEvent.start }}</span>
+          </div>
+
+          @if (selectedEvent.end) {
+            <div class="detail-row">
+              <strong>End:</strong>
+              <span>{{ selectedEvent.end }}</span>
+            </div>
+          }
+
+          @if (selectedEvent.extendedProps.quantity) {
+            <div class="detail-row">
+              <strong>Quantity:</strong>
+              <span>{{ selectedEvent.extendedProps.quantity }} unit(s)</span>
+            </div>
+          }
+
+          @if (selectedEvent.extendedProps.purpose) {
+            <div class="detail-row">
+              <strong>Purpose:</strong>
+              <span>{{ selectedEvent.extendedProps.purpose }}</span>
+            </div>
+          }
+
+          <div class="detail-row">
+            <strong>Status:</strong>
+            <span [class]="'status-badge ' + getStatusBadgeClass(selectedEvent.status)">
+              {{ selectedEvent.status }}
+            </span>
+          </div>
+
+          @if (selectedEvent.extendedProps.adminNotes) {
+            <div class="detail-row">
+              <strong>Admin Notes:</strong>
+              <span>{{ selectedEvent.extendedProps.adminNotes }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          @if (selectedEvent.status === 'PENDING') {
+            <button class="btn-approve" (click)="approveEvent()">Approve</button>
+            <button class="btn-reject" (click)="rejectEvent()">Reject</button>
+          }
+          <button class="btn-delete" (click)="deleteEvent()">Delete</button>
+          <button class="btn-cancel" (click)="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
