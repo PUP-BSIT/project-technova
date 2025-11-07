@@ -80,6 +80,17 @@ public class FacilityReservationController {
         return ResponseEntity.ok(ApiResponse.success("Reservation status updated", reservation));
     }
 
+    @PutMapping("/{id}/status/admin")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<FacilityReservationDTO>> updateReservationStatusAsAdmin(
+            @PathVariable Long id,
+            Authentication authentication,
+            @RequestBody ReservationApprovalDTO approval) {
+        Long adminId = (Long) authentication.getPrincipal();
+        FacilityReservationDTO reservation = reservationService.updateReservationStatus(id, adminId, approval);
+        return ResponseEntity.ok(ApiResponse.success("Reservation status updated", reservation));
+    }
+
     @DeleteMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<Void>> cancelReservation(
             @PathVariable Long id,

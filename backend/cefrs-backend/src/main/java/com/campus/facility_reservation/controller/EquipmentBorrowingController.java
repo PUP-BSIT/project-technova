@@ -85,4 +85,16 @@ public class EquipmentBorrowingController {
         EquipmentBorrowingDTO borrowing = borrowingService.updateBorrowingStatus(id, adminId, approval);
         return ResponseEntity.ok(ApiResponse.success("Borrowing status updated", borrowing));
     }
+
+    // PUT /api/equipment-borrowing/{id}/status/admin (use current admin principal)
+    @PutMapping("/{id}/status/admin")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<EquipmentBorrowingDTO>> updateBorrowingStatusAsAdmin(
+            @PathVariable Long id,
+            Authentication authentication,
+            @RequestBody BorrowingApprovalDTO approval) {
+        Long adminId = (Long) authentication.getPrincipal();
+        EquipmentBorrowingDTO borrowing = borrowingService.updateBorrowingStatus(id, adminId, approval);
+        return ResponseEntity.ok(ApiResponse.success("Borrowing status updated", borrowing));
+    }
 }
