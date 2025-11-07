@@ -53,6 +53,10 @@ export class EquipmentBorrowingService {
   }
 
   // Admin methods
+  getAllBorrowings(): Observable<ApiResponse<EquipmentBorrowing[]>> {
+    return this.http.get<ApiResponse<EquipmentBorrowing[]>>(`${this.apiUrl}`);
+  }
+
   getPendingBorrowings(): Observable<ApiResponse<EquipmentBorrowing[]>> {
     return this.http.get<ApiResponse<EquipmentBorrowing[]>>(`${this.apiUrl}/pending`);
   }
@@ -67,10 +71,11 @@ export class EquipmentBorrowingService {
     if (actualReturnDate) {
       body.actualReturnDate = actualReturnDate;
     }
-    return this.http.put<ApiResponse<EquipmentBorrowing>>(
-      `${this.apiUrl}/${id}/status/admin`,
-      body
-    );
+    const adminId = localStorage.getItem('userId');
+    const url = adminId
+      ? `${this.apiUrl}/${id}/status?adminId=${adminId}`
+      : `${this.apiUrl}/${id}/status`;
+    return this.http.put<ApiResponse<EquipmentBorrowing>>(url, body);
   }
 }
 

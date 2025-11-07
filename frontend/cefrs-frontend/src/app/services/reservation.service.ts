@@ -62,15 +62,21 @@ export class ReservationService {
   }
 
   // Admin methods
+  getAllReservations(): Observable<ApiResponse<Reservation[]>> {
+    return this.http.get<ApiResponse<Reservation[]>>(`${this.apiUrl}`);
+  }
+
   getPendingReservations(): Observable<ApiResponse<Reservation[]>> {
     return this.http.get<ApiResponse<Reservation[]>>(`${this.apiUrl}/pending`);
   }
 
   updateReservationStatus(id: number, status: string, adminNotes?: string): Observable<ApiResponse<Reservation>> {
-    return this.http.put<ApiResponse<Reservation>>(
-      `${this.apiUrl}/${id}/status/admin`,
-      { status, adminNotes }
-    );
+    const adminId = localStorage.getItem('userId');
+    const body: any = { status, adminNotes };
+    const url = adminId
+      ? `${this.apiUrl}/${id}/status?adminId=${adminId}`
+      : `${this.apiUrl}/${id}/status`;
+    return this.http.put<ApiResponse<Reservation>>(url, body);
   }
 }
 
