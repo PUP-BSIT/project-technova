@@ -1,0 +1,113 @@
+<div class="equipment-borrowing-request-container">
+  <div class="header">
+    <h2>Request Equipment Borrowing</h2>
+    <p>Fill out the form below to request equipment borrowing</p>
+  </div>
+
+  <div class="form-container">
+    <form (ngSubmit)="onSubmit()" #borrowingForm="ngForm">
+      <!-- Equipment Selection -->
+      <div class="form-group">
+        <label for="equipment">Select Equipment *</label>
+        <select
+          id="equipment"
+          name="equipment"
+          [(ngModel)]="selectedEquipmentId"
+          class="form-control"
+          required>
+          <option [value]="null">-- Select equipment --</option>
+          <option *ngFor="let item of equipment" [value]="item.id">
+            {{ item.name }} ({{ item.category }}) - Available: {{ item.quantityAvailable }}/{{ item.quantityTotal }}
+          </option>
+        </select>
+        <div *ngIf="selectedEquipmentId && getSelectedEquipment()" class="equipment-info">
+          <p><strong>Description:</strong> {{ getSelectedEquipment()?.description || 'N/A' }}</p>
+          <p><strong>Available:</strong> {{ getSelectedEquipment()?.quantityAvailable }} items</p>
+        </div>
+      </div>
+
+      <!-- Quantity -->
+      <div class="form-group">
+        <label for="quantity">Quantity *</label>
+        <input
+          type="number"
+          id="quantity"
+          name="quantity"
+          [(ngModel)]="quantity"
+          [min]="1"
+          [max]="getMaxQuantity()"
+          class="form-control"
+          required>
+        <small class="form-text">Maximum available: {{ getMaxQuantity() }}</small>
+      </div>
+
+      <!-- Date Selection -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="borrowDate">Borrow Date *</label>
+          <input
+            type="date"
+            id="borrowDate"
+            name="borrowDate"
+            [(ngModel)]="borrowDate"
+            [min]="getMinDate()"
+            class="form-control"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="returnDate">Expected Return Date *</label>
+          <input
+            type="date"
+            id="returnDate"
+            name="returnDate"
+            [(ngModel)]="expectedReturnDate"
+            [min]="borrowDate || getMinDate()"
+            class="form-control"
+            required>
+        </div>
+      </div>
+
+      <!-- Purpose -->
+      <div class="form-group">
+        <label for="purpose">Purpose *</label>
+        <textarea
+          id="purpose"
+          name="purpose"
+          [(ngModel)]="purpose"
+          rows="4"
+          class="form-control"
+          placeholder="Describe the purpose of borrowing this equipment..."
+          required></textarea>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-error">
+        {{ error }}
+      </div>
+
+      <!-- Success Message -->
+      <div *ngIf="success" class="alert alert-success">
+        {{ success }}
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="loading || !borrowingForm.valid">
+          <span *ngIf="loading">Submitting...</span>
+          <span *ngIf="!loading">Submit Request</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="goBack()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

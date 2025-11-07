@@ -39,7 +39,7 @@ export class EquipmentService {
         return this.http.get<ApiResponse<Equipment[]>>(`${this.apiUrl}/search?name=${name}`);
     }
 
-    requestEquipment(userId: number, request: any): Observable<ApiResponse<any>> {
-        return this.http.post<ApiResponse<any>>(`http://localhost:8080/api/equipment-borrowing/user/${userId}`, request);
+    requestEquipment(request: any): Observable<ApiResponse<any>> {
+        return this.http.post<ApiResponse<any>>(`http://localhost:8080/api/equipment-borrowing`, request);
     }
 }
