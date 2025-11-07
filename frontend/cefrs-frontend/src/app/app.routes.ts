@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { LoginComponent } from './components/login/login';
 import { OrgLoginComponent } from './components/org-login/org-login';
-import { AdminLogin } from './components/admin/admin-login/admin-login';
+import { AdminLogin } from './components/admin/login/admin-login';
 import { RegisterComponent } from './components/register/register';
 import { AdminRegister } from './components/admin/admin-register/admin-register';
 import { OrgRegisterComponent } from './components/org-register/org-register';
@@ -18,6 +18,12 @@ import { StudentProfileComponent } from './components/profile/profile';
 import { OrgProfileComponent } from './components/org-profile/org-profile';
 import { StudentChangePasswordComponent } from './components/student-change-password/student-change-password';
 import { OrgChangePasswordComponent } from './components/org-change-password/org-change-password';
+import { ReservationRequestComponent } from './components/reservation-request/reservation-request';
+import { EquipmentBorrowingRequestComponent } from './components/equipment-borrowing-request/equipment-borrowing-request';
+import { MyReservationsComponent } from './components/my-reservations/my-reservations';
+import { MyBorrowingsComponent } from './components/my-borrowings/my-borrowings';
+import { ReservationApprovalComponent } from './components/admin/reservation-approval/reservation-approval';
+import { EquipmentApprovalComponent } from './components/admin/equipment-approval/equipment-approval';
 
 export const routes: Routes = [
   { path: '', component: RoleSelectionComponent },
@@ -37,7 +43,9 @@ export const routes: Routes = [
     children: [
       { path: 'calendar', component: CalendarView },
       { path: 'settings/profile', component: AdminProfileComponent },
-      { path: 'settings/change-password', component: AdminChangePasswordComponent }
+      { path: 'settings/change-password', component: AdminChangePasswordComponent },
+      { path: 'reservations/approve', component: ReservationApprovalComponent },
+      { path: 'equipment/approve', component: EquipmentApprovalComponent }
     ]
   },
 
@@ -70,4 +78,12 @@ export const routes: Routes = [
   { path: 'change-password', component: StudentChangePasswordComponent, canActivate: [AuthGuard] },
   { path: 'student-change-password', component: StudentChangePasswordComponent },
   { path: 'org-change-password', component: OrgChangePasswordComponent, canActivate: [AuthGuard] },
+
+  // Reservation Routes (Protected)
+  { path: 'reservation-request', component: ReservationRequestComponent, canActivate: [AuthGuard] },
+  { path: 'my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard] },
+
+  // Equipment Borrowing Routes (Protected)
+  { path: 'equipment-borrowing-request', component: EquipmentBorrowingRequestComponent, canActivate: [AuthGuard] },
+  { path: 'my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard] },
 ];
