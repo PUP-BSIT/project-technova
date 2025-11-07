@@ -1,0 +1,105 @@
+<div class="reservation-approval-container">
+  <div class="header">
+    <h2>Pending Reservation Approvals</h2>
+    <button class="btn btn-primary" (click)="loadPendingReservations()">
+      Refresh
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && reservations.length === 0" class="loading">
+    Loading pending reservations...
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Reservations List -->
+  <div *ngIf="!loading || reservations.length > 0" class="reservations-list">
+    <div *ngFor="let reservation of reservations" class="reservation-card">
+      <div class="reservation-header">
+        <div>
+          <h3>{{ reservation.facilityName }}</h3>
+          <p class="user-name">Requested by: {{ reservation.userName }}</p>
+        </div>
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+
+      <div class="reservation-details">
+        <div class="detail-item">
+          <strong>Date:</strong> {{ formatDate(reservation.reservationDate) }}
+        </div>
+        <div class="detail-item">
+          <strong>Time:</strong> {{ reservation.startTime }} - {{ reservation.endTime }}
+        </div>
+        <div class="detail-item">
+          <strong>Purpose:</strong> {{ reservation.purpose }}
+        </div>
+        <div class="detail-item">
+          <strong>Requested:</strong> {{ formatDate(reservation.createdAt) }}
+        </div>
+      </div>
+
+      <div class="reservation-actions">
+        <button class="btn btn-success" (click)="openApprovalModal(reservation)">
+          Approve
+        </button>
+        <button class="btn btn-danger" (click)="approvalStatus = 'REJECTED'; openApprovalModal(reservation)">
+          Reject
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="reservations.length === 0 && !loading" class="no-reservations">
+      <p>No pending reservations</p>
+    </div>
+  </div>
+
+  <!-- Approval Modal -->
+  <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Review Reservation</h3>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedReservation">
+        <div class="review-details">
+          <p><strong>Facility:</strong> {{ selectedReservation.facilityName }}</p>
+          <p><strong>User:</strong> {{ selectedReservation.userName }}</p>
+          <p><strong>Date:</strong> {{ formatDate(selectedReservation.reservationDate) }}</p>
+          <p><strong>Time:</strong> {{ selectedReservation.startTime }} - {{ selectedReservation.endTime }}</p>
+          <p><strong>Purpose:</strong> {{ selectedReservation.purpose }}</p>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Decision *</label>
+          <select id="status" [(ngModel)]="approvalStatus" class="form-control">
+            <option value="APPROVED">Approve</option>
+            <option value="REJECTED">Reject</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Admin Notes</label>
+          <textarea
+            id="notes"
+            [(ngModel)]="adminNotes"
+            rows="4"
+            class="form-control"
+            placeholder="Add any notes or comments..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-primary" (click)="submitApproval()" [disabled]="loading">
+          {{ loading ? 'Processing...' : 'Submit' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
