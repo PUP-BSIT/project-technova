@@ -33,7 +33,7 @@ export class OrgRegisterComponent implements OnInit {
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
       address: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
       confirmPassword: ['', [Validators.required]]
@@ -181,6 +181,12 @@ export class OrgRegisterComponent implements OnInit {
     if (field?.errors?.['email']) {
       return 'Please enter a valid email address';
     }
+    if (field?.errors?.['pattern']) {
+      if (fieldName === 'phoneNumber') {
+        return 'Phone number must be exactly 11 digits';
+      }
+      return 'Invalid format';
+    }
     if (field?.errors?.['minlength']) {
       return `Minimum length is ${field.errors['minlength'].requiredLength} characters`;
     }
@@ -188,5 +194,30 @@ export class OrgRegisterComponent implements OnInit {
       return 'Password must have uppercase, lowercase, number, and special character';
     }
     return '';
+  }
+
+  onPhoneKeyPress(event: KeyboardEvent): boolean {
+    // Allow only numeric keys (0-9), backspace, delete, tab, escape, enter, and arrow keys
+    const charCode = event.which ? event.which : event.keyCode;
+    const phoneControl = this.registerForm.get('phoneNumber');
+    const currentValue = phoneControl?.value || '';
+    
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    }
+    // Check if we've reached 11 digits
+    if (currentValue.length >= 11 && charCode >= 48 && charCode <= 57) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  onPhoneInput(event: any): void {
+    // Remove all non-numeric characters and limit to 11 digits
+    const value = event.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+    // Update form control value
+    this.registerForm.patchValue({ phoneNumber: value }, { emitEvent: false });
   }
 }

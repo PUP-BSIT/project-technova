@@ -163,8 +163,11 @@
           <input
             type="tel"
             class="form-input"
-            placeholder="Enter Phone Number"
+            placeholder="Enter Phone Number (11 digits)"
             formControlName="phoneNumber"
+            (keypress)="onPhoneKeyPress($event)"
+            (input)="onPhoneInput($event)"
+            maxlength="11"
             [class.error]="isFieldInvalid('phoneNumber')"
           />
           <span class="error-message" *ngIf="isFieldInvalid('phoneNumber')">
