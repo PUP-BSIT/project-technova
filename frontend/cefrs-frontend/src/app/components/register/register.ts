@@ -87,7 +87,7 @@ export class RegisterComponent implements OnInit {
     // Validation for Step 2 - contact information
     if (this.currentStep === 2) {
       this.showEmailError = !this.formData.email.trim() || !this.isValidEmail(this.formData.email);
-      this.showPhoneError = !this.formData.phone.trim();
+      this.showPhoneError = !this.formData.phone.trim() || !this.isValidPhone(this.formData.phone);
       this.showAddressError = !this.formData.address.trim();
 
       if (this.showEmailError || this.showPhoneError || this.showAddressError) {
@@ -115,6 +115,34 @@ export class RegisterComponent implements OnInit {
   isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  isValidPhone(phone: string): boolean {
+    // Phone number must be exactly 11 digits
+    const phoneRegex = /^[0-9]{11}$/;
+    return phoneRegex.test(phone);
+  }
+
+  onPhoneKeyPress(event: KeyboardEvent): boolean {
+    // Allow only numeric keys (0-9), backspace, delete, tab, escape, enter, and arrow keys
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    }
+    // Check if we've reached 11 digits
+    if (this.formData.phone.length >= 11 && charCode >= 48 && charCode <= 57) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  onPhoneInput(event: any): void {
+    // Remove all non-numeric characters and limit to 11 digits
+    let value = event.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+    // Update the model
+    this.formData.phone = value;
   }
 
   submitForm() {
