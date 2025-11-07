@@ -176,11 +176,16 @@
         <input
             type="tel"
             class="form-input"
-            placeholder="Enter Phone Number"
+            placeholder="Enter Phone Number (11 digits)"
             [(ngModel)]="formData.phone"
+            (keypress)="onPhoneKeyPress($event)"
+            (input)="onPhoneInput($event)"
+            maxlength="11"
             [class.error]="showPhoneError"
         />
-        <span class="error-message" *ngIf="showPhoneError">Please enter a phone number</span>
+        <span class="error-message" *ngIf="showPhoneError">
+          {{ !formData.phone.trim() ? 'Please enter a phone number' : 'Phone number must be exactly 11 digits' }}
+        </span>
     </div>
 
       <div class="form-group">
