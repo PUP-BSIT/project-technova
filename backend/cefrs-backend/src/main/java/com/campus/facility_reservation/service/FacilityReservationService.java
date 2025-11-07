@@ -118,6 +118,16 @@ public class FacilityReservationService {
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.save(reservation);
     }
+
+    public List<FacilityReservationDTO> getFacilityReservationsByDate(Long facilityId, String dateStr) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found"));
+        LocalDate date = LocalDate.parse(dateStr);
+        return reservationRepository.findByFacilityAndReservationDate(facility, date)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
     
     private FacilityReservationDTO convertToDTO(FacilityReservation reservation) {
         return new FacilityReservationDTO(
