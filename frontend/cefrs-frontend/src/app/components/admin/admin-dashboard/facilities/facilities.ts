@@ -66,6 +66,9 @@ export class Facilities {
     }
   ];
 
+  // Search and filters
+  selectedStatus: string = 'All Status';
+
   getStatusText(status: string): string {
     if (status === 'maintenance') {
       return 'Under Maintenance';
@@ -115,7 +118,7 @@ export class Facilities {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file');
@@ -146,8 +149,6 @@ export class Facilities {
   }
 
   saveAddEdit(): void {
-    // In a real application, you would upload the file to a server here
-    // For now, we'll store the preview URL
     if (this.photoPreview && !this.facilityForm.photoUrl) {
       this.facilityForm.photoUrl = this.photoPreview;
     }
@@ -201,5 +202,34 @@ export class Facilities {
       this.facilityForm.location.trim() &&
       this.facilityForm.capacity > 0
     );
+  }
+
+  get filteredFacilities(): Facility[] {
+    let filtered = this.facilities;
+
+    // Filter by search text
+    if (this.searchText.trim()) {
+      const query = this.searchText.toLowerCase();
+      filtered = filtered.filter(facility =>
+        facility.name.toLowerCase().includes(query) ||
+        facility.location.toLowerCase().includes(query) ||
+        facility.id.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by status
+    if (this.selectedStatus !== 'All Status') {
+      const statusMap: Record<string, string> = {
+        'Available': 'available',
+        'Under Maintenance': 'maintenance',
+        'Unavailable': 'unavailable'
+      };
+      const status = statusMap[this.selectedStatus];
+      if (status) {
+        filtered = filtered.filter(facility => facility.status === status);
+      }
+    }
+
+    return filtered;
   }
 }
