@@ -12,31 +12,72 @@
       </button>
     </div>
     <div class="filter-dropdowns">
-      <select class="filter-dropdown">
+      <select class="filter-dropdown" [(ngModel)]="selectedType">
         <option>All Types</option>
         <option>Equipment</option>
         <option>Facility</option>
       </select>
-      <select class="filter-dropdown">
+      <select class="filter-dropdown" [(ngModel)]="selectedStatus">
         <option>All Status</option>
         <option>Pending</option>
         <option>Approved</option>
-        <option>Declined</option>
+        <option>Rejected</option>
       </select>
     </div>
   </div>
 
-  <div class="requests-list">
-    @for (request of requests; track request.id) {
+  <!-- Loading State -->
+  <div *ngIf="loading && allRequests.length === 0" class="loading-message">
+    Loading requests...
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+    <button *ngIf="allRequests.length === 0" (click)="loadAllRequests()" class="retry-button">Retry</button>
+  </div>
+
+  <!-- Success State -->
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+
+  <!-- Requests List -->
+  <div class="requests-list" *ngIf="!loading || allRequests.length > 0">
+    @if (filteredRequests.length === 0 && !loading) {
+      <div class="no-requests">
+        <p>No requests found matching your criteria.</p>
+      </div>
+    }
+    
+    @for (request of filteredRequests; track request.id) {
       <div class="request-card">
         <div class="request-card-header">
           <div>
-            <span class="request-id">{{ request.id }}</span>
-            <span [class]="'status-badge status-' + request.status">{{ request.status }}</span>
+            <span class="request-id">R{{ request.id }}</span>
+            <span [class]="'status-badge ' + getStatusClass(request.status)">
+              {{ request.status | titlecase }}
+            </span>
           </div>
           <div class="request-actions">
-            <button class="approve-button" (click)="approveRequest(request)">Approved</button>
-            <button class="decline-button" (click)="declineRequest(request)">Decline</button>
+            @if (request.status === 'pending') {
+              <button 
+                class="approve-button" 
+                (click)="approveRequest(request)"
+                [disabled]="actionLoading">
+                Approve
+              </button>
+              <button 
+                class="decline-button" 
+                (click)="declineRequest(request)"
+                [disabled]="actionLoading">
+                Decline
+              </button>
+            } @else {
+              <span class="action-status-label" [ngClass]="getStatusClass(request.status)">
+                {{ request.status | titlecase }}
+              </span>
+            }
           </div>
         </div>
         <h3 class="request-title">{{ request.name }}</h3>
@@ -51,43 +92,41 @@
               <span class="detail-value">{{ request.dateTime }}</span>
             </div>
           }
-          @if (request.burrow) {
+          @if (request.borrowDate) {
             <div class="detail-item">
-              <span class="detail-label">Burrow:</span>
-              <span class="detail-value">{{ request.burrow }}</span>
+              <span class="detail-label">Borrow Date:</span>
+              <span class="detail-value">{{ formatDate(request.borrowDate) }}</span>
             </div>
           }
-          @if (request.return) {
+          @if (request.returnDate || request.expectedReturnDate) {
             <div class="detail-item">
-              <span class="detail-label">Return:</span>
-              <span class="detail-value">{{ request.return }}</span>
+              <span class="detail-label">{{ request.type === 'equipment' ? 'Expected Return:' : 'Return:' }}</span>
+              <span class="detail-value">{{ formatDate(request.returnDate || request.expectedReturnDate || '') }}</span>
             </div>
           }
         </div>
         <div class="request-details-grid">
-          @if (request.capacity) {
+          @if (request.quantity) {
             <div class="detail-item">
-              <span class="detail-label">Capacity:</span>
-              <span class="detail-value">{{ request.capacity }}</span>
+              <span class="detail-label">Quantity:</span>
+              <span class="detail-value">{{ request.quantity }}</span>
             </div>
           }
-          @if (request.participants) {
-            <div class="detail-item">
-              <span class="detail-label">Participants:</span>
-              <span class="detail-value">{{ request.participants }}</span>
-            </div>
-          }
-          @if (request.condition) {
-            <div class="detail-item">
-              <span class="detail-label">Condition:</span>
-              <span class="detail-value">{{ request.condition }}</span>
-            </div>
-          }
-        </div>
-        @if (request.notes) {
           <div class="detail-item">
-            <span class="detail-label">Notes:</span>
-            <span class="detail-value">{{ request.notes }}</span>
+            <span class="detail-label">Requested:</span>
+            <span class="detail-value">{{ formatDate(request.createdAt) }}</span>
+          </div>
+        </div>
+        @if (request.purpose) {
+          <div class="detail-item">
+            <span class="detail-label">Purpose:</span>
+            <span class="detail-value">{{ request.purpose }}</span>
+          </div>
+        }
+        @if (request.adminNotes) {
+          <div class="detail-item">
+            <span class="detail-label">Admin Notes:</span>
+            <span class="detail-value">{{ request.adminNotes }}</span>
           </div>
         }
       </div>
@@ -104,11 +143,15 @@
       <div class="modal-info">
         <div class="info-row">
           <span class="info-label">Request ID:</span>
-          <span class="info-value">{{ selectedRequest?.id }}</span>
+          <span class="info-value">R{{ selectedRequest?.id }}</span>
         </div>
         <div class="info-row">
           <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
           <span class="info-value">{{ selectedRequest?.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Requester:</span>
+          <span class="info-value">{{ selectedRequest?.requester }}</span>
         </div>
       </div>
 
@@ -130,8 +173,18 @@
       </div>
 
       <div class="modal-actions">
-        <button class="modal-button modal-button-confirm" (click)="confirmApproval()">Confirm</button>
-        <button class="modal-button modal-button-cancel" (click)="closeApproveModal()">Cancel</button>
+        <button 
+          class="modal-button modal-button-confirm" 
+          (click)="confirmApproval()"
+          [disabled]="actionLoading">
+          {{ actionLoading ? 'Processing...' : 'Confirm' }}
+        </button>
+        <button 
+          class="modal-button modal-button-cancel" 
+          (click)="closeApproveModal()"
+          [disabled]="actionLoading">
+          Cancel
+        </button>
       </div>
     </div>
   </div>
@@ -146,11 +199,15 @@
       <div class="modal-info">
         <div class="info-row">
           <span class="info-label">Request ID:</span>
-          <span class="info-value">{{ selectedRequest?.id }}</span>
+          <span class="info-value">R{{ selectedRequest?.id }}</span>
         </div>
         <div class="info-row">
           <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
           <span class="info-value">{{ selectedRequest?.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Requester:</span>
+          <span class="info-value">{{ selectedRequest?.requester }}</span>
         </div>
       </div>
 
@@ -175,10 +232,15 @@
         <button 
           class="modal-button modal-button-confirm" 
           (click)="confirmDecline()"
-          [disabled]="!declineReason.trim()">
-          Confirm
+          [disabled]="!declineReason.trim() || actionLoading">
+          {{ actionLoading ? 'Processing...' : 'Confirm' }}
         </button>
-        <button class="modal-button modal-button-cancel" (click)="closeDeclineModal()">Cancel</button>
+        <button 
+          class="modal-button modal-button-cancel" 
+          (click)="closeDeclineModal()"
+          [disabled]="actionLoading">
+          Cancel
+        </button>
       </div>
     </div>
   </div>

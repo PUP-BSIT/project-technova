@@ -1,0 +1,80 @@
+<div class="my-borrowings-container">
+  <div class="header">
+    <h2>My Equipment Borrowings</h2>
+    <button class="btn btn-primary" (click)="navigateToRequest()">
+      + New Borrowing Request
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search borrowings..."
+      [(ngModel)]="searchQuery"
+      class="search-input">
+    <select [(ngModel)]="selectedStatus" class="status-filter">
+      <option value="All">All Status</option>
+      <option value="PENDING">Pending</option>
+      <option value="APPROVED">Approved</option>
+      <option value="BORROWED">Borrowed</option>
+      <option value="REJECTED">Rejected</option>
+      <option value="RETURNED">Returned</option>
+      <option value="OVERDUE">Overdue</option>
+    </select>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    Loading borrowings...
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Borrowings List -->
+  <div *ngIf="!loading && !error" class="borrowings-list">
+    <div *ngFor="let borrowing of filteredBorrowings" class="borrowing-card">
+      <div class="borrowing-header">
+        <h3>{{ borrowing.equipmentName }}</h3>
+        <span class="status-badge" [ngClass]="getStatusClass(borrowing.status)">
+          {{ borrowing.status }}
+        </span>
+      </div>
+      
+      <div class="borrowing-details">
+        <div class="detail-item">
+          <strong>Quantity:</strong> {{ borrowing.quantity }}
+        </div>
+        <div class="detail-item">
+          <strong>Borrow Date:</strong> {{ formatDate(borrowing.borrowDate) }}
+        </div>
+        <div class="detail-item">
+          <strong>Expected Return:</strong> {{ formatDate(borrowing.expectedReturnDate) }}
+        </div>
+        <div class="detail-item" *ngIf="borrowing.actualReturnDate">
+          <strong>Actual Return:</strong> {{ formatDate(borrowing.actualReturnDate) }}
+        </div>
+        <div class="detail-item">
+          <strong>Purpose:</strong> {{ borrowing.purpose }}
+        </div>
+        <div class="detail-item" *ngIf="borrowing.adminNotes">
+          <strong>Admin Notes:</strong> {{ borrowing.adminNotes }}
+        </div>
+        <div class="detail-item">
+          <strong>Requested:</strong> {{ formatDate(borrowing.createdAt) }}
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredBorrowings.length === 0" class="no-borrowings">
+      <p>No borrowings found.</p>
+      <button class="btn btn-primary" (click)="navigateToRequest()">
+        Create Your First Borrowing Request
+      </button>
+    </div>
+  </div>
+</div>
+

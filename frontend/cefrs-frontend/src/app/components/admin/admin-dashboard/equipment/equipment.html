@@ -12,21 +12,27 @@
         </svg>
       </button>
     </div>
+
     <div class="filter-dropdowns">
-      <select class="filter-dropdown">
-        <option>All Categories</option>
-        <option>Audio</option>
-        <option>Furniture</option>
-        <option>Visual</option>
-        <option>Lights</option>
+      <select class="filter-dropdown" [(ngModel)]="selectedCategory">
+        <option value="All Categories">All Categories</option>
+        <option value="AUDIO">Audio</option>
+        <option value="VIDEO">Video</option>
+        <option value="COMPUTER">Computer</option>
+        <option value="PROJECTOR">Projector</option>
+        <option value="MICROPHONE">Microphone</option>
+        <option value="SPEAKER">Speaker</option>
+        <option value="OTHER">Other</option>
       </select>
-      <select class="filter-dropdown">
+
+      <select class="filter-dropdown" [(ngModel)]="selectedCondition">
         <option>All Conditions</option>
         <option>Good</option>
         <option>Fair</option>
         <option>Poor</option>
       </select>
-      <select class="filter-dropdown">
+
+      <select class="filter-dropdown" [(ngModel)]="selectedAvailability">
         <option>All Availability</option>
         <option>Available</option>
         <option>Borrowed</option>
@@ -35,7 +41,7 @@
   </div>
 
   <div class="items-list">
-    @for (item of equipment; track item.id) {
+    @for (item of filteredEquipment; track item.id) {
       <div class="item-card">
         <div class="item-card-header">
           <div>
@@ -92,10 +98,13 @@
           <div class="form-group">
             <label class="form-label">Category</label>
             <select class="form-select" [(ngModel)]="equipmentForm.category">
-                <option value="Audio">Audio</option>
-                <option value="Furniture">Furniture</option>
-                <option value="Visual">Visual</option>
-                <option value="Lights">Lights</option>
+              <option value="AUDIO">Audio</option>
+              <option value="VIDEO">Video</option>
+              <option value="COMPUTER">Computer</option>
+              <option value="PROJECTOR">Projector</option>
+              <option value="MICROPHONE">Microphone</option>
+              <option value="SPEAKER">Speaker</option>
+              <option value="OTHER">Other</option>
             </select>
           </div>
         </div>
