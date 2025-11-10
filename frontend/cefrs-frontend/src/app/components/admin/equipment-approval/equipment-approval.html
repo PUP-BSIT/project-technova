@@ -1,0 +1,120 @@
+<div class="equipment-approval-container">
+  <div class="header">
+    <h2>Pending Equipment Borrowing Approvals</h2>
+    <button class="btn btn-primary" (click)="loadPendingBorrowings()">
+      Refresh
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && borrowings.length === 0" class="loading">
+    Loading pending borrowings...
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Borrowings List -->
+  <div *ngIf="!loading || borrowings.length > 0" class="borrowings-list">
+    <div *ngFor="let borrowing of borrowings" class="borrowing-card">
+      <div class="borrowing-header">
+        <div>
+          <h3>{{ borrowing.equipmentName }}</h3>
+          <p class="user-name">Requested by: {{ borrowing.userName }}</p>
+        </div>
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+
+      <div class="borrowing-details">
+        <div class="detail-item">
+          <strong>Quantity:</strong> {{ borrowing.quantity }}
+        </div>
+        <div class="detail-item">
+          <strong>Borrow Date:</strong> {{ formatDate(borrowing.borrowDate) }}
+        </div>
+        <div class="detail-item">
+          <strong>Expected Return:</strong> {{ formatDate(borrowing.expectedReturnDate) }}
+        </div>
+        <div class="detail-item">
+          <strong>Purpose:</strong> {{ borrowing.purpose }}
+        </div>
+        <div class="detail-item">
+          <strong>Requested:</strong> {{ formatDate(borrowing.createdAt) }}
+        </div>
+      </div>
+
+      <div class="borrowing-actions">
+        <button class="btn btn-success" (click)="openApprovalModal(borrowing)">
+          Approve
+        </button>
+        <button class="btn btn-danger" (click)="approvalStatus = 'REJECTED'; openApprovalModal(borrowing)">
+          Reject
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="borrowings.length === 0 && !loading" class="no-borrowings">
+      <p>No pending borrowings</p>
+    </div>
+  </div>
+
+  <!-- Approval Modal -->
+  <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Review Equipment Borrowing</h3>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedBorrowing">
+        <div class="review-details">
+          <p><strong>Equipment:</strong> {{ selectedBorrowing.equipmentName }}</p>
+          <p><strong>User:</strong> {{ selectedBorrowing.userName }}</p>
+          <p><strong>Quantity:</strong> {{ selectedBorrowing.quantity }}</p>
+          <p><strong>Borrow Date:</strong> {{ formatDate(selectedBorrowing.borrowDate) }}</p>
+          <p><strong>Expected Return:</strong> {{ formatDate(selectedBorrowing.expectedReturnDate) }}</p>
+          <p><strong>Purpose:</strong> {{ selectedBorrowing.purpose }}</p>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Decision *</label>
+          <select id="status" [(ngModel)]="approvalStatus" class="form-control">
+            <option value="APPROVED">Approve</option>
+            <option value="REJECTED">Reject</option>
+            <option value="RETURNED">Mark as Returned</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="approvalStatus === 'RETURNED'">
+          <label for="returnDate">Actual Return Date</label>
+          <input
+            type="date"
+            id="returnDate"
+            [(ngModel)]="actualReturnDate"
+            [min]="selectedBorrowing.borrowDate"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Admin Notes</label>
+          <textarea
+            id="notes"
+            [(ngModel)]="adminNotes"
+            rows="4"
+            class="form-control"
+            placeholder="Add any notes or comments..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-primary" (click)="submitApproval()" [disabled]="loading">
+          {{ loading ? 'Processing...' : 'Submit' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

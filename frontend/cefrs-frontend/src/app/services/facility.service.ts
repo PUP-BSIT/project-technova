@@ -35,7 +35,7 @@ export class FacilityService {
         return this.http.get<ApiResponse<Facility[]>>(`${this.apiUrl}/available`);
     }
 
-    createReservation(userId: number, request: any): Observable<ApiResponse<any>> {
-        return this.http.post<ApiResponse<any>>(`http://localhost:8080/api/reservations/user/${userId}`, request);
+    createReservation(request: any): Observable<ApiResponse<any>> {
+        return this.http.post<ApiResponse<any>>(`http://localhost:8080/api/reservations`, request);
     }
 }
