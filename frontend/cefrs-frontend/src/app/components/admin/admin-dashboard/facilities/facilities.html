@@ -3,6 +3,7 @@
   
   <div class="filter-section">
     <button class="add-button" (click)="addNewFacility()">+ Add New Facility</button>
+
     <div class="search-box">
       <input type="text" placeholder="Search by name or location..." [(ngModel)]="searchText">
       <button class="search-button">
@@ -12,7 +13,8 @@
         </svg>
       </button>
     </div>
-    <select class="filter-dropdown">
+
+    <select class="filter-dropdown" [(ngModel)]="selectedStatus">
       <option>All Status</option>
       <option>Available</option>
       <option>Under Maintenance</option>
@@ -21,7 +23,7 @@
   </div>
 
   <div class="items-list">
-    @for (facility of facilities; track facility.id) {
+    @for (facility of filteredFacilities; track facility.id) {
       <div class="item-card">
         <div class="item-card-header">
           <div>
