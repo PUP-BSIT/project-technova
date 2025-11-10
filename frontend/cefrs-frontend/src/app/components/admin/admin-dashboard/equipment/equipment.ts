@@ -34,7 +34,7 @@ export class Equipment {
   equipmentForm = {
     id: '',
     name: '',
-    category: 'Audio',
+    category: 'AUDIO',
     condition: 'Good',
     availability: 'available' as 'available' | 'borrowed',
     description: '',
@@ -62,6 +62,11 @@ export class Equipment {
     }
   ];
 
+  // Search and filters
+  selectedCategory: string = 'All Categories';
+  selectedCondition: string = 'All Conditions';
+  selectedAvailability: string = 'All Availability';
+
   getStatusText(status: string): string {
     return status.charAt(0).toUpperCase() + status.slice(1);
   }
@@ -71,7 +76,7 @@ export class Equipment {
     this.equipmentForm = {
       id: '',
       name: '',
-      category: 'Facilites',
+      category: 'AUDIO',
       condition: 'Good',
       availability: 'available',
       description: '',
@@ -108,7 +113,7 @@ export class Equipment {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file');
@@ -193,5 +198,39 @@ export class Equipment {
 
   isFormValid(): boolean {
     return !!(this.equipmentForm.name.trim());
+  }
+
+  get filteredEquipment(): EquipmentItem[] {
+    let filtered = this.equipment;
+
+    // Filter by search text
+    if (this.searchText.trim()) {
+      const query = this.searchText.toLowerCase();
+      filtered = filtered.filter(item =>
+        item.name.toLowerCase().includes(query) ||
+        item.id.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by category
+    if (this.selectedCategory !== 'All Categories') {
+      filtered = filtered.filter(item =>
+        item.category?.toUpperCase() === this.selectedCategory.toUpperCase()
+      );
+    }
+
+    // Filter by condition
+    if (this.selectedCondition !== 'All Conditions') {
+      filtered = filtered.filter(item => item.condition === this.selectedCondition);
+    }
+
+    // Filter by availability
+    if (this.selectedAvailability !== 'All Availability') {
+      filtered = filtered.filter(item =>
+        this.selectedAvailability === 'Available' ? item.availability === 'available' : item.availability === 'borrowed'
+      );
+    }
+
+    return filtered;
   }
 }
