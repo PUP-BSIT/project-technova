@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EquipmentService } from '../../../services/equipment.service';
-import { EquipmentBorrowingService, BorrowingRequest } from '../../../services/equipment-borrowing.service';
+import { EquipmentService } from '../../../../services/equipment.service';
+import { EquipmentBorrowingService, BorrowingRequest } from '../../../../services/equipment-borrowing.service';
 
 interface Equipment {
   id: number;
@@ -13,6 +13,12 @@ interface Equipment {
   quantityTotal: number;
   imageUrl: string;
   status: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
 }
 
 @Component({
@@ -53,13 +59,13 @@ export class OrgEquipmentComponent implements OnInit {
   fetchEquipment(): void {
     this.isLoadingEquipment = true;
     this.equipmentService.getAvailableEquipment().subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<Equipment[]>) => {
         if (response.success && response.data) {
           this.equipment = response.data;
         }
         this.isLoadingEquipment = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error fetching equipment:', err);
         this.isLoadingEquipment = false;
         this.equipment = [];
@@ -137,7 +143,7 @@ export class OrgEquipmentComponent implements OnInit {
     };
 
     this.borrowingService.createBorrowing(request).subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<any>) => {
         this.borrowingLoading = false;
         if (response.success) {
           this.closeEquipmentModal();
@@ -146,7 +152,7 @@ export class OrgEquipmentComponent implements OnInit {
           this.fetchEquipment();
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.borrowingLoading = false;
         this.borrowingError = err.error?.message || 'Failed to submit borrowing request';
         console.error('Error creating borrowing:', err);
