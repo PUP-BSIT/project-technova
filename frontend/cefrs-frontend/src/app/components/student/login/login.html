@@ -1,0 +1,60 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Login to your account</p>
+    
+    <form class="login-form" (ngSubmit)="onLogin()">
+      <div class="form-group">
+        <label for="email">
+          Email Address/Student ID 
+          <span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="email" 
+          name="email"
+          [(ngModel)]="credentials.email"
+          placeholder="yourexample@gmail.com or 2024-12345"
+          required
+        />
+      </div>
+      
+      <div class="form-group">
+        <label for="password">
+          Password 
+          <span class="required">*</span>
+        </label>
+        <div class="input-with-icon">
+          <input 
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="credentials.password"
+            placeholder="Enter your password"
+            required
+          />
+          <button type="button" class="toggle-password" (click)="togglePassword()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M10 4.375C5.625 4.375 2.06 6.8 0.625 10C2.06 13.2 5.625 15.625 10 15.625C14.375 15.625 17.94 13.2 19.375 10C17.94 6.8 14.375 4.375 10 4.375ZM10 13.75C7.9375 13.75 6.25 12.0625 6.25 10C6.25 7.9375 7.9375 6.25 10 6.25C12.0625 6.25 13.75 7.9375 13.75 10C13.75 12.0625 12.0625 13.75 10 13.75ZM10 7.8125C8.8125 7.8125 7.8125 8.8125 7.8125 10C7.8125 11.1875 8.8125 12.1875 10 12.1875C11.1875 12.1875 12.1875 11.1875 12.1875 10C12.1875 8.8125 11.1875 7.8125 10 7.8125Z"
+                fill="#999"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="forgot-password-link">
+        <a href="#" (click)="onForgotPassword($event)">Forgot password?</a>
+      </div>
+      
+      <button type="submit" class="btn-login" (click)="goToDashboard()">Login</button>
+      
+      <div class="signup-link">
+        Don't have an account? 
+        <a (click)="goToRegister()">Sign up</a>
+      </div>
+    </form>
+  </div>
+</div>
+

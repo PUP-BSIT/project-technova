@@ -1,0 +1,297 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h1 class="register-title">Create Your Account</h1>
+      <p class="register-subtitle">Start your journey with us!</p>
+    </div>
+
+    <!-- Progress Stepper -->
+    <div class="stepper">
+      <div
+        class="stepper-item"
+        [class.active]="currentStep >= 1"
+        [class.completed]="currentStep > 1"
+      >
+        <div class="stepper-circle">
+          <span *ngIf="currentStep === 1">1</span>
+          <svg *ngIf="currentStep > 1" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M13.3337 4L6.00033 11.3333L2.66699 8"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <span class="stepper-label">Personal Info</span>
+      </div>
+
+      <div class="stepper-line" [class.completed]="currentStep > 1"></div>
+
+      <div
+        class="stepper-item"
+        [class.active]="currentStep >= 2"
+        [class.completed]="currentStep > 2"
+      >
+        <div class="stepper-circle">
+          <span *ngIf="currentStep <= 2">2</span>
+          <svg *ngIf="currentStep > 2" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M13.3337 4L6.00033 11.3333L2.66699 8"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <span class="stepper-label">Contact Info</span>
+      </div>
+
+      <div class="stepper-line" [class.completed]="currentStep > 2"></div>
+
+      <div
+        class="stepper-item"
+        [class.active]="currentStep >= 3"
+        [class.completed]="currentStep > 3"
+        [class.error]="currentStep === 3 && hasPasswordError"
+      >
+        <div class="stepper-circle">
+          <span>3</span>
+        </div>
+        <span class="stepper-label">Confirm</span>
+      </div>
+
+      <div class="stepper-line" [class.completed]="currentStep > 3"></div>
+
+      <div
+        class="stepper-item"
+        [class.active]="currentStep === 4"
+        [class.completed]="currentStep === 4"
+      >
+        <div class="stepper-circle">
+          <svg *ngIf="currentStep === 4" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M13.3337 4L6.00033 11.3333L2.66699 8"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span *ngIf="currentStep < 4">4</span>
+        </div>
+        <span class="stepper-label">Success</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Personal Information -->
+    <div class="form-step" *ngIf="currentStep === 1">
+      <h2 class="section-title">PERSONAL INFORMATION</h2>
+
+      <div class="form-group">
+        <label class="form-label">Role <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="formData.role"
+          readonly
+          style="background-color: #f5f5f5; cursor: not-allowed;"
+        />
+        <p class="form-hint" style="font-size: 12px; color: #666; margin-top: 4px;">
+          Your role has been pre-selected based on your account type.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">First Name <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input"
+          placeholder="Enter First Name"
+          [(ngModel)]="formData.firstName"
+          [class.error]="showFirstNameError"
+        />
+        <span class="error-message" *ngIf="showFirstNameError">Please enter a first name</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Middle Name <span class="optional">(Optional)</span></label>
+        <input
+          type="text"
+          class="form-input"
+          placeholder="Enter Middle Name"
+          [(ngModel)]="formData.middleName"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Last Name <span class="required">*</span></label>
+        <input
+            type="text"
+            class="form-input"
+            placeholder="Enter Last Name"
+            [(ngModel)]="formData.lastName"
+            [class.error]="showLastNameError"
+        />
+        <span class="error-message" *ngIf="showLastNameError">Please enter a last name</span>
+    </div>
+
+      <div class="form-group">
+        <label class="form-label">Student ID <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input"
+          placeholder="Enter Student ID"
+          [(ngModel)]="formData.studentId"
+          [class.error]="showStudentIdError"
+        />
+        <span class="error-message" *ngIf="showStudentIdError">Please enter your student ID</span>
+      </div>
+
+      <div class="form-actions single-action">
+        <button class="btn-next" (click)="nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Contact Information -->
+    <div class="form-step" *ngIf="currentStep === 2">
+      <h2 class="section-title">CONTACT INFORMATION</h2>
+
+      <div class="form-group">
+        <label class="form-label">Email <span class="required">*</span></label>
+        <input
+            type="email"
+            class="form-input"
+            placeholder="Enter Email Account"
+            [(ngModel)]="formData.email"
+            [class.error]="showEmailError"
+        />
+        <span class="error-message" *ngIf="showEmailError">Please enter a valid email address</span>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Phone <span class="required">*</span></label>
+        <input
+            type="tel"
+            class="form-input"
+            placeholder="Enter Phone Number (11 digits)"
+            [(ngModel)]="formData.phone"
+            (keypress)="onPhoneKeyPress($event)"
+            (input)="onPhoneInput($event)"
+            maxlength="11"
+            [class.error]="showPhoneError"
+        />
+        <span class="error-message" *ngIf="showPhoneError">
+          {{ !formData.phone.trim() ? 'Please enter a phone number' : 'Phone number must be exactly 11 digits' }}
+        </span>
+    </div>
+
+      <div class="form-group">
+        <label class="form-label">Address <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input"
+          placeholder="Enter Address"
+          [(ngModel)]="formData.address"
+          [class.error]="showAddressError"
+        />
+        <span class="error-message" *ngIf="showAddressError">Please enter your address</span>
+      </div>
+
+      <div class="form-actions multiple-actions">
+        <button type="button" class="btn-prev" (click)="previousStep()">Previous</button>
+        <button type="button" class="btn-next" (click)="nextStep()">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Account Security -->
+    <div class="form-step" *ngIf="currentStep === 3">
+      <h2 class="section-title">ACCOUNT SECURITY</h2>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <p class="form-hint">
+          Password must be at least 8 characters with uppercase, lowercase, number, and special
+          character.
+        </p>
+        <div class="input-with-icon">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-input"
+            placeholder="Enter your password"
+            [(ngModel)]="formData.password"
+          />
+          <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M10 4.375C5.625 4.375 2.06 6.8 0.625 10C2.06 13.2 5.625 15.625 10 15.625C14.375 15.625 17.94 13.2 19.375 10C17.94 6.8 14.375 4.375 10 4.375ZM10 13.75C7.9375 13.75 6.25 12.0625 6.25 10C6.25 7.9375 7.9375 6.25 10 6.25C12.0625 6.25 13.75 7.9375 13.75 10C13.75 12.0625 12.0625 13.75 10 13.75ZM10 7.8125C8.8125 7.8125 7.8125 8.8125 7.8125 10C7.8125 11.1875 8.8125 12.1875 10 12.1875C11.1875 12.1875 12.1875 11.1875 12.1875 10C12.1875 8.8125 11.1875 7.8125 10 7.8125Z"
+                fill="#999"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="input-with-icon">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            class="form-input"
+            placeholder="Confirm password"
+            [(ngModel)]="formData.confirmPassword"
+            [class.error]="passwordMismatch"
+          />
+          <button type="button" class="toggle-password" (click)="toggleConfirmPasswordVisibility()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M10 4.375C5.625 4.375 2.06 6.8 0.625 10C2.06 13.2 5.625 15.625 10 15.625C14.375 15.625 17.94 13.2 19.375 10C17.94 6.8 14.375 4.375 10 4.375ZM10 13.75C7.9375 13.75 6.25 12.0625 6.25 10C6.25 7.9375 7.9375 6.25 10 6.25C12.0625 6.25 13.75 7.9375 13.75 10C13.75 12.0625 12.0625 13.75 10 13.75ZM10 7.8125C8.8125 7.8125 7.8125 8.8125 7.8125 10C7.8125 11.1875 8.8125 12.1875 10 12.1875C11.1875 12.1875 12.1875 11.1875 12.1875 10C12.1875 8.8125 11.1875 7.8125 10 7.8125Z"
+                fill="#999"
+              />
+            </svg>
+          </button>
+        </div>
+        <span class="error-message" *ngIf="passwordMismatch">Password not match</span>
+      </div>
+
+      <div class="registration-error" *ngIf="errorMessage">
+        <p class="error-message">{{ errorMessage }}</p>
+      </div>
+
+      <div class="form-actions multiple-actions">
+        <button type="button" class="btn-prev" (click)="previousStep()">Previous</button>
+        <button type="button" class="btn-submit" (click)="submitForm()" [disabled]="isLoading">
+          {{ isLoading ? 'Submitting...' : 'Submit' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 4: Success -->
+    <div class="form-step success-step" *ngIf="currentStep === 4">
+      <div class="success-content">
+        <div class="success-icon">
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+            <path
+              d="M100 30L45 85L20 60"
+              stroke="white"
+              stroke-width="8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <p class="success-message">
+          <span class="success-text">Congratulations! your account</span><br />
+          <span class="success-text">has been successfully created</span>
+        </p>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-continue" (click)="goToDashboard()">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
