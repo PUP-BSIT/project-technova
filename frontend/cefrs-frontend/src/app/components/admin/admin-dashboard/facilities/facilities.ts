@@ -1,15 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+import { FacilityService, FacilityDTO } from '../../../../services/facility.service';
 
 interface Facility {
-  id: string;
+  id: number;
   name: string;
-  location: string;
+  type: string;
+  building: string;
+  floor: string;
   capacity: number;
   description: string;
-  status: 'available' | 'maintenance' | 'unavailable';
-  photoUrl?: string;
+  status: string;
+  imageUrl?: string;
 }
 
 @Component({
@@ -19,7 +23,9 @@ interface Facility {
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class Facilities {
+export class Facilities implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   searchText: string = '';
   showAddEditModal: boolean = false;
   showDeleteModal: boolean = false;
@@ -27,65 +33,84 @@ export class Facilities {
   selectedFacility: Facility | null = null;
   selectedFile: File | null = null;
   photoPreview: string | null = null;
+  isLoading: boolean = false;
 
   // Form fields
   facilityForm = {
-    id: '',
+    id: 0,
     name: '',
-    location: '',
+    type: 'CLASSROOM',
+    building: '',
+    floor: '',
     capacity: 0,
     description: '',
-    status: 'available' as 'available' | 'maintenance' | 'unavailable',
-    photoUrl: ''
+    status: 'AVAILABLE',
+    imageUrl: ''
   };
 
-  facilities: Facility[] = [
-    {
-      id: 'R1023',
-      name: 'Aboitiz',
-      location: 'Building A',
-      capacity: 40,
-      description: 'Suitable for classes',
-      status: 'available'
-    },
-    {
-      id: 'R1024',
-      name: 'Computer Lab 2',
-      location: 'Building A',
-      capacity: 45,
-      description: 'Suitable for classes',
-      status: 'maintenance'
-    },
-    {
-      id: 'R1025',
-      name: 'Conference Room',
-      location: 'Building A',
-      capacity: 45,
-      description: '',
-      status: 'unavailable'
-    }
-  ];
-
-  // Search and filters
+  facilities: Facility[] = [];
   selectedStatus: string = 'All Status';
 
+  constructor(private facilityService: FacilityService) { }
+
+  ngOnInit(): void {
+    this.loadFacilities();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadFacilities(): void {
+    this.isLoading = true;
+    this.facilityService.getAllFacilities()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (facilities) => {
+          this.facilities = facilities.map(f => ({
+            id: f.id,
+            name: f.name,
+            type: f.type,
+            building: f.building,
+            floor: f.floor,
+            capacity: f.capacity,
+            description: f.description,
+            status: f.status,
+            imageUrl: f.imageUrl
+          }));
+          this.isLoading = false;
+          console.log('Facilities loaded:', this.facilities);
+        },
+        error: (error) => {
+          console.error('Error loading facilities:', error);
+          this.isLoading = false;
+          alert('Failed to load facilities');
+        }
+      });
+  }
+
   getStatusText(status: string): string {
-    if (status === 'maintenance') {
-      return 'Under Maintenance';
-    }
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    const statusMap: { [key: string]: string } = {
+      'AVAILABLE': 'Available',
+      'UNDER_MAINTENANCE': 'Under Maintenance',
+      'UNAVAILABLE': 'Unavailable'
+    };
+    return statusMap[status] || status;
   }
 
   addNewFacility(): void {
     this.isEditMode = false;
     this.facilityForm = {
-      id: '',
+      id: 0,
       name: '',
-      location: '',
+      type: 'CLASSROOM',
+      building: '',
+      floor: '',
       capacity: 0,
       description: '',
-      status: 'available',
-      photoUrl: ''
+      status: 'AVAILABLE',
+      imageUrl: ''
     };
     this.selectedFile = null;
     this.photoPreview = null;
@@ -98,14 +123,16 @@ export class Facilities {
     this.facilityForm = {
       id: facility.id,
       name: facility.name,
-      location: facility.location,
+      type: facility.type,
+      building: facility.building,
+      floor: facility.floor,
       capacity: facility.capacity,
       description: facility.description,
       status: facility.status,
-      photoUrl: facility.photoUrl || ''
+      imageUrl: facility.imageUrl || ''
     };
     this.selectedFile = null;
-    this.photoPreview = facility.photoUrl || null;
+    this.photoPreview = facility.imageUrl || null;
     this.showAddEditModal = true;
   }
 
@@ -145,42 +172,64 @@ export class Facilities {
   removePhoto(): void {
     this.selectedFile = null;
     this.photoPreview = null;
-    this.facilityForm.photoUrl = '';
+    this.facilityForm.imageUrl = '';
   }
 
   saveAddEdit(): void {
-    if (this.photoPreview && !this.facilityForm.photoUrl) {
-      this.facilityForm.photoUrl = this.photoPreview;
+    // Use preview URL if file was selected
+    if (this.photoPreview && !this.facilityForm.imageUrl) {
+      this.facilityForm.imageUrl = this.photoPreview;
     }
 
-    if (this.isEditMode && this.selectedFacility) {
+    if (this.isEditMode && this.facilityForm.id) {
       // Update existing facility
-      const index = this.facilities.findIndex(f => f.id === this.selectedFacility!.id);
-      if (index !== -1) {
-        this.facilities[index] = { ...this.facilityForm };
-      }
-      console.log('Updated facility:', this.facilityForm);
+      this.facilityService.updateFacility(this.facilityForm.id, this.facilityForm)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.loadFacilities();
+            this.closeAddEditModal();
+            alert('Facility updated successfully!');
+          },
+          error: (error) => {
+            console.error('Error updating facility:', error);
+            alert('Failed to update facility');
+          }
+        });
     } else {
       // Add new facility
-      const newFacility: Facility = {
-        ...this.facilityForm,
-        id: 'R' + (1025 + this.facilities.length + 1) // Generate new ID
-      };
-      this.facilities.push(newFacility);
-      console.log('Added new facility:', newFacility);
+      this.facilityService.createFacility(this.facilityForm)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.loadFacilities();
+            this.closeAddEditModal();
+            alert('Facility created successfully!');
+          },
+          error: (error) => {
+            console.error('Error creating facility:', error);
+            alert('Failed to create facility');
+          }
+        });
     }
-    this.closeAddEditModal();
   }
 
   confirmDelete(): void {
     if (this.selectedFacility) {
-      const index = this.facilities.findIndex(f => f.id === this.selectedFacility!.id);
-      if (index !== -1) {
-        this.facilities.splice(index, 1);
-      }
-      console.log('Deleted facility:', this.selectedFacility);
+      this.facilityService.deleteFacility(this.selectedFacility.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.loadFacilities();
+            this.closeDeleteModal();
+            alert('Facility deleted successfully!');
+          },
+          error: (error) => {
+            console.error('Error deleting facility:', error);
+            alert('Failed to delete facility');
+          }
+        });
     }
-    this.closeDeleteModal();
   }
 
   closeAddEditModal(): void {
@@ -199,7 +248,7 @@ export class Facilities {
   isFormValid(): boolean {
     return !!(
       this.facilityForm.name.trim() &&
-      this.facilityForm.location.trim() &&
+      this.facilityForm.building.trim() &&
       this.facilityForm.capacity > 0
     );
   }
@@ -212,17 +261,17 @@ export class Facilities {
       const query = this.searchText.toLowerCase();
       filtered = filtered.filter(facility =>
         facility.name.toLowerCase().includes(query) ||
-        facility.location.toLowerCase().includes(query) ||
-        facility.id.toLowerCase().includes(query)
+        facility.building.toLowerCase().includes(query) ||
+        facility.id.toString().toLowerCase().includes(query)
       );
     }
 
     // Filter by status
     if (this.selectedStatus !== 'All Status') {
       const statusMap: Record<string, string> = {
-        'Available': 'available',
-        'Under Maintenance': 'maintenance',
-        'Unavailable': 'unavailable'
+        'Available': 'AVAILABLE',
+        'Under Maintenance': 'UNDER_MAINTENANCE',
+        'Unavailable': 'UNAVAILABLE'
       };
       const status = statusMap[this.selectedStatus];
       if (status) {
