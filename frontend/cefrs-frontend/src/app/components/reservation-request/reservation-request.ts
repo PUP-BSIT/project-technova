@@ -30,7 +30,7 @@ export class ReservationRequestComponent implements OnInit {
   startTime: string = '';
   endTime: string = '';
   purpose: string = '';
-  
+
   loading = false;
   error: string | null = null;
   success: string | null = null;
@@ -40,7 +40,7 @@ export class ReservationRequestComponent implements OnInit {
     private facilityService: FacilityService,
     public router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Check if facilityId is passed as query parameter
@@ -52,16 +52,14 @@ export class ReservationRequestComponent implements OnInit {
         }
       }
     });
-    
+
     this.loadFacilities();
   }
 
   loadFacilities(): void {
     this.facilityService.getAvailableFacilities().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.facilities = response.data;
-        }
+      next: (facilities) => {
+        this.facilities = facilities;
       },
       error: (err) => {
         console.error('Error loading facilities:', err);
