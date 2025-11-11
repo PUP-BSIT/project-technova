@@ -93,7 +93,6 @@ export class Equipment implements OnInit, OnDestroy {
     const statusMap: { [key: string]: string } = {
       'AVAILABLE': 'Available',
       'BORROWED': 'Borrowed',
-      'MAINTENANCE': 'Under Maintenance',
       'UNAVAILABLE': 'Unavailable'
     };
     return statusMap[status] || status;
