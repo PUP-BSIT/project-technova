@@ -16,33 +16,33 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EquipmentService {
-    
+
     private final EquipmentRepository equipmentRepository;
-    
+
     public List<EquipmentDTO> getAllEquipment() {
         return equipmentRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     public List<EquipmentDTO> getAvailableEquipment() {
         return equipmentRepository.findByQuantityAvailableGreaterThan(0).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     public EquipmentDTO getEquipmentById(Long id) {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Equipment not found"));
         return convertToDTO(equipment);
     }
-    
+
     public List<EquipmentDTO> searchEquipment(String name) {
         return equipmentRepository.findByNameContainingIgnoreCase(name).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Transactional
     public EquipmentDTO createEquipment(EquipmentRequestDTO request) {
         Equipment equipment = new Equipment();
@@ -52,42 +52,53 @@ public class EquipmentService {
         equipment.setQuantityAvailable(request.getQuantityTotal());
         equipment.setDescription(request.getDescription());
         equipment.setImageUrl(request.getImageUrl());
-        equipment.setStatus(EquipmentStatus.AVAILABLE);
-        
+
+        // Allow status to be set, default to AVAILABLE
+        if (request.getStatus() != null) {
+            equipment.setStatus(EquipmentStatus.valueOf(request.getStatus().toUpperCase()));
+        } else {
+            equipment.setStatus(EquipmentStatus.AVAILABLE);
+        }
+
         Equipment saved = equipmentRepository.save(equipment);
         return convertToDTO(saved);
     }
-    
+
     @Transactional
     public EquipmentDTO updateEquipment(Long id, EquipmentRequestDTO request) {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Equipment not found"));
-        
+
         equipment.setName(request.getName());
         equipment.setCategory(EquipmentCategory.valueOf(request.getCategory().toUpperCase()));
         equipment.setQuantityTotal(request.getQuantityTotal());
         equipment.setDescription(request.getDescription());
         equipment.setImageUrl(request.getImageUrl());
-        
+
+        // IMPORTANT: Set status from request, don't calculate it
+        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+            equipment.setStatus(EquipmentStatus.valueOf(request.getStatus().toUpperCase()));
+        }
+
+        // DO NOT auto-set status based on quantity here
         Equipment updated = equipmentRepository.save(equipment);
         return convertToDTO(updated);
     }
-    
+
     @Transactional
     public void deleteEquipment(Long id) {
         equipmentRepository.deleteById(id);
     }
-    
+
     private EquipmentDTO convertToDTO(Equipment equipment) {
         return new EquipmentDTO(
-            equipment.getId(),
-            equipment.getName(),
-            equipment.getCategory().name(),
-            equipment.getQuantityTotal(),
-            equipment.getQuantityAvailable(),
-            equipment.getDescription(),
-            equipment.getImageUrl(),
-            equipment.getStatus().name()
-        );
+                equipment.getId(),
+                equipment.getName(),
+                equipment.getCategory().name(),
+                equipment.getQuantityTotal(),
+                equipment.getQuantityAvailable(),
+                equipment.getDescription(),
+                equipment.getImageUrl(),
+                equipment.getStatus().name());
     }
 }
