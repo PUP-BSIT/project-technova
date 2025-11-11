@@ -160,9 +160,10 @@ export class StudentDashboard implements OnInit {
   fetchFacilities(): void {
     this.isLoadingFacilities = true;
     this.facilityService.getAvailableFacilities().subscribe({
-      next: (response: any) => {
-        this.facilities = response.data;
+      next: (facilities) => {
+        this.facilities = facilities || [];
         this.isLoadingFacilities = false;
+        console.log('Facilities loaded:', this.facilities);
       },
       error: (err: any) => {
         console.error('Error fetching facilities:', err);
@@ -253,6 +254,10 @@ export class StudentDashboard implements OnInit {
 
   // Filter facilities
   get filteredFacilities(): Facility[] {
+    if (!this.facilities || !Array.isArray(this.facilities)) {
+      return [];
+    }
+
     if (!this.searchQuery.trim()) {
       return this.facilities;
     }
