@@ -2,16 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ReservationService, Reservation } from '../../services/reservation.service';
+import { ReservationService, Reservation } from '../../../services/reservation.service';
 
 @Component({
-  selector: 'app-my-reservations',
+  selector: 'app-org-my-reservations',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './my-reservations.html',
-  styleUrls: ['./my-reservations.scss']
+  templateUrl: './org-my-reservations.html',
+  styleUrls: ['./org-my-reservations.scss']
 })
-export class MyReservationsComponent implements OnInit {
+export class OrgMyReservationsComponent implements OnInit {
   reservations: Reservation[] = [];
   loading = false;
   error: string | null = null;
@@ -102,7 +102,7 @@ export class MyReservationsComponent implements OnInit {
   }
 
   navigateToRequest(): void {
-    this.router.navigate(['/reservation-request']);
+    this.router.navigate(['/org/reservation-request']);
   }
 }
 

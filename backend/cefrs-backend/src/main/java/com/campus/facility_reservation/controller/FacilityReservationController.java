@@ -54,7 +54,7 @@ public class FacilityReservationController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('STUDENT','ORGANIZATION')")
+    @PreAuthorize("hasAnyRole('STUDENT','ORGANIZATION','CAMPUS_ORGANIZATION')")
     public ResponseEntity<ApiResponse<FacilityReservationDTO>> createReservationForMe(
             Authentication authentication,
             @RequestBody FacilityReservationRequestDTO request) {

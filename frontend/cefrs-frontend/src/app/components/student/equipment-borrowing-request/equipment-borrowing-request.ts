@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { EquipmentBorrowingService, BorrowingRequest } from '../../services/equipment-borrowing.service';
-import { EquipmentDTO, EquipmentService } from '../../services/equipment.service';
+import { EquipmentBorrowingService, BorrowingRequest } from '../../../services/equipment-borrowing.service';
+import { EquipmentDTO, EquipmentService } from '../../../services/equipment.service';
 
 interface Equipment {
   id: number;
@@ -99,7 +99,7 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
         if (response.success) {
           this.success = 'Equipment borrowing request submitted successfully!';
           setTimeout(() => {
-            this.router.navigate(['/my-borrowings']);
+            this.router.navigate(['/student/my-borrowings']);
           }, 2000);
         }
       },
@@ -150,14 +150,7 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
   }
 
   goBack(): void {
-    const userRole = localStorage.getItem('role');
-    if (userRole === 'STUDENT') {
-      this.router.navigate(['/student-dashboard']);
-    } else if (userRole === 'ORGANIZATION') {
-      this.router.navigate(['/org-dashboard']);
-    } else {
-      this.router.navigate(['/']);
-    }
+    this.router.navigate(['/student-dashboard']);
   }
 }
 

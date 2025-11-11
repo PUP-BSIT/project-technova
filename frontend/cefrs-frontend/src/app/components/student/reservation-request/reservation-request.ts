@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ReservationService, ReservationRequest } from '../../services/reservation.service';
-import { FacilityService } from '../../services/facility.service';
+import { ReservationService, ReservationRequest } from '../../../services/reservation.service';
+import { FacilityService } from '../../../services/facility.service';
 
 interface Facility {
   id: number;
@@ -90,7 +90,7 @@ export class ReservationRequestComponent implements OnInit {
         if (response.success) {
           this.success = 'Reservation request submitted successfully!';
           setTimeout(() => {
-            this.router.navigate(['/my-reservations']);
+            this.router.navigate(['/student/my-reservations']);
           }, 2000);
         }
       },
@@ -136,15 +136,7 @@ export class ReservationRequestComponent implements OnInit {
   }
 
   goBack(): void {
-    // Navigate back to student dashboard or previous page
-    const userRole = localStorage.getItem('role');
-    if (userRole === 'STUDENT') {
-      this.router.navigate(['/student-dashboard']);
-    } else if (userRole === 'ORGANIZATION') {
-      this.router.navigate(['/org-dashboard']);
-    } else {
-      this.router.navigate(['/']);
-    }
+    this.router.navigate(['/student-dashboard']);
   }
 }
 

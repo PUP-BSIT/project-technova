@@ -67,7 +67,7 @@ public class EquipmentBorrowingController {
 
     // POST /api/equipment-borrowing (for current user)
     @PostMapping
-    @PreAuthorize("hasAnyRole('STUDENT','ORGANIZATION')")
+    @PreAuthorize("hasAnyRole('STUDENT','ORGANIZATION','CAMPUS_ORGANIZATION')")
     public ResponseEntity<ApiResponse<EquipmentBorrowingDTO>> createBorrowingForMe(
             Authentication authentication,
             @RequestBody EquipmentBorrowingRequestDTO request) {

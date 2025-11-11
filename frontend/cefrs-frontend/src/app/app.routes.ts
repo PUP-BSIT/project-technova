@@ -18,14 +18,16 @@ import { StudentProfileComponent } from './components/student/profile/profile';
 import { OrgProfileComponent } from './components/organization/org-profile/org-profile';
 import { StudentChangePasswordComponent } from './components/student/student-change-password/student-change-password';
 import { OrgChangePasswordComponent } from './components/organization/org-change-password/org-change-password';
-// Removed: legacy pages replaced by modal flows
-// import { ReservationRequestComponent } from './components/reservation-request/reservation-request';
-// import { EquipmentBorrowingRequestComponent } from './components/equipment-borrowing-request/equipment-borrowing-request';
-import { MyReservationsComponent } from './components/my-reservations/my-reservations';
-import { MyBorrowingsComponent } from './components/my-borrowings/my-borrowings';
-// Removed: admin approval pages replaced by modal flows in Manage Request
-// import { ReservationApprovalComponent } from './components/admin/reservation-approval/reservation-approval';
-// import { EquipmentApprovalComponent } from './components/admin/equipment-approval/equipment-approval';
+// Student components
+import { MyReservationsComponent } from './components/student/my-reservations/my-reservations';
+import { MyBorrowingsComponent } from './components/student/my-borrowings/my-borrowings';
+import { ReservationRequestComponent } from './components/student/reservation-request/reservation-request';
+import { EquipmentBorrowingRequestComponent } from './components/student/equipment-borrowing-request/equipment-borrowing-request';
+// Organization components
+import { OrgMyReservationsComponent } from './components/organization/org-my-reservations/org-my-reservations';
+import { OrgMyBorrowingsComponent } from './components/organization/org-my-borrowings/org-my-borrowings';
+import { OrgReservationRequestComponent } from './components/organization/org-reservation-request/org-reservation-request';
+import { OrgEquipmentBorrowingRequestComponent } from './components/organization/org-equipment-borrowing-request/org-equipment-borrowing-request';
 
 export const routes: Routes = [
   { path: '', component: RoleSelectionComponent },
@@ -79,11 +81,21 @@ export const routes: Routes = [
   { path: 'student-change-password', component: StudentChangePasswordComponent },
   { path: 'org-change-password', component: OrgChangePasswordComponent, canActivate: [AuthGuard] },
 
-  // Reservation Routes (Protected) – request page replaced by modal in dashboard
-  // { path: 'reservation-request', component: ReservationRequestComponent, canActivate: [AuthGuard] },
-  { path: 'my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard] },
+  // Student Reservation Routes (Protected)
+  { path: 'student/reservation-request', component: ReservationRequestComponent, canActivate: [AuthGuard] },
+  { path: 'student/my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard] },
+  { path: 'my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard] }, // Legacy route for backward compatibility
 
-  // Equipment Borrowing Routes (Protected) – request page replaced by modal in dashboard
-  // { path: 'equipment-borrowing-request', component: EquipmentBorrowingRequestComponent, canActivate: [AuthGuard] },
-  { path: 'my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard] },
+  // Student Equipment Borrowing Routes (Protected)
+  { path: 'student/equipment-borrowing-request', component: EquipmentBorrowingRequestComponent, canActivate: [AuthGuard] },
+  { path: 'student/my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard] },
+  { path: 'my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard] }, // Legacy route for backward compatibility
+
+  // Organization Reservation Routes (Protected)
+  { path: 'org/reservation-request', component: OrgReservationRequestComponent, canActivate: [AuthGuard] },
+  { path: 'org/my-reservations', component: OrgMyReservationsComponent, canActivate: [AuthGuard] },
+
+  // Organization Equipment Borrowing Routes (Protected)
+  { path: 'org/equipment-borrowing-request', component: OrgEquipmentBorrowingRequestComponent, canActivate: [AuthGuard] },
+  { path: 'org/my-borrowings', component: OrgMyBorrowingsComponent, canActivate: [AuthGuard] },
 ];

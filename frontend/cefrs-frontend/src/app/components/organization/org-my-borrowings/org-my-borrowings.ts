@@ -2,16 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { EquipmentBorrowingService, EquipmentBorrowing } from '../../services/equipment-borrowing.service';
+import { EquipmentBorrowingService, EquipmentBorrowing } from '../../../services/equipment-borrowing.service';
 
 @Component({
-  selector: 'app-my-borrowings',
+  selector: 'app-org-my-borrowings',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './my-borrowings.html',
-  styleUrls: ['./my-borrowings.scss']
+  templateUrl: './org-my-borrowings.html',
+  styleUrls: ['./org-my-borrowings.scss']
 })
-export class MyBorrowingsComponent implements OnInit {
+export class OrgMyBorrowingsComponent implements OnInit {
   borrowings: EquipmentBorrowing[] = [];
   loading = false;
   error: string | null = null;
@@ -81,7 +81,7 @@ export class MyBorrowingsComponent implements OnInit {
   }
 
   navigateToRequest(): void {
-    this.router.navigate(['/equipment-borrowing-request']);
+    this.router.navigate(['/org/equipment-borrowing-request']);
   }
 }
 
