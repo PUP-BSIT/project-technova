@@ -12,16 +12,13 @@
         </svg>
       </button>
     </div>
-
     <div class="filter-dropdowns">
       <select class="filter-dropdown" [(ngModel)]="selectedCategory">
         <option value="All Categories">All Categories</option>
         <option value="AUDIO">Audio</option>
-        <option value="VIDEO">Video</option>
-        <option value="COMPUTER">Computer</option>
-        <option value="PROJECTOR">Projector</option>
-        <option value="MICROPHONE">Microphone</option>
-        <option value="SPEAKER">Speaker</option>
+        <option value="VISUAL">Visual</option>
+        <option value="FURNITURE">Furniture</option>
+        <option value="LIGHTS">Lights</option>
         <option value="OTHER">Other</option>
       </select>
 
@@ -29,9 +26,8 @@
         <option>All Conditions</option>
         <option>Good</option>
         <option>Fair</option>
-        <option>Poor</option>
+        <option>Low Stock</option>
       </select>
-
       <select class="filter-dropdown" [(ngModel)]="selectedAvailability">
         <option>All Availability</option>
         <option>Available</option>
@@ -40,12 +36,18 @@
     </div>
   </div>
 
+  @if (isLoading) {
+    <div class="loading-container">
+      <p>Loading equipment...</p>
+    </div>
+  }
+
   <div class="items-list">
     @for (item of filteredEquipment; track item.id) {
       <div class="item-card">
         <div class="item-card-header">
           <div>
-            <span class="item-id">{{ item.id }}</span>
+            <span class="item-id">E{{ item.id }}</span>
           </div>
           <div class="item-actions">
             <button class="edit-button" (click)="editEquipment(item)">Edit</button>
@@ -59,20 +61,35 @@
             <span class="detail-value">{{ item.category }}</span>
           </div>
           <div class="detail-item">
+            <span class="detail-label">Quantity:</span>
+            <span class="detail-value">{{ item.quantityAvailable }}/{{ item.quantityTotal }}</span>
+          </div>
+          <div class="detail-item">
             <span class="detail-label">Condition:</span>
-            <span class="condition-badge condition-good">{{ item.condition }}</span>
+            <span class="condition-badge condition-good">{{ getConditionFromQuantity(item) }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">Availability:</span>
-            <span [class]="'availability-badge availability-' + item.availability">{{ getStatusText(item.availability) }}</span>
+            <span [class]="'availability-badge availability-' + (item.quantityAvailable > 0 ? 'available' : 'borrowed')">
+              {{ getAvailabilityText(item) }}
+            </span>
           </div>
         </div>
-        @if (item.availability === 'borrowed') {
+        @if (item.quantityAvailable === 0) {
           <div class="borrowed-info">
-            <div>Currently borrowed by: <strong>{{ item.borrowedBy }}</strong></div>
-            <div>Due: {{ item.dueDate }}</div>
+            <div><strong>All units currently borrowed</strong></div>
           </div>
         }
+        @if (item.description) {
+          <div class="item-description">
+            <span class="detail-label">Description:</span>
+            <span>{{ item.description }}</span>
+          </div>
+        }
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <p>No equipment found</p>
       </div>
     }
   </div>
@@ -87,7 +104,7 @@
       <div class="modal-form">
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Equipment Name</label>
+            <label class="form-label">Equipment Name *</label>
             <input 
               type="text" 
               class="form-input" 
@@ -96,14 +113,12 @@
           </div>
           
           <div class="form-group">
-            <label class="form-label">Category</label>
+            <label class="form-label">Category *</label>
             <select class="form-select" [(ngModel)]="equipmentForm.category">
               <option value="AUDIO">Audio</option>
-              <option value="VIDEO">Video</option>
-              <option value="COMPUTER">Computer</option>
-              <option value="PROJECTOR">Projector</option>
-              <option value="MICROPHONE">Microphone</option>
-              <option value="SPEAKER">Speaker</option>
+              <option value="VISUAL">Visual</option>
+              <option value="FURNITURE">Furniture</option>
+              <option value="LIGHTS">Lights</option>
               <option value="OTHER">Other</option>
             </select>
           </div>
@@ -111,20 +126,13 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Condition</label>
-            <select class="form-select" [(ngModel)]="equipmentForm.condition">
-              <option value="Good">Good</option>
-              <option value="Fair">Fair</option>
-              <option value="Poor">Poor</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Availability</label>
-            <select class="form-select" [(ngModel)]="equipmentForm.availability">
-              <option value="available">Available</option>
-              <option value="borrowed">Borrowed</option>
-            </select>
+            <label class="form-label">Total Quantity *</label>
+            <input
+              type="number"
+              class="form-input"
+              [(ngModel)]="equipmentForm.quantityTotal"
+              min="1"
+              placeholder="Enter quantity">
           </div>
         </div>
 
