@@ -93,7 +93,7 @@ export class Facilities implements OnInit, OnDestroy {
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
       'AVAILABLE': 'Available',
-      'BORROWED': 'Borrowed',
+      'RESERVED': 'Reserved',
       'UNAVAILABLE': 'Unavailable'
     };
     return statusMap[status] || status;
@@ -181,9 +181,20 @@ export class Facilities implements OnInit, OnDestroy {
       this.facilityForm.imageUrl = this.photoPreview;
     }
 
+    const requestData = {
+      name: this.facilityForm.name,
+      type: this.facilityForm.type,
+      building: this.facilityForm.building,
+      floor: this.facilityForm.floor,
+      capacity: this.facilityForm.capacity,
+      description: this.facilityForm.description,
+      imageUrl: this.facilityForm.imageUrl,
+      status: this.facilityForm.status
+    };
+
     if (this.isEditMode && this.facilityForm.id) {
       // Update existing facility
-      this.facilityService.updateFacility(this.facilityForm.id, this.facilityForm)
+      this.facilityService.updateFacility(this.facilityForm.id, requestData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
@@ -198,7 +209,7 @@ export class Facilities implements OnInit, OnDestroy {
         });
     } else {
       // Add new facility
-      this.facilityService.createFacility(this.facilityForm)
+      this.facilityService.createFacility(requestData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
@@ -270,7 +281,7 @@ export class Facilities implements OnInit, OnDestroy {
     if (this.selectedStatus !== 'All Status') {
       const statusMap: Record<string, string> = {
         'Available': 'AVAILABLE',
-        'Borrowed': 'BORROWED',
+        'Reserved': 'RESERVED',
         'Unavailable': 'UNAVAILABLE'
       };
       const status = statusMap[this.selectedStatus];
