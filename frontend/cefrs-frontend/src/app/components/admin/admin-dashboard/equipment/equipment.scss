@@ -179,6 +179,23 @@ $font-family: 'Roboto', sans-serif;
     }
   }
 
+  .availability-badge {
+    &.availability-available {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    &.availability-borrowed {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    &.availability-unavailable {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  }
+
   .borrowed-info {
     margin-top: 16px;
     padding: 16px;
@@ -395,7 +412,7 @@ $font-family: 'Roboto', sans-serif;
     display: flex;
     justify-content: center;
     margin-bottom: 16px;
-    
+
     svg {
       opacity: 0.7;
     }
@@ -544,7 +561,7 @@ $font-family: 'Roboto', sans-serif;
 
   .modal-actions {
     flex-direction: column;
-    
+
     .modal-button {
       width: 100%;
     }

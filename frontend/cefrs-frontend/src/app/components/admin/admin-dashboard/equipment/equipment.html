@@ -1,6 +1,6 @@
 <div class="view-container">
   <h1 class="page-title">Equipment</h1>
-  
+
   <div class="filter-section">
     <button class="add-button" (click)="addNewEquipment()">+ Add New Equipment</button>
     <div class="search-box">
@@ -72,7 +72,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Availability:</span>
-            <span [class]="'availability-badge availability-' + (item.quantityAvailable > 0 ? 'available' : 'borrowed')">
+            <span [class]="'availability-badge availability-' + item.status.toLowerCase()">
               {{ getAvailabilityText(item) }}
             </span>
           </div>
@@ -102,25 +102,27 @@
   <div class="modal-overlay" (click)="closeAddEditModal()">
     <div class="modal-container modal-form-container" (click)="$event.stopPropagation()">
       <h2 class="modal-title">{{ isEditMode ? 'Edit Equipment' : 'Add New Equipment' }}</h2>
-      
+
       <div class="modal-form">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Equipment Name *</label>
-            <input 
-              type="text" 
-              class="form-input" 
+            <input
+              type="text"
+              class="form-input"
               [(ngModel)]="equipmentForm.name"
               placeholder="Enter equipment name">
           </div>
-          
+
           <div class="form-group">
             <label class="form-label">Category *</label>
             <select class="form-select" [(ngModel)]="equipmentForm.category">
               <option value="AUDIO">Audio</option>
-              <option value="VISUAL">Visual</option>
-              <option value="FURNITURE">Furniture</option>
-              <option value="LIGHTS">Lights</option>
+              <option value="VIDEO">Video</option>
+              <option value="COMPUTER">Computer</option>
+              <option value="PROJECTOR">Projector</option>
+              <option value="MICROPHONE">Microphone</option>
+              <option value="SPEAKER">Speaker</option>
               <option value="OTHER">Other</option>
             </select>
           </div>
@@ -136,20 +138,29 @@
               min="1"
               placeholder="Enter quantity">
           </div>
+
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" [(ngModel)]="equipmentForm.status">
+              <option value="AVAILABLE">Available</option>
+              <option value="BORROWED">Borrowed</option>
+              <option value="UNAVAILABLE">Unavailable</option>
+            </select>
+          </div>
         </div>
 
         <!-- Photo Upload Section -->
         <div class="form-group form-group-full">
           <label class="form-label">Upload Photo</label>
-          
+
           <div class="file-upload-container">
-            <input 
-              type="file" 
+            <input
+              type="file"
               #fileInput
               (change)="onFileSelected($event)"
               accept="image/*"
               style="display: none;">
-            
+
             @if (!photoPreview) {
               <div class="file-upload-area" (click)="fileInput.click()">
                 <div class="upload-icon">
@@ -180,8 +191,8 @@
 
         <div class="form-group form-group-full">
           <label class="form-label">Description (optional)</label>
-          <textarea 
-            class="form-textarea" 
+          <textarea
+            class="form-textarea"
             [(ngModel)]="equipmentForm.description"
             placeholder="Describe the equipment...">
           </textarea>
@@ -189,8 +200,8 @@
       </div>
 
       <div class="modal-actions">
-        <button 
-          class="modal-button modal-button-confirm" 
+        <button
+          class="modal-button modal-button-confirm"
           (click)="saveAddEdit()"
           [disabled]="!isFormValid()">
           {{ isEditMode ? 'Save Changes' : 'Add Equipment' }}
@@ -206,7 +217,7 @@
   <div class="modal-overlay" (click)="closeDeleteModal()">
     <div class="modal-container modal-delete-container" (click)="$event.stopPropagation()">
       <h2 class="modal-title">Confirm Delete</h2>
-      
+
       <div class="delete-message">
         <p>Are you sure you want to delete <strong>{{ selectedEquipment?.name }}</strong>?</p>
         <p>This action cannot be undone.</p>

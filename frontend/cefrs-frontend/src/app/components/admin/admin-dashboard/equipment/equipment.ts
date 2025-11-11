@@ -41,7 +41,8 @@ export class Equipment implements OnInit, OnDestroy {
     category: 'AUDIO',
     quantityTotal: 1,
     description: '',
-    imageUrl: ''
+    imageUrl: '',
+    status: 'AVAILABLE'
   };
 
   equipment: EquipmentItem[] = [];
@@ -93,17 +94,24 @@ export class Equipment implements OnInit, OnDestroy {
     const statusMap: { [key: string]: string } = {
       'AVAILABLE': 'Available',
       'BORROWED': 'Borrowed',
-      'MAINTENANCE': 'Under Maintenance',
       'UNAVAILABLE': 'Unavailable'
     };
     return statusMap[status] || status;
   }
 
   getAvailabilityText(item: EquipmentItem): string {
-    if (item.quantityAvailable > 0) {
-      return 'Available';
+    // Show based on actual database status
+    if (item.status === 'BORROWED') {
+      if (item.quantityAvailable === 0) {
+        return 'All Borrowed';
+      } else {
+        return `Partially Borrowed (${item.quantityAvailable}/${item.quantityTotal} available)`;
+      }
     }
-    return 'Borrowed';
+    if (item.status === 'UNAVAILABLE') {
+      return 'Unavailable';
+    }
+    return 'Available';
   }
 
   getConditionFromQuantity(item: EquipmentItem): string {
@@ -121,7 +129,8 @@ export class Equipment implements OnInit, OnDestroy {
       category: 'AUDIO',
       quantityTotal: 1,
       description: '',
-      imageUrl: ''
+      imageUrl: '',
+      status: 'AVAILABLE'
     };
     this.selectedFile = null;
     this.photoPreview = null;
@@ -137,7 +146,8 @@ export class Equipment implements OnInit, OnDestroy {
       category: item.category,
       quantityTotal: item.quantityTotal,
       description: item.description || '',
-      imageUrl: item.imageUrl || ''
+      imageUrl: item.imageUrl || '',
+      status: item.status
     };
     this.selectedFile = null;
     this.photoPreview = item.imageUrl || null;
@@ -194,7 +204,8 @@ export class Equipment implements OnInit, OnDestroy {
       category: this.equipmentForm.category,
       quantityTotal: this.equipmentForm.quantityTotal,
       description: this.equipmentForm.description,
-      imageUrl: this.equipmentForm.imageUrl
+      imageUrl: this.equipmentForm.imageUrl,
+      status: this.equipmentForm.status
     };
 
     if (this.isEditMode && this.equipmentForm.id) {
