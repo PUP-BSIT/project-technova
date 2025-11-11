@@ -59,8 +59,15 @@ export class AdminRegister {
       const phone = this.registerForm.get('phoneNumber');
       email?.markAsTouched();
       phone?.markAsTouched();
-      if (email?.invalid || phone?.invalid) return;
+      // Check if phone is taken
+      if (email?.invalid || phone?.invalid || this.phoneNumberTaken) {
+        if (this.phoneNumberTaken) {
+          this.errorMessage = 'This phone number is already registered';
+        }
+        return;
+      }
     }
+    this.errorMessage = ''; // Clear error message when moving to next step
     this.currentStep++;
   }
 
@@ -70,6 +77,12 @@ export class AdminRegister {
 
   submitForm() {
     this.registerForm.markAllAsTouched();
+
+    // Check if phone number is taken
+    if (this.phoneNumberTaken) {
+      this.errorMessage = 'This phone number is already registered. Please use a different number.';
+      return;
+    }
 
     if (this.registerForm.errors?.['passwordMismatch']) {
       this.errorMessage = 'Passwords do not match.';
@@ -137,7 +150,7 @@ export class AdminRegister {
     const charCode = event.which ? event.which : event.keyCode;
     const phoneControl = this.registerForm.get('phoneNumber');
     const currentValue = phoneControl?.value || '';
-    
+
     if (charCode > 31 && (charCode < 48 || charCode > 57)) {
       event.preventDefault();
       return false;
@@ -155,6 +168,9 @@ export class AdminRegister {
     const value = event.target.value.replace(/[^0-9]/g, '').slice(0, 11);
     // Update form control value
     this.registerForm.patchValue({ phoneNumber: value }, { emitEvent: false });
+
+    // Check phone availability
+    this.checkPhoneAvailability(value);
   }
 
   passwordValidator(control: any) {
@@ -168,5 +184,40 @@ export class AdminRegister {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
     return password === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  phoneNumberTaken = false;
+  checkingPhoneNumber = false;
+  phoneNumberCheckTimeout: any;
+
+  checkPhoneAvailability(phoneNumber: string): void {
+    // Clear previous timeout
+    if (this.phoneNumberCheckTimeout) {
+      clearTimeout(this.phoneNumberCheckTimeout);
+    }
+
+    // Reset validation state
+    this.phoneNumberTaken = false;
+
+    // Only check if phone number is valid (11 digits)
+    if (phoneNumber && phoneNumber.length === 11) {
+      this.checkingPhoneNumber = true;
+
+      // Debounce: wait 500ms after user stops typing
+      this.phoneNumberCheckTimeout = setTimeout(() => {
+        this.authService.checkPhoneNumberAvailability(phoneNumber).subscribe({
+          next: (isAvailable) => {
+            this.phoneNumberTaken = !isAvailable;
+            this.checkingPhoneNumber = false;
+          },
+          error: (err) => {
+            console.error('Error checking phone number:', err);
+            this.checkingPhoneNumber = false;
+          }
+        });
+      }, 500);
+    } else {
+      this.checkingPhoneNumber = false;
+    }
   }
 }
