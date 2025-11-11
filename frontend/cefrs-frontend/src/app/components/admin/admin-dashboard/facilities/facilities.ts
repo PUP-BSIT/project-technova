@@ -93,7 +93,7 @@ export class Facilities implements OnInit, OnDestroy {
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
       'AVAILABLE': 'Available',
-      'UNDER_MAINTENANCE': 'Under Maintenance',
+      'BORROWED': 'Borrowed',
       'UNAVAILABLE': 'Unavailable'
     };
     return statusMap[status] || status;
@@ -270,7 +270,7 @@ export class Facilities implements OnInit, OnDestroy {
     if (this.selectedStatus !== 'All Status') {
       const statusMap: Record<string, string> = {
         'Available': 'AVAILABLE',
-        'Under Maintenance': 'UNDER_MAINTENANCE',
+        'Borrowed': 'BORROWED',
         'Unavailable': 'UNAVAILABLE'
       };
       const status = statusMap[this.selectedStatus];
