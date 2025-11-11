@@ -212,7 +212,8 @@ export class OrgEquipmentComponent implements OnInit {
       Returned: 'status-returned',
       Available: 'status-available',
       AVAILABLE: 'status-available',
-      Reserved: 'status-reserved'
+      Reserved: 'status-reserved',
+      Completed: 'status-completed'
     };
     return map[status] || '';
   }

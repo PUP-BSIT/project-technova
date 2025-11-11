@@ -49,6 +49,36 @@
   gap: 1.5rem;
 }
 
+.requests-panel {
+  background: #f6e69a; /* pale yellow like design */
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.request-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.return-btn {
+  background: #10b981; /* green */
+  color: white;
+}
+
+.complete-btn {
+  background: #10b981;
+  color: white;
+}
+
 .request-detail-card {
   background: white;
   border-radius: 12px;
@@ -116,6 +146,11 @@
 
 .status-returned {
   background: #6b7280;
+  color: white;
+}
+
+.status-completed {
+  background: #60a5fa;
   color: white;
 }
 
