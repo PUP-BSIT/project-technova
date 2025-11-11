@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { OrgEquipmentComponent } from './equipment';
 import { provideHttpClient } from '@angular/common/http';
 
@@ -12,7 +11,7 @@ describe('Equipment', () => {
       imports: [OrgEquipmentComponent],
       providers: [provideHttpClient()]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrgEquipmentComponent);
     component = fixture.componentInstance;
