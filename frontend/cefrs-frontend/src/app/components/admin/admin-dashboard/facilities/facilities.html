@@ -15,7 +15,7 @@
     <select class="filter-dropdown" [(ngModel)]="selectedStatus">
       <option>All Status</option>
       <option>Available</option>
-      <option>Under Maintenance</option>
+      <option>Borrowed</option>
       <option>Unavailable</option>
     </select>
   </div>
@@ -97,7 +97,7 @@
             <label class="form-label">Status</label>
             <select class="form-select" [(ngModel)]="facilityForm.status">
               <option value="available">Available</option>
-              <option value="maintenance">Under Maintenance</option>
+              <option value="borrowed">Borrowed</option>
               <option value="unavailable">Unavailable</option>
             </select>
           </div>
