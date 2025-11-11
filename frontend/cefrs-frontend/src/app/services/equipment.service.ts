@@ -20,6 +20,7 @@ export interface EquipmentRequestDTO {
   quantityTotal: number;
   description: string;
   imageUrl: string;
+  status?: string;
 }
 
 interface ApiResponse<T> {

@@ -13,6 +13,7 @@ public class EquipmentRequestDTO {
     private Integer quantityTotal;
     private String description;
     private String imageUrl;
+    private String status;
 }
 
 // For requests
