@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EquipmentBorrowingService, BorrowingRequest } from '../../services/equipment-borrowing.service';
-import { EquipmentService } from '../../services/equipment.service';
+import { EquipmentDTO, EquipmentService } from '../../services/equipment.service';
 
 interface Equipment {
   id: number;
@@ -29,7 +29,7 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
   borrowDate: string = '';
   expectedReturnDate: string = '';
   purpose: string = '';
-  
+
   loading = false;
   error: string | null = null;
   success: string | null = null;
@@ -39,7 +39,7 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
     private equipmentService: EquipmentService,
     public router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Check if equipmentId is passed as query parameter
@@ -51,16 +51,14 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
         }
       }
     });
-    
+
     this.loadEquipment();
   }
 
   loadEquipment(): void {
     this.equipmentService.getAvailableEquipment().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.equipment = response.data.filter(eq => eq.quantityAvailable > 0);
-        }
+      next: (equipmentList: EquipmentDTO[]) => {
+        this.equipment = equipmentList.filter(eq => eq.quantityAvailable > 0);
       },
       error: (err) => {
         console.error('Error loading equipment:', err);

@@ -145,8 +145,8 @@ export class StudentDashboard implements OnInit {
   fetchEquipment(): void {
     this.isLoadingEquipment = true;
     this.equipmentService.getAvailableEquipment().subscribe({
-      next: (response) => {
-        this.equipment = response.data;
+      next: (equipmentList) => {
+        this.equipment = equipmentList;
         this.isLoadingEquipment = false;
         console.log('Equipment loaded:', this.equipment);
       },
