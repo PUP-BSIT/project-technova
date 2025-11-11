@@ -1,17 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+import { EquipmentService, EquipmentDTO, EquipmentRequestDTO } from '../../../../services/equipment.service';
 
 interface EquipmentItem {
-  id: string;
+  id: number;
   name: string;
   category: string;
-  condition: string;
-  availability: 'available' | 'borrowed';
-  description?: string;
-  borrowedBy?: string;
-  dueDate?: string;
-  photoUrl?: string;
+  quantityTotal: number;
+  quantityAvailable: number;
+  description: string;
+  imageUrl?: string;
+  status: string;
 }
 
 @Component({
@@ -21,7 +22,9 @@ interface EquipmentItem {
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class Equipment {
+export class Equipment implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   searchText: string = '';
   showAddEditModal: boolean = false;
   showDeleteModal: boolean = false;
@@ -29,58 +32,96 @@ export class Equipment {
   selectedEquipment: EquipmentItem | null = null;
   selectedFile: File | null = null;
   photoPreview: string | null = null;
+  isLoading: boolean = false;
 
   // Form fields
   equipmentForm = {
-    id: '',
+    id: 0,
     name: '',
     category: 'AUDIO',
-    condition: 'Good',
-    availability: 'available' as 'available' | 'borrowed',
+    quantityTotal: 1,
     description: '',
-    photoUrl: ''
+    imageUrl: ''
   };
 
-  equipment: EquipmentItem[] = [
-    {
-      id: 'E001',
-      name: 'Projector',
-      category: 'Facilites',
-      condition: 'Good',
-      availability: 'available',
-      description: ''
-    },
-    {
-      id: 'E002',
-      name: 'Speaker',
-      category: 'Equipments',
-      condition: 'Good',
-      availability: 'borrowed',
-      description: '',
-      borrowedBy: 'Kevin Barcelos',
-      dueDate: 'Jan 3, 2025'
-    }
-  ];
+  equipment: EquipmentItem[] = [];
 
   // Search and filters
   selectedCategory: string = 'All Categories';
   selectedCondition: string = 'All Conditions';
   selectedAvailability: string = 'All Availability';
 
+  constructor(private equipmentService: EquipmentService) { }
+
+  ngOnInit(): void {
+    this.loadEquipment();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadEquipment(): void {
+    this.isLoading = true;
+    this.equipmentService.getAllEquipment()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (equipmentList) => {
+          this.equipment = equipmentList.map(e => ({
+            id: e.id,
+            name: e.name,
+            category: e.category,
+            quantityTotal: e.quantityTotal,
+            quantityAvailable: e.quantityAvailable,
+            description: e.description,
+            imageUrl: e.imageUrl,
+            status: e.status
+          }));
+          this.isLoading = false;
+          console.log('Equipment loaded:', this.equipment);
+        },
+        error: (error) => {
+          console.error('Error loading equipment:', error);
+          this.isLoading = false;
+          alert('Failed to load equipment');
+        }
+      });
+  }
+
   getStatusText(status: string): string {
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    const statusMap: { [key: string]: string } = {
+      'AVAILABLE': 'Available',
+      'BORROWED': 'Borrowed',
+      'MAINTENANCE': 'Under Maintenance',
+      'UNAVAILABLE': 'Unavailable'
+    };
+    return statusMap[status] || status;
+  }
+
+  getAvailabilityText(item: EquipmentItem): string {
+    if (item.quantityAvailable > 0) {
+      return 'Available';
+    }
+    return 'Borrowed';
+  }
+
+  getConditionFromQuantity(item: EquipmentItem): string {
+    const percentAvailable = (item.quantityAvailable / item.quantityTotal) * 100;
+    if (percentAvailable === 100) return 'Good';
+    if (percentAvailable >= 50) return 'Fair';
+    return 'Low Stock';
   }
 
   addNewEquipment(): void {
     this.isEditMode = false;
     this.equipmentForm = {
-      id: '',
+      id: 0,
       name: '',
       category: 'AUDIO',
-      condition: 'Good',
-      availability: 'available',
+      quantityTotal: 1,
       description: '',
-      photoUrl: ''
+      imageUrl: ''
     };
     this.selectedFile = null;
     this.photoPreview = null;
@@ -94,13 +135,12 @@ export class Equipment {
       id: item.id,
       name: item.name,
       category: item.category,
-      condition: item.condition,
-      availability: item.availability,
+      quantityTotal: item.quantityTotal,
       description: item.description || '',
-      photoUrl: item.photoUrl || ''
+      imageUrl: item.imageUrl || ''
     };
     this.selectedFile = null;
-    this.photoPreview = item.photoUrl || null;
+    this.photoPreview = item.imageUrl || null;
     this.showAddEditModal = true;
   }
 
@@ -140,47 +180,72 @@ export class Equipment {
   removePhoto(): void {
     this.selectedFile = null;
     this.photoPreview = null;
-    this.equipmentForm.photoUrl = '';
+    this.equipmentForm.imageUrl = '';
   }
 
   saveAddEdit(): void {
-    // In a real application, you would upload the file to a server here
-    // For now, we'll store the preview URL
-    if (this.photoPreview && !this.equipmentForm.photoUrl) {
-      this.equipmentForm.photoUrl = this.photoPreview;
+    // Use preview URL if file was selected
+    if (this.photoPreview && !this.equipmentForm.imageUrl) {
+      this.equipmentForm.imageUrl = this.photoPreview;
     }
 
-    if (this.isEditMode && this.selectedEquipment) {
+    const requestData: EquipmentRequestDTO = {
+      name: this.equipmentForm.name,
+      category: this.equipmentForm.category,
+      quantityTotal: this.equipmentForm.quantityTotal,
+      description: this.equipmentForm.description,
+      imageUrl: this.equipmentForm.imageUrl
+    };
+
+    if (this.isEditMode && this.equipmentForm.id) {
       // Update existing equipment
-      const index = this.equipment.findIndex(e => e.id === this.selectedEquipment!.id);
-      if (index !== -1) {
-        this.equipment[index] = {
-          ...this.equipment[index],
-          ...this.equipmentForm
-        };
-      }
-      console.log('Updated equipment:', this.equipmentForm);
+      this.equipmentService.updateEquipment(this.equipmentForm.id, requestData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.loadEquipment();
+            this.closeAddEditModal();
+            alert('Equipment updated successfully!');
+          },
+          error: (error) => {
+            console.error('Error updating equipment:', error);
+            alert('Failed to update equipment');
+          }
+        });
     } else {
       // Add new equipment
-      const newEquipment: EquipmentItem = {
-        ...this.equipmentForm,
-        id: 'E' + String(this.equipment.length + 1).padStart(3, '0')
-      };
-      this.equipment.push(newEquipment);
-      console.log('Added new equipment:', newEquipment);
+      this.equipmentService.createEquipment(requestData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.loadEquipment();
+            this.closeAddEditModal();
+            alert('Equipment created successfully!');
+          },
+          error: (error) => {
+            console.error('Error creating equipment:', error);
+            alert('Failed to create equipment');
+          }
+        });
     }
-    this.closeAddEditModal();
   }
 
   confirmDelete(): void {
     if (this.selectedEquipment) {
-      const index = this.equipment.findIndex(e => e.id === this.selectedEquipment!.id);
-      if (index !== -1) {
-        this.equipment.splice(index, 1);
-      }
-      console.log('Deleted equipment:', this.selectedEquipment);
+      this.equipmentService.deleteEquipment(this.selectedEquipment.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.loadEquipment();
+            this.closeDeleteModal();
+            alert('Equipment deleted successfully!');
+          },
+          error: (error) => {
+            console.error('Error deleting equipment:', error);
+            alert('Failed to delete equipment');
+          }
+        });
     }
-    this.closeDeleteModal();
   }
 
   closeAddEditModal(): void {
@@ -197,7 +262,10 @@ export class Equipment {
   }
 
   isFormValid(): boolean {
-    return !!(this.equipmentForm.name.trim());
+    return !!(
+      this.equipmentForm.name.trim() &&
+      this.equipmentForm.quantityTotal > 0
+    );
   }
 
   get filteredEquipment(): EquipmentItem[] {
@@ -208,27 +276,32 @@ export class Equipment {
       const query = this.searchText.toLowerCase();
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(query) ||
-        item.id.toLowerCase().includes(query)
+        item.id.toString().toLowerCase().includes(query)
       );
     }
 
     // Filter by category
     if (this.selectedCategory !== 'All Categories') {
       filtered = filtered.filter(item =>
-        item.category?.toUpperCase() === this.selectedCategory.toUpperCase()
+        item.category === this.selectedCategory
       );
     }
 
-    // Filter by condition
+    // Filter by condition (based on quantity available)
     if (this.selectedCondition !== 'All Conditions') {
-      filtered = filtered.filter(item => item.condition === this.selectedCondition);
+      filtered = filtered.filter(item => {
+        const condition = this.getConditionFromQuantity(item);
+        return condition === this.selectedCondition;
+      });
     }
 
     // Filter by availability
     if (this.selectedAvailability !== 'All Availability') {
-      filtered = filtered.filter(item =>
-        this.selectedAvailability === 'Available' ? item.availability === 'available' : item.availability === 'borrowed'
-      );
+      if (this.selectedAvailability === 'Available') {
+        filtered = filtered.filter(item => item.quantityAvailable > 0);
+      } else if (this.selectedAvailability === 'Borrowed') {
+        filtered = filtered.filter(item => item.quantityAvailable === 0);
+      }
     }
 
     return filtered;
