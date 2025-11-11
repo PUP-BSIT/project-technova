@@ -334,8 +334,54 @@ export class ManageRequest implements OnInit {
       'declined': 'status-declined',
       'cancelled': 'status-declined',
       'returned': 'status-approved',
-      'borrowed': 'status-approved'
+      'borrowed': 'status-approved',
+      'completed': 'status-completed'
     };
     return statusMap[status.toLowerCase()] || 'status-pending';
+  }
+
+  markRequestReturned(request: UnifiedRequest): void {
+    if (!request) return;
+    this.actionLoading = true;
+    const adminId = localStorage.getItem('userId');
+    if (!adminId) {
+      this.actionLoading = false;
+      this.error = 'Your admin session is missing. Please sign in again.';
+      return;
+    }
+
+    if (request.type === 'equipment') {
+      // Mark equipment borrowing as RETURNED
+      this.borrowingService.updateBorrowingStatus(request.id, 'RETURNED', 'Marked returned by admin').subscribe({
+        next: (res: any) => {
+          this.actionLoading = false;
+          if (res.success) {
+            this.showSuccess('Equipment marked returned');
+            this.loadAllRequests();
+          }
+        },
+        error: (err: any) => {
+          this.actionLoading = false;
+          this.error = err.error?.message || 'Failed to mark equipment returned';
+          console.error('Error marking equipment returned:', err);
+        }
+      });
+    } else {
+      // Mark facility reservation as COMPLETED (treat as returned)
+      this.reservationService.updateReservationStatus(request.id, 'COMPLETED', 'Marked returned by admin').subscribe({
+        next: (res: any) => {
+          this.actionLoading = false;
+          if (res.success) {
+            this.showSuccess('Reservation marked returned');
+            this.loadAllRequests();
+          }
+        },
+        error: (err: any) => {
+          this.actionLoading = false;
+          this.error = err.error?.message || 'Failed to mark reservation returned';
+          console.error('Error marking reservation returned:', err);
+        }
+      });
+    }
   }
 }

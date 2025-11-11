@@ -27,7 +27,7 @@ interface Request {
   id: string;
   title: string;
   type: 'Equipment' | 'Facility';
-  status: 'Pending' | 'Approved' | 'Rejected' | 'Returned';
+  status: string;
   quantity?: number;
   requestDate: string;
   returnDate?: string;
@@ -142,6 +142,52 @@ export class StudentDashboard implements OnInit {
     this.fetchFacilities();
   }
 
+  // Fetch user's reservations and borrowings when viewing requests
+  fetchMyRequests(): void {
+    // reset
+    this.allRequests = [];
+
+    Promise.all([
+      this.reservationService.getMyReservations().toPromise(),
+      this.borrowingService.getMyBorrowings().toPromise()
+    ]).then(([resResp, borResp]) => {
+      const reservations: any[] = resResp?.data || [];
+      const borrowings: any[] = borResp?.data || [];
+
+      const resMapped = reservations.map(r => ({
+        id: `RES-${r.id}`,
+        title: r.facilityName || 'Facility Reservation',
+        type: 'Facility' as const,
+        status: this.prettyStatus(r.status),
+        requestDate: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : (r.reservationDate || ''),
+        createdAtRaw: r.createdAt,
+        dayOfEvent: r.reservationDate || '',
+        adminNotes: r.adminNotes || ''
+      }));
+
+      const borMapped = borrowings.map(b => ({
+        id: `BOR-${b.id}`,
+        title: b.equipmentName || 'Equipment Borrowing',
+        type: 'Equipment' as const,
+        status: this.prettyStatus(b.status),
+        quantity: b.quantity,
+        requestDate: b.createdAt ? new Date(b.createdAt).toLocaleDateString() : (b.borrowDate || ''),
+        createdAtRaw: b.createdAt,
+        returnDate: b.actualReturnDate || b.expectedReturnDate || '',
+        adminNotes: b.adminNotes || ''
+      }));
+
+      this.allRequests = [...resMapped, ...borMapped].sort((a, b) => {
+        const aRaw = (a as any).createdAtRaw || a.requestDate;
+        const bRaw = (b as any).createdAtRaw || b.requestDate;
+        return (new Date(bRaw).getTime() || 0) - (new Date(aRaw).getTime() || 0);
+      });
+    }).catch(err => {
+      console.error('Error fetching my requests', err);
+      this.allRequests = [];
+    });
+  }
+
   fetchEquipment(): void {
     this.isLoadingEquipment = true;
     this.equipmentService.getAvailableEquipment().subscribe({
@@ -233,6 +279,9 @@ export class StudentDashboard implements OnInit {
     if (view === 'facilities') {
       this.fetchFacilities();
     }
+    if (view === 'requests') {
+      this.fetchMyRequests();
+    }
   }
 
   onSidebarViewChange(view: string): void {
@@ -247,9 +296,44 @@ export class StudentDashboard implements OnInit {
       Returned: 'status-returned',
       Available: 'status-available',
       AVAILABLE: 'status-available',
-      Reserved: 'status-reserved'
+      Reserved: 'status-reserved',
+      Completed: 'status-completed'
     };
     return map[status] || '';
+  }
+
+  private prettyStatus(raw: string): string {
+    if (!raw) return 'Pending';
+    const map: Record<string, string> = {
+      PENDING: 'Pending',
+      APPROVED: 'Approved',
+      REJECTED: 'Rejected',
+      RETURNED: 'Returned',
+      COMPLETED: 'Completed',
+      OVERDUE: 'Overdue',
+      BORROWED: 'Borrowed'
+    };
+    return map[raw.toUpperCase()] || raw;
+  }
+
+  markBorrowingAsReturned(request: Request): void {
+    if (request.type !== 'Equipment') return;
+    const idParts = request.id.split('-');
+    const id = Number(idParts[1]);
+    this.borrowingService.markAsReturned(id).subscribe({
+      next: () => this.fetchMyRequests(),
+      error: (err) => console.error('Error marking borrowing returned', err)
+    });
+  }
+
+  markReservationAsCompleted(request: Request): void {
+    if (request.type !== 'Facility') return;
+    const idParts = request.id.split('-');
+    const id = Number(idParts[1]);
+    this.reservationService.markAsCompleted(id).subscribe({
+      next: () => this.fetchMyRequests(),
+      error: (err) => console.error('Error marking reservation completed', err)
+    });
   }
 
   // Filter facilities

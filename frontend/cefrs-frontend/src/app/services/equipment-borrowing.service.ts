@@ -52,6 +52,10 @@ export class EquipmentBorrowingService {
     return this.http.get<ApiResponse<EquipmentBorrowing>>(`${this.apiUrl}/${id}`);
   }
 
+  markAsReturned(id: number): Observable<ApiResponse<EquipmentBorrowing>> {
+    return this.http.put<ApiResponse<EquipmentBorrowing>>(`${this.apiUrl}/${id}/return`, null);
+  }
+
   // Admin methods
   getAllBorrowings(): Observable<ApiResponse<EquipmentBorrowing[]>> {
     return this.http.get<ApiResponse<EquipmentBorrowing[]>>(`${this.apiUrl}`);

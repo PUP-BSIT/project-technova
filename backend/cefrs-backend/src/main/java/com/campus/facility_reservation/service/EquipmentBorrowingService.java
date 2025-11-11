@@ -130,6 +130,37 @@ public class EquipmentBorrowingService {
         
         return convertToDTO(updated);
     }
+
+    @Transactional
+    public EquipmentBorrowingDTO markAsReturnedByUser(Long id, Long userId) {
+        EquipmentBorrowing borrowing = borrowingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Borrowing not found"));
+
+        if (!borrowing.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Unauthorized to mark this borrowing as returned");
+        }
+
+        // Only allow marking returned if it was approved/borrowed
+        BorrowingStatus status = borrowing.getStatus();
+        if (status != BorrowingStatus.APPROVED && status != BorrowingStatus.BORROWED && status != BorrowingStatus.OVERDUE) {
+            throw new RuntimeException("Borrowing cannot be marked as returned in its current status");
+        }
+
+        // Update equipment quantity
+        Equipment equipment = borrowing.getEquipment();
+        equipment.setQuantityAvailable(equipment.getQuantityAvailable() + borrowing.getQuantity());
+        equipmentRepository.save(equipment);
+
+        borrowing.setStatus(BorrowingStatus.RETURNED);
+        borrowing.setActualReturnDate(LocalDate.now());
+
+        EquipmentBorrowing updated = borrowingRepository.save(borrowing);
+
+        // Send notification
+        notificationService.createBorrowingStatusNotification(borrowing.getUser(), updated);
+
+        return convertToDTO(updated);
+    }
     
     private EquipmentBorrowingDTO convertToDTO(EquipmentBorrowing borrowing) {
         return new EquipmentBorrowingDTO(

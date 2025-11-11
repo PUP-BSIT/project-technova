@@ -61,6 +61,10 @@ export class ReservationService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}/cancel?userId=${userId}`);
   }
 
+  markAsCompleted(id: number): Observable<ApiResponse<Reservation>> {
+    return this.http.put<ApiResponse<Reservation>>(`${this.apiUrl}/${id}/complete`, null);
+  }
+
   // Admin methods
   getAllReservations(): Observable<ApiResponse<Reservation[]>> {
     return this.http.get<ApiResponse<Reservation[]>>(`${this.apiUrl}`);

@@ -18,8 +18,9 @@
       <option>Facility</option>
     </select>
   </div>
-  <div class="requests-detail-list">
-    @for (request of filteredRequests; track request.id) {
+  <div class="requests-panel">
+    <div class="requests-detail-list">
+      @for (request of filteredRequests; track request.id) {
       <div class="request-detail-card">
         <div class="request-id">{{ request.id }}</div>
         <div class="request-header">
@@ -41,6 +42,14 @@
             <div class="detail-row"><strong>Day of event:</strong> {{ request.dayOfEvent }}</div>
           }
           <div class="detail-row"><strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}</div>
+        </div>
+        <div class="request-actions">
+          @if (request.type === 'Equipment' && (request.status === 'Approved' || request.status === 'Borrowed' || request.status === 'Overdue')) {
+            <button class="action-btn return-btn" (click)="markAsReturned(request)">Mark Returned</button>
+          }
+          @if (request.type === 'Facility' && (request.status === 'Approved' || request.status === 'Pending')) {
+            <button class="action-btn return-btn" (click)="markReservationCompleted(request)">Mark Returned</button>
+          }
         </div>
       </div>
     } @empty {

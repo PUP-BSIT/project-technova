@@ -117,7 +117,8 @@ export class OrgDashboardComponent implements OnInit {
       Approved: 'status-approved',
       Pending: 'status-pending',
       Rejected: 'status-rejected',
-      Returned: 'status-returned'
+      Returned: 'status-returned',
+      Completed: 'status-completed'
     };
     return map[status] || '';
   }

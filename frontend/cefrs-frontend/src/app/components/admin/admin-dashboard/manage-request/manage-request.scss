@@ -204,6 +204,7 @@ $font-family: 'Roboto', sans-serif;
   &.status-approved { background: #7fe87f; color: #1a5c1a; }
   &.status-declined { background: #fca5a5; color: #7f1d1d; }
   &.status-pending { background: #fcd34d; color: #78350f; }
+  &.status-completed { background: #cfe2ff; color: #084298; }
 }
 .decline-button {
   @include button-reset;
@@ -431,5 +432,20 @@ $font-family: 'Roboto', sans-serif;
     .modal-button {
       width: 100%;
     }
+  }
+}
+
+.return-button {
+  @include button-reset;
+  padding: 8px 20px;
+  background: #10b981;
+  color: #ffffff;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #0ea46a;
   }
 }
