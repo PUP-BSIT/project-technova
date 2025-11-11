@@ -405,6 +405,10 @@ $font-family: 'Roboto', sans-serif;
     background: #fecaca;
     color: #991b1b;
   }
+    &.status-completed {
+      background: #cfe2ff;
+      color: #084298;
+    }
 }
 
 // Empty State
