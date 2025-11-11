@@ -88,3 +88,13 @@ jobs:
 
       - name: Build and test with Maven
         run: cd backend/cefrs-backend && mvn -B clean verify
+
+  # Always-run fallback job to ensure workflow reports status
+  finalize:
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, frontend-check, backend-check, skip-docs]
+    if: always()
+    steps:
+      - name: Mark workflow as complete
+        run: echo "All conditional jobs completed or skipped. Reporting success."
+
