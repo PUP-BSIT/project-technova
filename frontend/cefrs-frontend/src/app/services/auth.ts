@@ -133,4 +133,16 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+
+  checkPhoneNumberAvailability(phoneNumber: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/check-phone?phoneNumber=${phoneNumber}`).pipe(
+      tap((isAvailable) => {
+        console.log('Phone availability check:', phoneNumber, isAvailable);
+      }),
+      catchError((error) => {
+        console.error('Error checking phone availability:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }

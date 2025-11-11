@@ -158,6 +158,7 @@ html {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -361,6 +362,28 @@ html {
   font-style: italic;
 }
 
+// Validation and States for phone number
+.validation-message {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.875rem;
+
+  &.checking {
+    color: #6c757d;
+  }
+}
+
+.success-message {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.875rem;
+  color: #28a745;
+}
+
+.form-input.error {
+  border-color: #dc3545 !important;
+}
+
 // Responsive
 @media (max-width: 768px) {
   .register-card {
@@ -411,5 +434,3 @@ html {
     margin: 0 0.25rem;
   }
 }
-
-
