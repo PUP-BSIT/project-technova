@@ -97,4 +97,15 @@ public class EquipmentBorrowingController {
         EquipmentBorrowingDTO borrowing = borrowingService.updateBorrowingStatus(id, adminId, approval);
         return ResponseEntity.ok(ApiResponse.success("Borrowing status updated", borrowing));
     }
+
+    // PUT /api/equipment-borrowing/{id}/return (mark as returned by borrower)
+    @PutMapping("/{id}/return")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<EquipmentBorrowingDTO>> markBorrowingAsReturned(
+            @PathVariable Long id,
+            Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        EquipmentBorrowingDTO borrowing = borrowingService.markAsReturnedByUser(id, userId);
+        return ResponseEntity.ok(ApiResponse.success("Borrowing marked as returned", borrowing));
+    }
 }
