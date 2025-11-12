@@ -112,8 +112,14 @@ public class AuthService {
         // Login user (assuming AuthRequest or separate DTO is used here)
         public AuthResponse login(String email, String password) {
                 // Find user by email
-                User user = userRepository.findByEmail(email)
-                                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                Optional<User> userOptional = userRepository.findByEmail(email);
+                
+                // Check if email is registered
+                if (userOptional.isEmpty()) {
+                        throw new RuntimeException("Email not registered. Please sign up first.");
+                }
+                
+                User user = userOptional.get();
 
                 // Check if user is active
                 if (!user.getIsActive()) {
@@ -122,7 +128,7 @@ public class AuthService {
 
                 // Verify password
                 if (!passwordEncoder.matches(password, user.getPassword())) {
-                        throw new RuntimeException("Invalid email or password");
+                        throw new RuntimeException("Incorrect password. Please try again.");
                 }
 
                 // Update last login
