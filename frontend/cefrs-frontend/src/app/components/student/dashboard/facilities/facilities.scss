@@ -1,0 +1,113 @@
+@import '../student-dashboard.scss';
+
+.facilities-grid {
+  padding: 0 $spacing-4xl $spacing-4xl;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-2xl;
+}
+
+.facility-card {
+  background: $white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+}
+
+.facility-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.facility-badge {
+  position: absolute;
+  background-color: #000;
+  top: $spacing-md;
+  right: $spacing-md;
+  padding: 6px $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+  color: $white;
+}
+
+.facility-content {
+  padding: $spacing-xl;
+  background: $bg-yellow;
+}
+
+.facility-name {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  margin-bottom: $spacing-sm;
+  color: $text-primary;
+  font-family: $font-family;
+}
+
+.facility-description {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $spacing-md;
+  line-height: 1.5;
+  font-family: $font-family;
+}
+
+.facility-capacity {
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin-bottom: $spacing-lg;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+}
+
+.request-btn {
+  width: 100%;
+  padding: $spacing-md;
+  background: $white;
+  border: 2px solid $text-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  font-family: $font-family;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: $text-primary;
+    color: $white;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 1400px) {
+  .facilities-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .facilities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header,
+  .search-bar,
+  .facilities-grid {
+    padding-left: $spacing-2xl;
+    padding-right: $spacing-2xl;
+  }
+}

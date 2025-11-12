@@ -1,0 +1,130 @@
+@import '../student-dashboard.scss';
+
+.equipment-grid {
+  padding: 0 $spacing-4xl $spacing-4xl;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-2xl;
+}
+
+.equipment-card {
+  background: $white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+}
+
+.equipment-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: $gray-lighter;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.category-badge {
+  position: absolute;
+  top: $spacing-md;
+  right: $spacing-md;
+  padding: 6px $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: $info-color;
+  color: $white;
+  font-family: $font-family;
+}
+
+.equipment-content {
+  padding: $spacing-xl;
+  background: $bg-yellow;
+}
+
+.equipment-name {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  margin-bottom: $spacing-sm;
+  color: $text-primary;
+  font-family: $font-family;
+}
+
+.equipment-description {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $spacing-md;
+  line-height: 1.5;
+  font-family: $font-family;
+}
+
+.equipment-availability {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  font-size: $font-size-sm;
+  font-family: $font-family;
+
+  span:first-child {
+    color: $text-primary;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.availability-badge {
+  padding: $spacing-xs 10px;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: $text-primary;
+  color: $white;
+  font-family: $font-family;
+}
+
+.request-btn {
+  width: 100%;
+  padding: $spacing-md;
+  background: $white;
+  border: 2px solid $text-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  font-family: $font-family;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: $text-primary;
+    color: $white;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 1400px) {
+  .equipment-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .equipment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header,
+  .search-controls,
+  .equipment-grid {
+    padding-left: $spacing-2xl;
+    padding-right: $spacing-2xl;
+  }
+}

@@ -1,0 +1,112 @@
+@import '../student-dashboard.scss';
+
+.requests-panel {
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+}
+
+.requests-detail-list {
+  padding: 0 $spacing-4xl $spacing-4xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+.request-detail-card {
+  background: $bg-yellow;
+  border-radius: $radius-lg;
+  padding: $spacing-2xl;
+  box-shadow: $shadow-md;
+}
+
+.request-id {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $spacing-md;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+}
+
+.request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-xl;
+
+  h3 {
+    font-size: $font-size-2xl;
+    font-weight: 600;
+    color: $text-primary;
+    font-family: $font-family;
+  }
+}
+
+.request-badges {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.type-badge {
+  padding: 6px 14px;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: $white;
+  color: $text-primary;
+  border: 1px solid $border-light;
+  font-family: $font-family;
+}
+
+.request-details {
+  background: $white;
+  padding: $spacing-xl;
+  border-radius: $radius-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.detail-row {
+  font-size: $font-size-base;
+  color: $text-primary;
+  line-height: 1.6;
+  font-family: $font-family;
+
+  strong {
+    font-weight: 600;
+    margin-right: $spacing-sm;
+  }
+}
+
+.request-actions {
+  margin-top: $spacing-md;
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.action-btn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: $font-family;
+}
+
+.return-btn {
+  background: $complete-color;
+  color: $white;
+
+  &:hover {
+    background: darken($complete-color, 10%);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header,
+  .search-controls,
+  .requests-detail-list {
+    padding-left: $spacing-2xl;
+    padding-right: $spacing-2xl;
+  }
+}

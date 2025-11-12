@@ -11,20 +11,18 @@
     <button class="nav-item" [class.active]="currentView === 'facilities'" (click)="navigateTo('facilities')">Facilities</button>
     <button class="nav-item" [class.active]="currentView === 'equipment'" (click)="navigateTo('equipment')">Equipment</button>
     <button class="nav-item" [class.active]="currentView === 'requests'" (click)="navigateTo('requests')">My Request</button>
-    <button class="nav-item" [class.active]="currentView === 'transactions'" (click)="navigateTo('transactions')">Transactions</button>
+    <!-- <button class="nav-item" [class.active]="currentView === 'transactions'" (click)="navigateTo('transactions')">Transactions</button> -->
     <button class="nav-item" [class.active]="currentView === 'settings'" (click)="navigateTo('settings')">Settings</button>
   </nav>
 
   <div class="user-profile">
     <div class="user-details">
       @if (user) {
-        <div class="user-avatar"><div class="avatar-circle"></div></div>
         <div class="user-info">
           <div class="user-name">{{ user.name }}</div>
           <div class="user-email">{{ user.email }}</div>
         </div>
       } @else {
-        <div class="user-avatar"><div class="avatar-circle"></div></div>
         <div class="user-info">
           <div class="user-name">Loading...</div>
           <div class="user-email">Please wait...</div>
