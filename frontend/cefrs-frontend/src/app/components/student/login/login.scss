@@ -175,6 +175,11 @@ html {
         }
       }
     }
+    .field-error {
+      color: #dc2626;
+      font-size: $font-xs;
+      margin-top: 6px;
+    }
   }
   
   .forgot-password-link {
@@ -211,8 +216,20 @@ html {
     &:hover {
       background: $primary-hover;
     }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
   }
   
+  .info-message {
+    text-align: center;
+    font-size: $font-sm;
+    color: $text-secondary;
+    margin-bottom: $spacing-md;
+  }
+
   .signup-link {
     text-align: center;
     font-size: $font-sm;

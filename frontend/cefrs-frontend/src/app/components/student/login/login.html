@@ -14,9 +14,11 @@
           id="email" 
           name="email"
           [(ngModel)]="credentials.email"
+          (ngModelChange)="clearError('email')"
           placeholder="yourexample@gmail.com or 2024-12345"
           required
         />
+        <div class="field-error" *ngIf="errors.email">{{ errors.email }}</div>
       </div>
       
       <div class="form-group">
@@ -30,6 +32,7 @@
             id="password"
             name="password"
             [(ngModel)]="credentials.password"
+            (ngModelChange)="clearError('password')"
             placeholder="Enter your password"
             required
           />
@@ -42,13 +45,21 @@
             </svg>
           </button>
         </div>
+        <div class="field-error" *ngIf="errors.password">{{ errors.password }}</div>
       </div>
       
       <div class="forgot-password-link">
         <a href="#" (click)="onForgotPassword($event)">Forgot password?</a>
       </div>
+
+      <div class="info-message" *ngIf="infoMessage">
+        {{ infoMessage }}
+      </div>
       
-      <button type="submit" class="btn-login" (click)="goToDashboard()">Login</button>
+      <button type="submit" class="btn-login" [disabled]="isLoading">
+        <ng-container *ngIf="isLoading; else loginText">Logging in...</ng-container>
+        <ng-template #loginText>Login</ng-template>
+      </button>
       
       <div class="signup-link">
         Don't have an account? 

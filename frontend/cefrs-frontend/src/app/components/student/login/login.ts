@@ -20,12 +20,13 @@ export class LoginComponent implements OnInit {
   showPassword: boolean = false;
   selectedRole: string = '';
   isLoading: boolean = false;
-  errorMessage: string = '';
 
   credentials = {
     email: '',
     password: ''
   };
+	 errors = { email: '', password: '' };
+  infoMessage: string = '';
 
   constructor(
     private router: Router,
@@ -46,13 +47,22 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  onLogin(): void {
-    this.errorMessage = '';
+	clearError(field: 'email' | 'password'): void {
+		this.errors[field] = '';
+    this.infoMessage = '';
+	}
 
-    if (!this.credentials.email || !this.credentials.password) {
-      this.errorMessage = 'Please fill in all fields.';
-      return;
+  onLogin(): void {
+    this.infoMessage = '';
+		this.errors = { email: '', password: '' };
+
+    if (!this.credentials.email) {
+      this.errors.email = 'Email is required.';
     }
+    if (!this.credentials.password) {
+      this.errors.password = 'Password is required.';
+    }
+    if (this.errors.email || this.errors.password) return;
 
     this.isLoading = true;
     console.log('Login attempt:', this.credentials);
@@ -68,7 +78,7 @@ export class LoginComponent implements OnInit {
         if (role === 'STUDENT') {
           this.router.navigate(['/student-dashboard']);
         } else {
-          this.errorMessage = `This login page is for students only. Your account is registered as ${role}. Please use the correct login page.`;
+          this.errors.email = `This account is registered as ${role} account. Please use the correct login page.`;
           this.authService.logout();
         }
       },
@@ -76,15 +86,34 @@ export class LoginComponent implements OnInit {
         console.error('Login error:', error);
         this.isLoading = false;
 
-        const backendMessage = error.error?.message;
-        this.errorMessage = backendMessage || 'Login failed. Please check your credentials.';
+				let backendMsg = '';
+				if (error.error?.message) {
+					backendMsg = error.error.message.replace(/^Login failed: /, '');
+				} else if (error.message) {
+					backendMsg = error.message;
+				}
+
+				if (!backendMsg) {
+					this.errors.password = 'Login failed. Please check your credentials.';
+					return;
+				}
+
+				if (/email not registered/i.test(backendMsg)) {
+					this.errors.email = 'This email is not registered.';
+				} else if (/incorrect password/i.test(backendMsg)) {
+					this.errors.password = 'Incorrect password. Please try again.';
+				} else if (/deactivated/i.test(backendMsg)) {
+					this.errors.email = 'This account has been deactivated.';
+				} else {
+					this.errors.password = backendMsg;
+				}
       }
     });
   }
 
   onForgotPassword(event: Event): void {
     event.preventDefault();
-    this.errorMessage = 'Forgot password functionality coming soon!';
+    this.infoMessage = 'Forgot password functionality coming soon!';
   }
 
   goToDashboard() {
