@@ -1,30 +1,81 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+// Colors
+$sidebar-primary: #6d1818;
+$sidebar-dark: #4a0f0f;
+$sidebar-gradient: linear-gradient(180deg, #6d1818 0%, #4a0f0f 100%);
+
+$white: #ffffff;
+$white-opacity-10: rgba(255, 255, 255, 0.1);
+$white-opacity-15: rgba(255, 255, 255, 0.15);
+$white-opacity-20: rgba(255, 255, 255, 0.2);
+$white-opacity-30: rgba(255, 255, 255, 0.3);
+$white-opacity-40: rgba(255, 255, 255, 0.4);
+$white-opacity-80: rgba(255, 255, 255, 0.8);
+
+// Typography
+$font-family: 'Roboto', sans-serif;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+$font-size-xs: 13px;
+$font-size-sm: 16px;
+$font-size-md: 18px;
+$font-size-lg: 36px;
+
+// Spacing
+$spacing-xs: 2px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 20px;
+$spacing-2xl: 24px;
+
+// Layout Dimensions
+$sidebar-width: 280px;
+$sidebar-width-mobile: 240px;
+
+$logo-size: 120px;
+$avatar-size: 48px;
+$logout-btn-size: 40px;
+
+// Border Radius
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-full: 50%;
+
+// Transitions
+$transition-fast: 0.2s;
+$animation-pulse: 1.5s;
+
+// Z-Index
+$z-index-sidebar: 1000;
 
 .sidebar {
-  width: 280px;
-  background: linear-gradient(180deg, #6d1818 0%, #4a0f0f 100%);
-  color: white;
+  width: $sidebar-width;
+  background: $sidebar-gradient;
+  color: $white;
   display: flex;
   flex-direction: column;
   position: fixed;
   height: 100vh;
   left: 0;
   top: 0;
-  z-index: 1000;
+  z-index: $z-index-sidebar;
 }
 
 .logo-section {
-  padding: 24px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: $spacing-2xl $spacing-lg;
+  border-bottom: 1px solid $white-opacity-10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: $spacing-lg;
 }
 
 .logo-image {
-  width: 120px;
-  height: 120px;
+  width: $logo-size;
+  height: $logo-size;
 
   img {
     width: 100%;
@@ -34,65 +85,65 @@
 }
 
 .logo-text {
-  font-size: 36px;
-  font-weight: 500;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
   line-height: 0.6;
-  font-family: 'Roboto', sans-serif;
+  font-family: $font-family;
   text-align: center;
 }
 
 .nav-menu {
   flex: 1;
-  padding: 16px 0;
+  padding: $spacing-lg 0;
 }
 
 .nav-item {
   width: 100%;
-  padding: 16px 24px;
+  padding: $spacing-lg $spacing-2xl;
   background: none;
   border: none;
-  color: white;
-  font-size: 18px;
-  font-weight: 400;
+  color: $white;
+  font-size: $font-size-md;
+  font-weight: $font-weight-regular;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Roboto', sans-serif;
+  transition: all $transition-fast;
+  font-family: $font-family;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: $white-opacity-10;
   }
 
   &.active {
-    background: rgba(255, 255, 255, 0.15);
-    font-weight: 500;
+    background: $white-opacity-15;
+    font-weight: $font-weight-medium;
   }
 }
 
 .user-profile {
-  padding: 20px 24px;
+  padding: $spacing-xl $spacing-2xl;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: $spacing-md;
+  border-top: 1px solid $white-opacity-10;
   justify-content: space-between;
 }
 
 .user-details {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: $spacing-md;
   flex: 1;
   min-width: 0;
 }
 
 .user-avatar {
   .avatar-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: $avatar-size;
+    height: $avatar-size;
+    border-radius: $radius-full;
+    background: $white-opacity-20;
+    border: 2px solid $white-opacity-30;
   }
 }
 
@@ -102,34 +153,36 @@
 }
 
 .user-name {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 2px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-xs;
+  font-family: $font-family;
 }
 
 .user-email {
-  font-size: 13px;
+  font-size: $font-size-xs;
   opacity: 0.8;
+  font-family: $font-family;
 }
 
 .logout-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  background: $white-opacity-10;
+  border: 1px solid $white-opacity-20;
+  color: $white;
   cursor: pointer;
-  padding: 8px;
+  padding: $spacing-sm;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  border-radius: 6px;
-  min-width: 40px;
-  min-height: 40px;
+  transition: all $transition-fast;
+  border-radius: $radius-md;
+  min-width: $logout-btn-size;
+  min-height: $logout-btn-size;
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: $white-opacity-20;
+    border-color: $white-opacity-40;
     opacity: 1;
     transform: scale(1.05);
   }
@@ -146,11 +199,11 @@
 
 .skeleton-loading {
   .user-name {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    height: 16px;
+    background: $white-opacity-20;
+    border-radius: $radius-sm;
+    height: $spacing-lg;
     width: 80px;
-    animation: pulse 1.5s ease-in-out infinite;
+    animation: pulse $animation-pulse ease-in-out infinite;
   }
 }
 
@@ -163,10 +216,93 @@
   }
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .sidebar {
-    width: 240px;
+    width: $sidebar-width-mobile;
+  }
+
+  .logo-section {
+    padding: $spacing-lg $spacing-md;
+    gap: $spacing-md;
+  }
+
+  .logo-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logo-text {
+    font-size: 28px;
+  }
+
+  .nav-item {
+    padding: $spacing-md $spacing-lg;
+    font-size: $font-size-sm;
+  }
+
+  .user-profile {
+    padding: $spacing-lg;
+  }
+
+  .user-name {
+    font-size: 14px;
+  }
+
+  .user-email {
+    font-size: 12px;
+  }
+
+  .logout-btn {
+    min-width: 36px;
+    min-height: 36px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
   }
 }
 
+@media (max-width: 480px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .logo-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .logo-text {
+    font-size: 24px;
+  }
+
+  .nav-item {
+    padding: $spacing-sm $spacing-md;
+    font-size: 14px;
+  }
+
+  .user-profile {
+    padding: $spacing-md;
+    gap: $spacing-sm;
+  }
+
+  .user-name {
+    font-size: 13px;
+  }
+
+  .user-email {
+    font-size: 11px;
+  }
+
+  .logout-btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 6px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
