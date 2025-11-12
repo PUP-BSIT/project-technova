@@ -15,10 +15,12 @@
 }
 
 .profile-container {
+  max-width: 900px;
+  margin: 0 auto;
   padding: 0;
   background-color: transparent;
   height: 100%;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Roboto', sans-serif;
 
   .nav-header {
     display: flex;
@@ -35,11 +37,10 @@
   }
 
   .profile-card {
-    background: #fff;
-    padding: 2rem 2.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    max-width: 700px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 24px;
   }
 
   .user-header {
