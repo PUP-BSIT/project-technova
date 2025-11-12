@@ -1,178 +1,112 @@
-.my-request-view {
-  padding: 2rem;
-}
+@import '../org-dashboard.scss';
 
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.page-subtitle {
-  color: #666;
-  font-size: 1rem;
-}
-
-.search-controls {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.search-input {
-  flex: 1;
-  min-width: 200px;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.filter-select {
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  background: white;
-  cursor: pointer;
-  min-width: 150px;
+.requests-panel {
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
 }
 
 .requests-detail-list {
+  padding: 0 $spacing-4xl $spacing-4xl;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-}
-
-.requests-panel {
-  background: #f6e69a; /* pale yellow like design */
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-.request-actions {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.action-btn {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.return-btn {
-  background: #10b981; /* green */
-  color: white;
-}
-
-.complete-btn {
-  background: #10b981;
-  color: white;
+  gap: $spacing-xl;
 }
 
 .request-detail-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: $bg-yellow;
+  border-radius: $radius-lg;
+  padding: $spacing-2xl;
+  box-shadow: $shadow-md;
 }
 
 .request-id {
-  font-size: 0.875rem;
-  color: #666;
-  margin-bottom: 0.5rem;
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $spacing-md;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
 }
 
 .request-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+  margin-bottom: $spacing-xl;
 
-.request-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
+  h3 {
+    font-size: $font-size-2xl;
+    font-weight: 600;
+    color: $text-primary;
+    font-family: $font-family;
+  }
 }
 
 .request-badges {
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: $spacing-sm;
 }
 
 .type-badge {
-  padding: 0.5rem 1rem;
-  background: #f3f4f6;
-  color: #374151;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.status-badge {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.status-approved {
-  background: #10b981;
-  color: white;
-}
-
-.status-pending {
-  background: #f59e0b;
-  color: white;
-}
-
-.status-rejected {
-  background: #ef4444;
-  color: white;
-}
-
-.status-returned {
-  background: #6b7280;
-  color: white;
-}
-
-.status-completed {
-  background: #60a5fa;
-  color: white;
+  padding: 6px 14px;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: $white;
+  color: $text-primary;
+  border: 1px solid $border-light;
+  font-family: $font-family;
 }
 
 .request-details {
+  background: $white;
+  padding: $spacing-xl;
+  border-radius: $radius-md;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: $spacing-md;
 }
 
 .detail-row {
-  font-size: 0.875rem;
-  color: #374151;
+  font-size: $font-size-base;
+  color: $text-primary;
+  line-height: 1.6;
+  font-family: $font-family;
+
+  strong {
+    font-weight: 600;
+    margin-right: $spacing-sm;
+  }
 }
 
-.detail-row strong {
-  color: #111827;
-  margin-right: 0.5rem;
+.request-actions {
+  margin-top: $spacing-md;
+  display: flex;
+  gap: $spacing-sm;
 }
 
-.no-data-message {
-  text-align: center;
-  padding: 3rem;
-  color: #666;
+.action-btn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: $font-family;
 }
 
+.return-btn {
+  background: $complete-color;
+  color: $white;
+
+  &:hover {
+    background: darken($complete-color, 10%);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header,
+  .search-controls,
+  .requests-detail-list {
+    padding-left: $spacing-2xl;
+    padding-right: $spacing-2xl;
+  }
+}

@@ -1,388 +1,113 @@
-.facilities-view {
-  padding: 2rem;
-}
-
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.page-subtitle {
-  color: #666;
-  font-size: 1rem;
-}
-
-.search-bar {
-  margin-bottom: 2rem;
-}
-
-.search-input {
-  width: 100%;
-  max-width: 400px;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-}
+@import '../org-dashboard.scss';
 
 .facilities-grid {
+  padding: 0 $spacing-4xl $spacing-4xl;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-2xl;
 }
 
 .facility-card {
-  background: white;
-  border-radius: 12px;
+  background: $white;
+  border-radius: $radius-lg;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.facility-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: $shadow-md;
 }
 
 .facility-image {
   position: relative;
-  width: 100%;
   height: 200px;
   overflow: hidden;
-}
 
-.facility-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .facility-badge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.status-available {
-  background: #10b981;
-  color: white;
-}
-
-.status-reserved {
-  background: #ef4444;
-  color: white;
+  background-color: #000;
+  top: $spacing-md;
+  right: $spacing-md;
+  padding: 6px $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+  color: $white;
 }
 
 .facility-content {
-  padding: 1.5rem;
+  padding: $spacing-xl;
+  background: $bg-yellow;
 }
 
 .facility-name {
-  font-size: 1.25rem;
+  font-size: $font-size-xl;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: $spacing-sm;
+  color: $text-primary;
+  font-family: $font-family;
 }
 
 .facility-description {
-  color: #666;
-  margin-bottom: 1rem;
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $spacing-md;
   line-height: 1.5;
+  font-family: $font-family;
 }
 
 .facility-capacity {
-  color: #888;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
+  font-size: $font-size-sm;
+  color: $text-primary;
+  margin-bottom: $spacing-lg;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
 }
 
 .request-btn {
   width: 100%;
-  padding: 0.75rem;
-  background: #6d1818;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  padding: $spacing-md;
+  background: $white;
+  border: 2px solid $text-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
   cursor: pointer;
-  transition: background 0.2s;
-}
+  font-family: $font-family;
+  transition: all $transition-fast;
 
-.request-btn:hover:not(:disabled) {
-  background: #8b2020;
-}
-
-.request-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.no-data-message {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 3rem;
-  color: #666;
-}
-
-.loading-message {
-  text-align: center;
-  padding: 40px 20px;
-  color: #666;
-  font-size: 16px;
-  font-style: italic;
-}
-
-// Modal Styles
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
-  backdrop-filter: blur(2px);
-}
-
-.modal-container {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  max-width: 500px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-
-  &.reservation-modal {
-    padding: 32px;
+  &:hover:not(:disabled) {
+    background: $text-primary;
+    color: $white;
   }
-
-  &.success-modal {
-    padding: 48px 32px;
-    text-align: center;
-  }
-}
-
-.modal-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 24px;
-  color: #333;
-}
-
-.modal-form-group {
-  margin-bottom: 20px;
-
-  &:last-of-type {
-    margin-bottom: 0;
-  }
-}
-
-.modal-form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.modal-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.modal-input,
-.modal-textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  font-family: 'Roboto', sans-serif;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
-
-  &:focus {
-    outline: none;
-    border-color: #69040C;
-  }
-
-  &::placeholder {
-    color: #999;
-  }
-}
-
-.modal-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.modal-note {
-  background: #fff9e6;
-  border-left: 4px solid #ffc107;
-  padding: 12px 16px;
-  margin: 20px 0;
-  border-radius: 4px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  color: #856404;
-
-  svg {
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  span {
-    font-size: 14px;
-    line-height: 1.5;
-  }
-}
-
-.modal-error {
-  background: #fee;
-  color: #c33;
-  padding: 12px;
-  border-radius: 4px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  border: 1px solid #fcc;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 24px;
-}
-
-.modal-btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-family: 'Roboto', sans-serif;
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
+}
 
-  &.modal-btn-cancel {
-    background: white;
-    color: #333;
-    border: 1px solid #ddd;
-
-    &:hover:not(:disabled) {
-      background: #f5f5f5;
-    }
-  }
-
-  &.modal-btn-submit,
-  &.modal-btn-done {
-    background: #69040C;
-    color: white;
-
-    &:hover:not(:disabled) {
-      background: #520308;
-    }
+@media (max-width: 1400px) {
+  .facilities-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-// Success Modal Styles
-.success-icon {
-  width: 80px;
-  height: 80px;
-  background: #69040C;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 24px;
-  
-  svg {
-    width: 48px;
-    height: 48px;
-  }
-}
-
-.success-message {
-  font-size: 18px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 32px;
-  line-height: 1.5;
-}
-
-// Responsive Modal Styles
-@media (max-width: 768px) {
-  .modal-overlay {
-    padding: 10px;
-  }
-
-  .modal-container {
-    max-width: 100%;
-    max-height: 95vh;
-
-    &.reservation-modal {
-      padding: 24px;
-    }
-
-    &.success-modal {
-      padding: 32px 24px;
-    }
-  }
-
-  .modal-title {
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .modal-form-row {
+@media (max-width: 1024px) {
+  .facilities-grid {
     grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .modal-actions {
-    flex-direction: column-reverse;
-    width: 100%;
-
-    .modal-btn {
-      width: 100%;
-    }
-  }
-
-  .success-icon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 20px;
-
-    svg {
-      width: 36px;
-      height: 36px;
-    }
-  }
-
-  .success-message {
-    font-size: 16px;
-    margin-bottom: 24px;
   }
 }
 
+@media (max-width: 768px) {
+  .page-header,
+  .search-bar,
+  .facilities-grid {
+    padding-left: $spacing-2xl;
+    padding-right: $spacing-2xl;
+  }
+}
