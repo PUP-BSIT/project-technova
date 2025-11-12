@@ -11,9 +11,11 @@
           id="email"
           name="email"
           placeholder="yourorg@gmail.com"
-          [(ngModel)]="credentials.email"
+			[(ngModel)]="credentials.email"
+			(ngModelChange)="clearError('email')"
           required
         />
+		<div class="field-error" *ngIf="errors.email">{{ errors.email }}</div>
       </div>
 
       <div class="form-group">
@@ -24,7 +26,8 @@
             id="password"
             name="password"
             placeholder="Enter your password"
-            [(ngModel)]="credentials.password"
+			[(ngModel)]="credentials.password"
+			(ngModelChange)="clearError('password')"
             required
           />
           <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
@@ -36,6 +39,7 @@
             </svg>
           </button>
         </div>
+		<div class="field-error" *ngIf="errors.password">{{ errors.password }}</div>
       </div>
 
       <div class="forgot-password">

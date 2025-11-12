@@ -55,6 +55,18 @@ $radius: 20px;
     margin-bottom: 40px;
   }
 
+  .error-message {
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 500;
+  }
+
   .form-group {
     margin-bottom: 24px;
 
@@ -89,6 +101,12 @@ $radius: 20px;
         outline: none;
         border-color: $primary;
       }
+    }
+
+    .field-error {
+      color: #dc2626;
+      font-size: 12px;
+      margin-top: 6px;
     }
 
     .input-with-icon {

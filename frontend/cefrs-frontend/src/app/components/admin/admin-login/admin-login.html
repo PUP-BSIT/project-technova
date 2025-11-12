@@ -12,13 +12,17 @@
           formControlName="email"
           placeholder="admin@example.com"
         />
-        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+        @if ((loginForm.get('email')?.invalid && loginForm.get('email')?.touched) || loginForm.get('email')?.errors?.['serverError']) {
           <div class="error-message">
-            @if (loginForm.get('email')?.errors?.['required']) {
-              Email is required.
-            }
-            @if (loginForm.get('email')?.errors?.['email']) {
-              Please enter a valid email address.
+            @if (loginForm.get('email')?.errors?.['serverError']) {
+              {{ loginForm.get('email')?.errors?.['serverError'] }}
+            } @else {
+              @if (loginForm.get('email')?.errors?.['required']) {
+                Email is required.
+              }
+              @if (loginForm.get('email')?.errors?.['email']) {
+                Please enter a valid email address.
+              }
             }
           </div>
         }
@@ -42,20 +46,18 @@
             </svg>
           </button>
         </div>
-        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+        @if ((loginForm.get('password')?.invalid && loginForm.get('password')?.touched) || loginForm.get('password')?.errors?.['serverError']) {
           <div class="error-message">
-            @if (loginForm.get('password')?.errors?.['required']) {
-              Password is required.
+            @if (loginForm.get('password')?.errors?.['serverError']) {
+              {{ loginForm.get('password')?.errors?.['serverError'] }}
+            } @else {
+              @if (loginForm.get('password')?.errors?.['required']) {
+                Password is required.
+              }
             }
           </div>
         }
       </div>
-
-      @if (errorMessage) {
-        <div class="error-message global-error">
-          {{ errorMessage }}
-        </div>
-      }
 
       <div class="forgot-password">
         <a href="#" (click)="onForgotPassword($event)">Forgot password?</a>

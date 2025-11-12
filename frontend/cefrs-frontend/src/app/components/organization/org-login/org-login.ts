@@ -16,6 +16,7 @@ export class OrgLoginComponent {
   private authService = inject(AuthService);
 
   credentials = { email: '', password: '' };
+		errors = { email: '', password: '' };
   showPassword = false;
   isLoading = false;
   errorMessage = '';
@@ -24,13 +25,21 @@ export class OrgLoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  onLogin(): void {
-    this.errorMessage = '';
+		clearError(field: 'email' | 'password'): void {
+			this.errors[field] = '';
+		}
 
-    if (!this.credentials.email || !this.credentials.password) {
-      this.errorMessage = 'Please fill in all fields.';
-      return;
-    }
+  onLogin(): void {
+		this.errorMessage = '';
+		this.errors = { email: '', password: '' };
+
+		if (!this.credentials.email) {
+			this.errors.email = 'Email is required.';
+		}
+		if (!this.credentials.password) {
+			this.errors.password = 'Password is required.';
+		}
+		if (this.errors.email || this.errors.password) return;
 
     this.isLoading = true;
     console.log('Logging in as organization:', this.credentials);
@@ -45,8 +54,12 @@ export class OrgLoginComponent {
         // Redirect to org-dashboard for organization users
         if (role === 'CAMPUS_ORGANIZATION') {
           this.router.navigate(['/org-dashboard']);
+        } else if (role === 'STUDENT') {
+          // Show error under email field for student accounts
+          this.errors.email = 'This email is registered as a student account. Please use the student login page.';
+          this.authService.logout();
         } else {
-          this.errorMessage = `Logged in as ${role}. Please use the correct login page.`;
+          this.errors.email = `This account is registered as ${role}. Please use the correct login page.`;
           this.authService.logout();
         }
       },
@@ -54,8 +67,31 @@ export class OrgLoginComponent {
         console.error('Login error:', error);
         this.isLoading = false;
 
-        const backendMessage = error.error?.message;
-        this.errorMessage = backendMessage || 'Login failed. Please check your credentials.';
+				// Extract error message from backend response and map to fields
+				let backendMsg = '';
+				if (error.error?.message) {
+					backendMsg = error.error.message.replace(/^Login failed: /, '');
+				} else if (error.message) {
+					backendMsg = error.message;
+				}
+
+				// Default/fallback
+				if (!backendMsg) {
+					this.errors.password = 'Login failed. Please check your credentials.';
+					return;
+				}
+
+				// Map common backend messages to field errors
+				if (/email not registered/i.test(backendMsg)) {
+					this.errors.email = 'This email is not registered.';
+				} else if (/incorrect password/i.test(backendMsg)) {
+					this.errors.password = 'Incorrect password. Please try again.';
+				} else if (/deactivated/i.test(backendMsg)) {
+					this.errors.email = 'This account is deactivated.';
+				} else {
+					// If message is ambiguous, show under password by convention
+					this.errors.password = backendMsg;
+				}
       }
     });
   }
