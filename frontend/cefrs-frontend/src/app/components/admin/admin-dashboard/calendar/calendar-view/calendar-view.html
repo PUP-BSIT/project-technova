@@ -49,6 +49,10 @@
     </div>
   </div>
 
+  @if (isLoading) {
+    <div class="loading-message">Loading calendar events...</div>
+  }
+
   <!-- Calendar -->
   <div class="calendar-wrapper">
     <full-calendar [options]="calendarOptions"></full-calendar>
@@ -59,7 +63,7 @@
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h2>{{ selectedEvent.type === 'facility' ? 'Facility Reservation' : 'Equipment Borrowing' }}</h2>
+          <h2>{{ selectedEvent.extendedProps.type === 'facility' ? 'Facility Reservation' : 'Equipment Borrowing' }}</h2>
           <button class="close-button" (click)="closeModal()">×</button>
         </div>
 
@@ -112,8 +116,8 @@
 
           <div class="detail-row">
             <strong>Status:</strong>
-            <span [class]="'status-badge ' + getStatusBadgeClass(selectedEvent.status)">
-              {{ selectedEvent.status }}
+            <span [class]="'status-badge ' + getStatusBadgeClass(selectedEvent.extendedProps.status)">
+              {{ selectedEvent.extendedProps.status }}
             </span>
           </div>
 
@@ -126,7 +130,7 @@
         </div>
 
         <div class="modal-footer">
-          @if (selectedEvent.status === 'PENDING') {
+          @if (selectedEvent.extendedProps.status === 'PENDING') {
             <button class="btn-approve" (click)="approveEvent()">Approve</button>
             <button class="btn-reject" (click)="rejectEvent()">Reject</button>
           }

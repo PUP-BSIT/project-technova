@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -7,24 +7,9 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: string;
-  end?: string;
-  type: 'facility' | 'equipment';
-  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE';
-  backgroundColor: string;
-  borderColor: string;
-  extendedProps: {
-    userName: string;
-    userEmail: string;
-    purpose?: string;
-    quantity?: number;
-    adminNotes?: string;
-  };
-}
+import { Subject, takeUntil } from 'rxjs';
+import { CalendarService, CalendarEvent } from '../../../../../services/calendar.service';
+import { AuthService } from '../../../../../services/auth';
 
 @Component({
   selector: 'app-calendar-view',
@@ -37,7 +22,9 @@ interface CalendarEvent {
   templateUrl: './calendar-view.html',
   styleUrls: ['./calendar-view.scss']
 })
-export class CalendarView implements OnInit {
+export class CalendarView implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
     initialView: 'dayGridMonth',
@@ -63,113 +50,54 @@ export class CalendarView implements OnInit {
   showEventModal = false;
   filterType: 'all' | 'facility' | 'equipment' = 'all';
   filterStatus: 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE' = 'all';
+  isLoading = false;
+  adminId: number = 0;
+
+  constructor(
+    private calendarService: CalendarService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
+    this.loadAdminId();
     this.loadCalendarEvents();
   }
 
-  loadCalendarEvents(): void {
-    // TODO: Replace with actual API calls to fetch events
-    const sampleEvents: CalendarEvent[] = [
-      // Facility Reservations
-      {
-        id: 'FR-1',
-        title: 'Conference Room A - Computer Society',
-        start: '2025-11-07T09:00:00',
-        end: '2025-11-07T12:00:00',
-        type: 'facility',
-        status: 'APPROVED',
-        backgroundColor: '#10b981',
-        borderColor: '#059669',
-        extendedProps: {
-          userName: 'CS Society',
-          userEmail: 'cs@example.com',
-          purpose: 'Monthly meeting'
-        }
-      },
-      {
-        id: 'FR-2',
-        title: 'Computer Lab 1 - Jane Doe',
-        start: '2025-11-08T13:00:00',
-        end: '2025-11-08T17:00:00',
-        type: 'facility',
-        status: 'PENDING',
-        backgroundColor: '#f59e0b',
-        borderColor: '#d97706',
-        extendedProps: {
-          userName: 'Jane Doe',
-          userEmail: 'jane@example.com',
-          purpose: 'Programming workshop'
-        }
-      },
-      {
-        id: 'FR-3',
-        title: 'Auditorium - Central Student Council',
-        start: '2025-11-10T08:00:00',
-        end: '2025-11-10T18:00:00',
-        type: 'facility',
-        status: 'APPROVED',
-        backgroundColor: '#10b981',
-        borderColor: '#059669',
-        extendedProps: {
-          userName: 'Central Student Council',
-          userEmail: 'csc@example.com',
-          purpose: 'Annual event'
-        }
-      },
-      // Equipment Borrowing
-      {
-        id: 'EB-1',
-        title: 'Projector (2 units) - Jennie Doe',
-        start: '2025-11-06',
-        end: '2025-11-09',
-        type: 'equipment',
-        status: 'BORROWED',
-        backgroundColor: '#3b82f6',
-        borderColor: '#2563eb',
-        extendedProps: {
-          userName: 'Jenny Doe',
-          userEmail: 'jenny@example.com',
-          quantity: 2,
-          purpose: 'Seminar presentation'
-        }
-      },
-      {
-        id: 'EB-2',
-        title: 'Microphone (5 units) - Jane Dee',
-        start: '2025-11-05',
-        end: '2025-11-07',
-        type: 'equipment',
-        status: 'OVERDUE',
-        backgroundColor: '#ef4444',
-        borderColor: '#dc2626',
-        extendedProps: {
-          userName: 'Jane Dee',
-          userEmail: 'jane@example.com',
-          quantity: 5,
-          purpose: 'Culminating activity'
-        }
-      },
-      {
-        id: 'EB-3',
-        title: 'Laptop (1 unit) - Defense',
-        start: '2025-11-09',
-        end: '2025-11-12',
-        type: 'equipment',
-        status: 'PENDING',
-        backgroundColor: '#f59e0b',
-        borderColor: '#d97706',
-        extendedProps: {
-          userName: 'John Doe',
-          userEmail: 'john@example.com',
-          quantity: 1,
-          purpose: 'Defense'
-        }
-      }
-    ];
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
-    this.events = sampleEvents;
-    this.updateCalendarEvents();
+  loadAdminId(): void {
+    this.authService.getUserProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (profile) => {
+          this.adminId = profile.id;
+        },
+        error: (error) => {
+          console.error('Error loading admin profile:', error);
+        }
+      });
+  }
+
+  loadCalendarEvents(): void {
+    this.isLoading = true;
+    this.calendarService.getAllCalendarEvents()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (events) => {
+          this.events = events;
+          this.updateCalendarEvents();
+          this.isLoading = false;
+          console.log('Calendar events loaded:', events);
+        },
+        error: (error) => {
+          console.error('Error loading calendar events:', error);
+          this.isLoading = false;
+          alert('Failed to load calendar events');
+        }
+      });
   }
 
   updateCalendarEvents(): void {
@@ -177,12 +105,12 @@ export class CalendarView implements OnInit {
 
     // Filter by type
     if (this.filterType !== 'all') {
-      filteredEvents = filteredEvents.filter(event => event.type === this.filterType);
+      filteredEvents = filteredEvents.filter(event => event.extendedProps.type === this.filterType);
     }
 
     // Filter by status
     if (this.filterStatus !== 'all') {
-      filteredEvents = filteredEvents.filter(event => event.status === this.filterStatus);
+      filteredEvents = filteredEvents.filter(event => event.extendedProps.status === this.filterStatus);
     }
 
     this.calendarOptions.events = filteredEvents as EventInput[];
@@ -198,7 +126,7 @@ export class CalendarView implements OnInit {
 
   handleDateClick(arg: any): void {
     console.log('Date clicked:', arg.dateStr);
-    // You can implement create new reservation/borrowing here
+    // We can implement create new reservation/borrowing here
   }
 
   handleEventDidMount(info: any): void {
@@ -222,38 +150,131 @@ export class CalendarView implements OnInit {
   }
 
   approveEvent(): void {
-    if (this.selectedEvent) {
-      console.log('Approving event:', this.selectedEvent.id);
-      // TODO: Call backend API to approve
-      // After success, update the event status and color
-      this.selectedEvent.status = 'APPROVED';
-      this.selectedEvent.backgroundColor = '#10b981';
-      this.selectedEvent.borderColor = '#059669';
-      this.updateCalendarEvents();
-      this.closeModal();
+    if (!this.selectedEvent) return;
+
+    const eventId = this.getEventIdNumber(this.selectedEvent.id);
+    const eventType = this.selectedEvent.extendedProps.type;
+    const notes = prompt('Enter approval notes (optional):') || '';
+
+    if (eventType === 'facility') {
+      this.calendarService.approveFacilityReservation(eventId, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Facility reservation approved!');
+            this.loadCalendarEvents(); // Reload events
+            this.closeModal();
+          },
+          error: (error) => {
+            console.error('Error approving facility reservation:', error);
+            alert('Failed to approve reservation');
+          }
+        });
+    } else if (eventType === 'equipment') {
+      this.calendarService.approveEquipmentBorrowing(eventId, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Equipment borrowing approved!');
+            this.loadCalendarEvents(); // Reload events
+            this.closeModal();
+          },
+          error: (error) => {
+            console.error('Error approving equipment borrowing:', error);
+            alert('Failed to approve borrowing');
+          }
+        });
     }
   }
 
   rejectEvent(): void {
-    if (this.selectedEvent) {
-      console.log('Rejecting event:', this.selectedEvent.id);
-      // TODO: Call backend API to reject
-      this.selectedEvent.status = 'REJECTED';
-      this.selectedEvent.backgroundColor = '#ef4444';
-      this.selectedEvent.borderColor = '#dc2626';
-      this.updateCalendarEvents();
-      this.closeModal();
+    if (!this.selectedEvent) return;
+
+    const eventId = this.getEventIdNumber(this.selectedEvent.id);
+    const eventType = this.selectedEvent.extendedProps.type;
+    const notes = prompt('Enter rejection reason:');
+
+    if (!notes) {
+      alert('Rejection reason is required');
+      return;
+    }
+
+    if (eventType === 'facility') {
+      this.calendarService.rejectFacilityReservation(eventId, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Facility reservation rejected!');
+            this.loadCalendarEvents();
+            this.closeModal();
+          },
+          error: (error) => {
+            console.error('Error rejecting facility reservation:', error);
+            alert('Failed to reject reservation');
+          }
+        });
+    } else if (eventType === 'equipment') {
+      this.calendarService.rejectEquipmentBorrowing(eventId, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Equipment borrowing rejected!');
+            this.loadCalendarEvents();
+            this.closeModal();
+          },
+          error: (error) => {
+            console.error('Error rejecting equipment borrowing:', error);
+            alert('Failed to reject borrowing');
+          }
+        });
     }
   }
 
   deleteEvent(): void {
-    if (this.selectedEvent) {
-      console.log('Deleting event:', this.selectedEvent.id);
-      // TODO: Call backend API to delete
-      this.events = this.events.filter(e => e.id !== this.selectedEvent?.id);
-      this.updateCalendarEvents();
-      this.closeModal();
+    if (!this.selectedEvent) return;
+
+    if (!confirm('Are you sure you want to delete this event?')) {
+      return;
     }
+
+    const eventId = this.getEventIdNumber(this.selectedEvent.id);
+    const eventType = this.selectedEvent.extendedProps.type;
+
+    if (eventType === 'facility') {
+      this.calendarService.deleteFacilityReservation(eventId, this.adminId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Facility reservation deleted!');
+            this.loadCalendarEvents();
+            this.closeModal();
+          },
+          error: (error) => {
+            console.error('Error deleting facility reservation:', error);
+            alert('Failed to delete reservation');
+          }
+        });
+    } else if (eventType === 'equipment') {
+      this.calendarService.deleteEquipmentBorrowing(eventId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Equipment borrowing deleted!');
+            this.loadCalendarEvents();
+            this.closeModal();
+          },
+          error: (error) => {
+            console.error('Error deleting equipment borrowing:', error);
+            alert('Failed to delete borrowing');
+          }
+        });
+    }
+  }
+
+  // Extract numeric ID from event ID string (e.g., "facility-123" to 123)
+  private getEventIdNumber(eventId: string): number {
+    const parts = eventId.split('-');
+    return parseInt(parts[1], 10);
   }
 
   getStatusBadgeClass(status: string): string {
