@@ -1,0 +1,53 @@
+<div class="page-header">
+  <h1>Dashboard</h1>
+</div>
+
+@if (user) {
+  <div class="welcome-banner">
+    <h2>Welcome back, {{ user.name }}!</h2>
+    <p>Track your reservations and equipment requests here</p>
+  </div>
+} @else {
+  <div class="welcome-banner skeleton-loading">
+    <h2>Welcome back, Loading...</h2>
+  </div>
+}
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Active Reservations</div>
+    <div class="stat-value">{{ stats.activeReservations }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Borrowed Equipment</div>
+    <div class="stat-value">{{ stats.borrowedEquipment }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pending Requests</div>
+    <div class="stat-value">{{ stats.pendingRequests }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Requests</div>
+    <div class="stat-value">{{ stats.totalRequests }}</div>
+  </div>
+</div>
+
+<div class="recent-section">
+  <div class="section-header">
+    <h3>My Recent Requests</h3>
+  </div>
+
+  <div class="requests-list">
+    @for (request of recentRequests; track request.id) {
+      <div class="request-item">
+        <div class="request-info">
+          <div class="request-title">{{ request.title }}</div>
+          <div class="request-meta">{{ request.type }} • {{ request.requestDate }}</div>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
+      </div>
+    } @empty {
+      <div class="no-data-message">No recent requests found.</div>
+    }
+  </div>
+</div>
