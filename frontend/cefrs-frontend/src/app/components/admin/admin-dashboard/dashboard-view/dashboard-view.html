@@ -1,23 +1,27 @@
 <div class="view-container">
   <h1 class="page-title">Admin Dashboard</h1>
-  
+
+  @if (isLoading) {
+    <div class="loading-message">Loading dashboard data...</div>
+  }
+
   <!-- Stats Cards -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-label">Active Request</div>
-      <div class="stat-value">3</div>
+      <div class="stat-value">{{ stats.activeRequests }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total Reservations</div>
-      <div class="stat-value">24</div>
+      <div class="stat-value">{{ stats.totalReservations }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Equipment Borrowed Today</div>
-      <div class="stat-value">8</div>
+      <div class="stat-value">{{ stats.equipmentBorrowedToday }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Facilities in Use</div>
-      <div class="stat-value">3</div>
+      <div class="stat-value">{{ stats.facilitiesInUse }}</div>
     </div>
   </div>
 
@@ -25,11 +29,15 @@
   <div class="pending-requests-card">
     <div class="card-header">
       <h2 class="card-title">Pending Requests</h2>
-      <button class="view-all-button">View all</button>
+      <button class="view-all-button" (click)="viewAllRequests()">View all</button>
     </div>
-    
+
     <div class="request-list">
-      @for (request of pendingRequests; track $index) {
+      @if (!isLoading && pendingRequests.length === 0) {
+        <div class="no-requests">No pending requests at this time</div>
+      }
+
+      @for (request of pendingRequests; track request.id) {
         <div class="request-item">
           <div class="request-info">
             <span [class]="'request-badge ' + request.type">{{ request.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>

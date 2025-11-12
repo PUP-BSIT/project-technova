@@ -1,11 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { Subject, takeUntil, forkJoin } from 'rxjs';
+import { ReportService } from '../../../../services/report.service';
+import { CalendarService } from '../../../../services/calendar.service';
+import { AuthService } from '../../../../services/auth';
 
 interface PendingRequest {
+  id: number;
   type: 'equipment' | 'facility';
   name: string;
   details: string;
   date: string;
+  status: string;
+}
+
+interface DashboardStats {
+  activeRequests: number;
+  totalReservations: number;
+  equipmentBorrowedToday: number;
+  facilitiesInUse: number;
 }
 
 @Component({
@@ -15,35 +29,179 @@ interface PendingRequest {
   standalone: true,
   imports: [CommonModule]
 })
-export class DashboardView {
-  pendingRequests: PendingRequest[] = [
-    {
-      type: 'equipment',
-      name: 'Jane Doe',
-      details: 'Projector (2 units)',
-      date: '2025-10-06'
-    },
-    {
-      type: 'facility',
-      name: 'CS Society',
-      details: 'Computer Lab 1',
-      date: '2025-10-07'
-    },
-    {
-      type: 'facility',
-      name: 'John Doe',
-      details: 'Conference Room A',
-      date: '2025-10-05'
-    }
-  ];
+export class DashboardView implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  pendingRequests: PendingRequest[] = [];
+  stats: DashboardStats = {
+    activeRequests: 0,
+    totalReservations: 0,
+    equipmentBorrowedToday: 0,
+    facilitiesInUse: 0
+  };
+
+  isLoading = false;
+  adminId: number = 0;
+
+  constructor(
+    private reportService: ReportService,
+    private calendarService: CalendarService,
+    private authService: AuthService,
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
+    this.loadAdminId();
+    this.loadDashboardData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadAdminId(): void {
+    this.authService.getUserProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (profile) => {
+          this.adminId = profile.id;
+        },
+        error: (error) => {
+          console.error('Error loading admin profile:', error);
+        }
+      });
+  }
+
+  loadDashboardData(): void {
+    this.isLoading = true;
+
+    forkJoin({
+      dashboardStats: this.reportService.getDashboardStats(),
+      calendarEvents: this.calendarService.getAllCalendarEvents()
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          // Process dashboard stats
+          const stats = data.dashboardStats;
+          this.stats = {
+            activeRequests: stats.facilityUsage.activeReservations + stats.equipmentUsage.activeBorrowings,
+            totalReservations: stats.facilityUsage.totalReservations,
+            equipmentBorrowedToday: stats.userActivity.todayBorrowings,
+            facilitiesInUse: stats.facilityUsage.activeReservations
+          };
+
+          // Process pending requests from calendar events
+          this.pendingRequests = data.calendarEvents
+            .filter(event => event.extendedProps.status === 'PENDING')
+            .slice(0, 5) // Show only first 5
+            .map(event => ({
+              id: this.getEventIdNumber(event.id),
+              type: event.extendedProps.type,
+              name: event.extendedProps.userName,
+              details: event.title,
+              date: event.start,
+              status: event.extendedProps.status
+            }));
+
+          this.isLoading = false;
+          console.log('Dashboard data loaded:', this.stats, this.pendingRequests);
+        },
+        error: (error) => {
+          console.error('Error loading dashboard data:', error);
+          this.isLoading = false;
+        }
+      });
+  }
 
   approveRequest(request: PendingRequest): void {
-    console.log('Approving request:', request);
-    // Implement approval logic here
+    if (!this.adminId) {
+      alert('Admin ID not loaded. Please refresh the page.');
+      return;
+    }
+
+    const notes = prompt('Enter approval notes (optional):') || 'Approved';
+
+    if (request.type === 'facility') {
+      this.calendarService.approveFacilityReservation(request.id, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Facility reservation approved!');
+            this.loadDashboardData(); // Reload data
+          },
+          error: (error) => {
+            console.error('Error approving facility reservation:', error);
+            alert('Failed to approve reservation');
+          }
+        });
+    } else if (request.type === 'equipment') {
+      this.calendarService.approveEquipmentBorrowing(request.id, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Equipment borrowing approved!');
+            this.loadDashboardData(); // Reload data
+          },
+          error: (error) => {
+            console.error('Error approving equipment borrowing:', error);
+            alert('Failed to approve borrowing');
+          }
+        });
+    }
   }
 
   declineRequest(request: PendingRequest): void {
-    console.log('Declining request:', request);
-    // Implement decline logic here
+    if (!this.adminId) {
+      alert('Admin ID not loaded. Please refresh the page.');
+      return;
+    }
+
+    const notes = prompt('Enter rejection reason:');
+
+    if (!notes) {
+      alert('Rejection reason is required');
+      return;
+    }
+
+    if (request.type === 'facility') {
+      this.calendarService.rejectFacilityReservation(request.id, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Facility reservation declined!');
+            this.loadDashboardData(); // Reload data
+          },
+          error: (error) => {
+            console.error('Error declining facility reservation:', error);
+            alert('Failed to decline reservation');
+          }
+        });
+    } else if (request.type === 'equipment') {
+      this.calendarService.rejectEquipmentBorrowing(request.id, this.adminId, notes)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            alert('Equipment borrowing declined!');
+            this.loadDashboardData(); // Reload data
+          },
+          error: (error) => {
+            console.error('Error declining equipment borrowing:', error);
+            alert('Failed to decline borrowing');
+          }
+        });
+    }
+  }
+
+  viewAllRequests(): void {
+    // Navigate to manage requests page
+    this.router.navigate(['/admin-dashboard/manage-request']);
+  }
+
+  // Extract numeric ID from event ID string (e.g., "facility-123" to 123)
+  private getEventIdNumber(eventId: string): number {
+    const parts = eventId.split('-');
+    return parseInt(parts[1], 10);
   }
 }
