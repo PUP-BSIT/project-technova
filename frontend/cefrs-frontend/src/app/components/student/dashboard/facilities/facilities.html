@@ -1,0 +1,151 @@
+<div class="page-header">
+  <h1>Facility Reservations</h1>
+  <p class="page-subtitle">Reserve campus facilities for your events</p>
+</div>
+
+<div class="search-bar">
+  <input type="text" placeholder="Search Facilities" [(ngModel)]="searchQuery" class="search-input">
+</div>
+
+@if (isLoadingFacilities) {
+  <div class="loading-message">Loading facilities...</div>
+} @else {
+  @if (filteredFacilities.length === 0) {
+    <div class="no-data-message">
+      @if (searchQuery) {
+        No facilities found matching "{{ searchQuery }}".
+      } @else {
+        No facilities currently available.
+      }
+    </div>
+  } @else {
+    <div class="facilities-grid">
+      @for (facility of filteredFacilities; track facility.id) {
+        <div class="facility-card">
+          <div class="facility-image">
+            <img [src]="facility.imageUrl" [alt]="facility.name">
+            <span class="facility-badge" [ngClass]="getStatusClass(facility.status)">{{ facility.status }}</span>
+          </div>
+          <div class="facility-content">
+            <h3 class="facility-name">{{ facility.name }}</h3>
+            <p class="facility-description">{{ facility.description }}</p>
+            <div class="facility-capacity">Capacity: {{ facility.capacity }} People</div>
+            <button 
+              class="request-btn" 
+              [disabled]="facility.status !== 'AVAILABLE'"
+              (click)="requestFacility(facility.id)">
+              @if (facility.status !== 'AVAILABLE') { Not Available } @else { Reserve Facility }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+}
+
+<!-- Reservation Request Modal -->
+@if (showReservationModal && selectedFacility) {
+  <div class="modal-overlay" (click)="closeReservationModal()">
+    <div class="modal-container reservation-modal" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Request: {{ selectedFacility.name }}</h2>
+      
+      <form (ngSubmit)="submitReservation()" #reservationFormRef="ngForm">
+        <div class="modal-form-group">
+          <label class="modal-label">Reservation Date *</label>
+          <input
+            type="date"
+            class="modal-input"
+            [(ngModel)]="reservationForm.reservationDate"
+            name="reservationDate"
+            [min]="getMinDate()"
+            required>
+        </div>
+
+        <div class="modal-form-row">
+          <div class="modal-form-group">
+            <label class="modal-label">Start Time *</label>
+            <input
+              type="time"
+              class="modal-input"
+              [(ngModel)]="reservationForm.startTime"
+              name="startTime"
+              required>
+          </div>
+
+          <div class="modal-form-group">
+            <label class="modal-label">End Time *</label>
+            <input
+              type="time"
+              class="modal-input"
+              [(ngModel)]="reservationForm.endTime"
+              name="endTime"
+              required>
+          </div>
+        </div>
+
+        <div class="modal-form-group">
+          <label class="modal-label">Purpose *</label>
+          <textarea
+            class="modal-textarea"
+            [(ngModel)]="reservationForm.purpose"
+            name="purpose"
+            rows="4"
+            placeholder="Describe the purpose of your reservation..."
+            required></textarea>
+        </div>
+
+        <div class="modal-note">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+            <path d="M12 8v4"></path>
+            <path d="M12 16h.01"></path>
+          </svg>
+          <span>Note: Your reservation request will be reviewed by an administrator.</span>
+        </div>
+
+        @if (reservationError) {
+          <div class="modal-error">
+            {{ reservationError }}
+          </div>
+        }
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="modal-btn modal-btn-cancel"
+            (click)="closeReservationModal()"
+            [disabled]="reservationLoading">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="modal-btn modal-btn-submit"
+            [disabled]="reservationLoading || !reservationFormRef.valid">
+            {{ reservationLoading ? 'Submitting...' : 'Submit Request' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Success Modal -->
+@if (showSuccessModal) {
+  <div class="modal-overlay" (click)="closeSuccessModal()">
+    <div class="modal-container success-modal" (click)="$event.stopPropagation()">
+      <div class="success-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <h2 class="success-message">Facility reservation submitted successfully!</h2>
+      <button
+        type="button"
+        class="modal-btn modal-btn-done"
+        (click)="closeSuccessModal()">
+        Done
+      </button>
+    </div>
+  </div>
+}
