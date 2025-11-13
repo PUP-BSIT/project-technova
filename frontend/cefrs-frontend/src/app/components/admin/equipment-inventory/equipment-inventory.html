@@ -1,0 +1,198 @@
+<div class="inventory-container">
+  <!-- Header -->
+  <div class="inventory-header">
+    <div class="header-left">
+      <button class="icon-button" title="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <h1 class="page-title">Equipment Inventory</h1>
+    </div>
+    <div class="header-right">
+      <button class="btn-export" (click)="exportToCSV()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export
+      </button>
+      <button class="btn-help" title="Help">?</button>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filters-left">
+      <!-- Category Filter -->
+      <select class="filter-select" [(ngModel)]="selectedCategory" (change)="applyFilters()">
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+
+      <!-- Stock Filter -->
+      <select class="filter-select" [(ngModel)]="selectedStock" (change)="applyFilters()">
+        <option value="Any stock">Any stock</option>
+        <option value="In stock">In stock</option>
+        <option value="Low stock">Low stock</option>
+        <option value="Out of stock">Out of stock</option>
+      </select>
+
+      <!-- Search -->
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search products"
+          [(ngModel)]="searchQuery"
+          (input)="applyFilters()">
+      </div>
+    </div>
+
+    <div class="filters-right">
+      <!-- Import Button -->
+      <button class="btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Import
+      </button>
+
+      <!-- Bulk Update Section -->
+      <div class="bulk-update" *ngIf="selectedItems.size > 0">
+        <span class="bulk-label">Quantity:</span>
+        <input
+          type="number"
+          class="bulk-input"
+          [(ngModel)]="bulkQuantity"
+          min="0"
+          placeholder="0">
+        <button class="btn-update" (click)="updateBulkQuantity()">
+          Update {{ selectedItems.size }} products
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading equipment...</p>
+  </div>
+
+  <!-- Inventory Table -->
+  <div class="inventory-table-container" *ngIf="!isLoading">
+    <table class="inventory-table">
+      <thead>
+        <tr>
+          <th class="col-checkbox">
+            <input
+              type="checkbox"
+              [(ngModel)]="selectAll"
+              (change)="toggleSelectAll()">
+          </th>
+          <th class="col-category">Category</th>
+          <th class="col-modified">Modified</th>
+          <th class="col-product">Product</th>
+          <th class="col-code">SKU / Code</th>
+          <th class="col-quantity">Edit Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of filteredEquipment; track item.id) {
+          <!-- Checkbox -->
+          <td class="col-checkbox">
+            <input
+              type="checkbox"
+              [(ngModel)]="item.selected"
+              (change)="toggleSelect(item)">
+          </td>
+
+          <!-- Category Badge -->
+          <td class="col-category">
+            <span class="category-badge" [ngClass]="getCategoryBadgeClass(item.category)">
+              {{ item.category }}
+            </span>
+          </td>
+
+          <!-- Modified Date -->
+          <td class="col-modified">
+            <span class="last-modified">{{ item.lastModified | date: 'MMM d, yyyy' }}</span>
+          </td>
+
+          <!-- Product (with image and details) -->
+          <td class="col-product">
+            <div class="product-info">
+              <div class="product-image">
+                <img [src]="item.imageUrl || 'assets/placeholder.png'"
+                     [alt]="item.name"
+                     onerror="this.src='assets/placeholder.png'">
+              </div>
+              <div class="product-details">
+                <div class="product-name">{{ item.name }}</div>
+                <div class="product-stock-info">
+                  <span class="stock-available">{{ item.quantityAvailable }} Available</span>
+                  <span class="stock-separator">•</span>
+                  <span class="stock-borrowed">{{ item.quantityBorrowed }} Borrowed</span>
+                  <span class="stock-separator">•</span>
+                  <span class="stock-condition" [class.low]="item.condition === 'Low Stock'">
+                    {{ item.condition }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <!-- SKU / Code -->
+          <td class="col-code">
+            <span class="code-badge">{{ item.code }}</span>
+          </td>
+
+          <!-- Edit Quantity -->
+          <td class="col-quantity">
+            <div class="quantity-editor" *ngIf="!item.editing">
+              <span class="quantity-display">{{ item.quantityTotal }}</span>
+              <button class="btn-edit" (click)="startEdit(item)">Edit</button>
+            </div>
+            <div class="quantity-editor editing" *ngIf="item.editing">
+              <input
+                type="number"
+                class="quantity-input"
+                [(ngModel)]="item.tempQuantity"
+                min="0">
+              <button class="btn-save" (click)="saveQuantity(item)">Save</button>
+              <button class="btn-cancel" (click)="cancelEdit(item)">Cancel</button>
+            </div>
+          </td>
+        }
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredEquipment.length === 0">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+      </svg>
+      <h3>No equipment found</h3>
+      <p>Try adjusting your filters or search query</p>
+    </div>
+  </div>
+
+  <!-- Footer Info -->
+  <div class="inventory-footer" *ngIf="!isLoading">
+    <div class="footer-info">
+      Showing {{ filteredEquipment.length }} of {{ equipment.length }} items
+      <span *ngIf="selectedItems.size > 0" class="selected-count">
+        • {{ selectedItems.size }} selected
+      </span>
+    </div>
+  </div>
+</div>

@@ -12,6 +12,7 @@ import { Equipment } from './equipment/equipment';
 import { ReportLogs } from './report-logs/report-logs';
 
 import { CalendarView } from '../admin-dashboard/calendar/calendar-view/calendar-view';
+import { EquipmentInventory } from '../equipment-inventory/equipment-inventory';
 
 interface NavItem {
   id: string;
@@ -32,7 +33,8 @@ interface NavItem {
     Facilities,
     Equipment,
     ReportLogs,
-    CalendarView
+    CalendarView,
+    EquipmentInventory
   ]
 })
 export class AdminDashboard {
@@ -45,6 +47,7 @@ export class AdminDashboard {
     { id: 'calendar', label: 'Calendar' },
     { id: 'facilities', label: 'Facilities' },
     { id: 'equipment', label: 'Equipment' },
+    { id: 'equipment-inventory', label: 'Equipment Inventory' },
     { id: 'report-logs', label: 'Report and Logs' },
     { id: 'settings', label: 'Settings' }
   ];
