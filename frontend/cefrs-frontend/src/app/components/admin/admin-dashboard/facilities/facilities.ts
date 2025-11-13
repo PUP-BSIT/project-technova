@@ -152,9 +152,9 @@ export class Facilities implements OnInit, OnDestroy {
         return;
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+      // Validate file size (max 2MB for Base64)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size must be less than 2MB. Please compress your image.');
         return;
       }
 
@@ -164,6 +164,12 @@ export class Facilities implements OnInit, OnDestroy {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.photoPreview = e.target?.result as string;
+
+        // Check Base64 size
+        const base64Size = this.photoPreview.length;
+        if (base64Size > 50000) { // 50KB Base64
+          console.warn('Large Base64 image:', (base64Size / 1024).toFixed(2) + 'KB');
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -265,7 +271,8 @@ export class Facilities implements OnInit, OnDestroy {
   }
 
   get filteredFacilities(): Facility[] {
-    let filtered = this.facilities;
+    // Create a new array to avoid reference issues
+    let filtered = [...this.facilities];
 
     // Filter by search text
     if (this.searchText.trim()) {
@@ -290,6 +297,9 @@ export class Facilities implements OnInit, OnDestroy {
       }
     }
 
-    return filtered;
+    // Remove any duplicates (just in case)
+    return filtered.filter((facility, index, self) =>
+      index === self.findIndex(f => f.id === facility.id)
+    );
   }
 }
