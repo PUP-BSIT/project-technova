@@ -553,6 +553,113 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
+// Message Modal Styling
+.message-modal {
+  max-width: 450px;
+  width: 90%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  .modal-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .success-header {
+    background-color: #10b981;
+  }
+
+  .error-header {
+    background-color: #ef4444;
+  }
+
+  .modal-body {
+    padding: 30px 24px;
+    background: white;
+
+    p {
+      margin: 0;
+      font-size: 16px;
+      color: #374151;
+      text-align: center;
+      line-height: 1.5;
+    }
+  }
+
+  .modal-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: center;
+    background: white;
+
+    .btn-ok {
+      padding: 10px 32px;
+      background-color: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: #f9fafb;
+        border-color: #9ca3af;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}
+
+// Modal Overlay
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .modal-container {
