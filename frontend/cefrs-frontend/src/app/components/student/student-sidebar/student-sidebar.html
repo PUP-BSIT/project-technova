@@ -7,12 +7,37 @@
   </div>
 
   <nav class="nav-menu">
-    <button class="nav-item" [class.active]="currentView === 'dashboard'" (click)="navigateTo('dashboard')">Dashboard</button>
-    <button class="nav-item" [class.active]="currentView === 'facilities'" (click)="navigateTo('facilities')">Facilities</button>
-    <button class="nav-item" [class.active]="currentView === 'equipment'" (click)="navigateTo('equipment')">Equipment</button>
-    <button class="nav-item" [class.active]="currentView === 'requests'" (click)="navigateTo('requests')">My Request</button>
+    <button class="nav-item" 
+      [class.active]="currentView === 'dashboard'" 
+      (click)="navigateTo('dashboard')">
+      <img src="assets/dashboard.png" alt="Dashboard Icon" class="icon" />
+        Dashboard
+    </button>
+    <button class="nav-item" 
+      [class.active]="currentView === 'facilities'" 
+      (click)="navigateTo('facilities')">
+      <img src="assets/facilities.png" alt="Facilities Icon" class="icon-2" />
+        Facilities
+    </button>
+    <button class="nav-item" 
+      [class.active]="currentView === 'equipment'" 
+      (click)="navigateTo('equipment')">
+      <img src="assets/equipment.png" alt="Equipment Icon" class="icon-2" />
+        Equipment
+    </button>
+    <button class="nav-item" 
+      [class.active]="currentView === 'requests'" 
+      (click)="navigateTo('requests')">
+      <img src="assets/requests.png" alt="Requests Icon" class="icon-2" />
+        My Request
+    </button>
     <!-- <button class="nav-item" [class.active]="currentView === 'transactions'" (click)="navigateTo('transactions')">Transactions</button> -->
-    <button class="nav-item" [class.active]="currentView === 'settings'" (click)="navigateTo('settings')">Settings</button>
+    <button class="nav-item" 
+      [class.active]="currentView === 'settings'" 
+      (click)="navigateTo('settings')">
+      <img src="assets/settings.png" alt="Settings Icon" class="icon-2" />
+        Settings
+    </button>
   </nav>
 
   <div class="user-profile">

@@ -120,6 +120,20 @@ $z-index-sidebar: 1000;
   }
 }
 
+.icon{
+  width: 20px;
+  height: 20px;
+  margin-right: $spacing-md;
+  vertical-align: middle;
+}
+
+.icon-2{
+  width: 26px;
+  height: 26px;
+  margin-right: $spacing-md;
+  vertical-align: middle;
+}
+
 .user-profile {
   padding: $spacing-xl $spacing-2xl;
   display: flex;
