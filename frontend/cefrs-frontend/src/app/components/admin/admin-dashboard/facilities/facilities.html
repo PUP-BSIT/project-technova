@@ -184,3 +184,21 @@
     </div>
   </div>
 }
+
+<!-- Success/Error Message Modal -->
+@if (showMessageModal) {
+  <div class="modal-overlay" (click)="closeMessageModal()">
+    <div class="modal-content message-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header" [ngClass]="messageType === 'success' ? 'success-header' : 'error-header'">
+        <h2>{{ messageType === 'success' ? 'Success' : 'Error' }}</h2>
+        <button class="close-btn" (click)="closeMessageModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p>{{ messageText }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ok" (click)="closeMessageModal()">OK</button>
+      </div>
+    </div>
+  </div>
+}

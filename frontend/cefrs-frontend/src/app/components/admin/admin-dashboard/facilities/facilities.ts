@@ -29,6 +29,9 @@ export class Facilities implements OnInit, OnDestroy {
   searchText: string = '';
   showAddEditModal: boolean = false;
   showDeleteModal: boolean = false;
+  showMessageModal: boolean = false;
+  messageType: 'success' | 'error' = 'success';
+  messageText: string = '';
   isEditMode: boolean = false;
   selectedFacility: Facility | null = null;
   selectedFile: File | null = null;
@@ -85,9 +88,19 @@ export class Facilities implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading facilities:', error);
           this.isLoading = false;
-          alert('Failed to load facilities');
+          this.displayMessage('error', 'Failed to load facilities');
         }
       });
+  }
+
+  private displayMessage(type: 'success' | 'error', message: string): void {
+    this.messageType = type;
+    this.messageText = message;
+    this.showMessageModal = true;
+  }
+
+  closeMessageModal(): void {
+    this.showMessageModal = false;
   }
 
   getStatusText(status: string): string {
@@ -148,13 +161,13 @@ export class Facilities implements OnInit, OnDestroy {
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        this.displayMessage('error', 'Please select an image file');
         return;
       }
 
       // Validate file size (max 2MB for Base64)
       if (file.size > 2 * 1024 * 1024) {
-        alert('File size must be less than 2MB. Please compress your image.');
+        this.displayMessage('error', 'File size must be less than 2MB. Please compress your image.');
         return;
       }
 
@@ -206,11 +219,11 @@ export class Facilities implements OnInit, OnDestroy {
           next: () => {
             this.loadFacilities();
             this.closeAddEditModal();
-            alert('Facility updated successfully!');
+            this.displayMessage('success', 'Facility updated successfully!');
           },
           error: (error) => {
             console.error('Error updating facility:', error);
-            alert('Failed to update facility');
+            this.displayMessage('error', 'Failed to update facility');
           }
         });
     } else {
@@ -221,11 +234,11 @@ export class Facilities implements OnInit, OnDestroy {
           next: () => {
             this.loadFacilities();
             this.closeAddEditModal();
-            alert('Facility created successfully!');
+            this.displayMessage('success', 'Facility created successfully!');
           },
           error: (error) => {
             console.error('Error creating facility:', error);
-            alert('Failed to create facility');
+            this.displayMessage('error', 'Failed to create facility');
           }
         });
     }
@@ -239,11 +252,11 @@ export class Facilities implements OnInit, OnDestroy {
           next: () => {
             this.loadFacilities();
             this.closeDeleteModal();
-            alert('Facility deleted successfully!');
+            this.displayMessage('success', 'Facility deleted successfully!');
           },
           error: (error) => {
             console.error('Error deleting facility:', error);
-            alert('Failed to delete facility');
+            this.displayMessage('error', 'Failed to delete facility');
           }
         });
     }
