@@ -28,6 +28,9 @@ export class Equipment implements OnInit, OnDestroy {
   searchText: string = '';
   showAddEditModal: boolean = false;
   showDeleteModal: boolean = false;
+  showMessageModal: boolean = false;
+  messageType: 'success' | 'error' = 'success';
+  messageText: string = '';
   isEditMode: boolean = false;
   selectedEquipment: EquipmentItem | null = null;
   selectedFile: File | null = null;
@@ -63,6 +66,16 @@ export class Equipment implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private displayMessage(type: 'success' | 'error', message: string): void {
+    this.messageType = type;
+    this.messageText = message;
+    this.showMessageModal = true;
+  }
+
+  closeMessageModal(): void {
+    this.showMessageModal = false;
+  }
+
   loadEquipment(): void {
     this.isLoading = true;
     this.equipmentService.getAllEquipment()
@@ -85,7 +98,7 @@ export class Equipment implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading equipment:', error);
           this.isLoading = false;
-          alert('Failed to load equipment');
+          this.displayMessage('error', 'Failed to load equipment');
         }
       });
   }
@@ -166,13 +179,13 @@ export class Equipment implements OnInit, OnDestroy {
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        this.displayMessage('error', 'Please select an image file');
         return;
       }
 
       // Validate file size (max 2MB for Base64)
       if (file.size > 2 * 1024 * 1024) {
-        alert('File size must be less than 2MB. Please compress your image.');
+        this.displayMessage('error', 'File size must be less than 2MB. Please compress your image.');
         return;
       }
 
@@ -222,11 +235,11 @@ export class Equipment implements OnInit, OnDestroy {
           next: () => {
             this.loadEquipment();
             this.closeAddEditModal();
-            alert('Equipment updated successfully!');
+            this.displayMessage('success', 'Equipment updated successfully!');
           },
           error: (error) => {
             console.error('Error updating equipment:', error);
-            alert('Failed to update equipment');
+            this.displayMessage('error', 'Failed to update equipment');
           }
         });
     } else {
@@ -237,11 +250,11 @@ export class Equipment implements OnInit, OnDestroy {
           next: () => {
             this.loadEquipment();
             this.closeAddEditModal();
-            alert('Equipment created successfully!');
+            this.displayMessage('success', 'Equipment created successfully!');
           },
           error: (error) => {
             console.error('Error creating equipment:', error);
-            alert('Failed to create equipment');
+            this.displayMessage('error', 'Failed to create equipment');
           }
         });
     }
@@ -255,11 +268,11 @@ export class Equipment implements OnInit, OnDestroy {
           next: () => {
             this.loadEquipment();
             this.closeDeleteModal();
-            alert('Equipment deleted successfully!');
+            this.displayMessage('success', 'Equipment deleted successfully!');
           },
           error: (error) => {
             console.error('Error deleting equipment:', error);
-            alert('Failed to delete equipment');
+            this.displayMessage('error', 'Failed to delete equipment');
           }
         });
     }
