@@ -43,7 +43,7 @@ html {
   width: 100vw;
   background: $color-bg;
   font-family: 'Roboto', sans-serif;
-  padding: 2rem;
+  padding: 1rem;
   margin: 0;
   position: relative;
   overflow: hidden;
@@ -51,10 +51,11 @@ html {
 
 .register-card {
   background: $color-card-bg;
-  border-radius: 2rem;
-  padding: 2rem 3rem;
+  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
   width: 100%;
-  max-width: 680px;
+  max-width: 550px;
+  max-height: 95vh;
   border: 1px solid $color-primary;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   margin: auto;
@@ -65,18 +66,18 @@ html {
 
 .register-header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .register-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: $color-primary;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
 }
 
 .register-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #666;
   margin: 0;
 }
@@ -86,7 +87,7 @@ html {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.25rem;
   position: relative;
 }
 
@@ -118,8 +119,8 @@ html {
 }
 
 .stepper-circle {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: white;
   border: 2px solid $color-border;
@@ -127,18 +128,18 @@ html {
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: $color-placeholder;
   transition: all 0.3s ease;
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 }
 
 .stepper-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: $color-muted;
   white-space: nowrap;
 }
@@ -148,7 +149,7 @@ html {
   height: 2px;
   background: $color-border;
   margin: 0 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   transition: background 0.3s ease;
 
   &.completed {
@@ -177,21 +178,21 @@ html {
   font-weight: 600;
   color: #c2665d;
   letter-spacing: 0.05em;
-  margin: 0 0 1.25rem 0;
+  margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #e5d5ce;
 }
 
 .form-group {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .form-label {
   display: block;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: $color-text;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 
   .required {
     color: #dc2626;
@@ -212,13 +213,12 @@ html {
 
 .form-input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
   border: 1.5px solid $color-border;
   border-radius: 0.5rem;
   background: white;
   color: $color-input-text;
-  transition: all 0.2s ease;
   font-family: inherit;
 
   &::placeholder {
@@ -266,16 +266,16 @@ html {
 
 .error-message {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: $color-error;
-  margin-top: 0.375rem;
+  margin-top: 0.25rem;
   font-weight: 500;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1.75rem;
+  margin-top: 1.25rem;
 
   &.single-action {
     justify-content: flex-end;
@@ -291,8 +291,8 @@ html {
 .btn-submit,
 .btn-continue,
 .btn-prev {
-  padding: 0.75rem 2.5rem;
-  font-size: 0.95rem;
+  padding: 0.625rem 2rem;
+  font-size: 0.875rem;
   font-weight: 600;
   border: none;
   border-radius: 0.75rem;
@@ -346,20 +346,20 @@ html {
 // Success Step Styles
 .success-step {
   text-align: center;
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 
 .success-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .success-icon {
-  width: 240px;
-  height: 240px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   background: $color-primary;
   display: flex;
@@ -367,6 +367,11 @@ html {
   justify-content: center;
   box-shadow: 0 0 60px rgba(255, 193, 7, 0.4), 0 0 100px rgba(255, 193, 7, 0.2);
   animation: successPulse 2s ease-in-out infinite;
+
+  svg {
+    width: 90px;
+    height: 90px;
+  }
 }
 
 @keyframes successPulse {
@@ -394,12 +399,13 @@ html {
 // Responsive Design
 @media (max-width: 768px) {
   .register-container {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .register-card {
-    padding: 1.75rem 2rem;
-    max-width: calc(100% - 3rem);
+    padding: 1.25rem 1.5rem;
+    max-width: calc(100% - 2rem);
+    max-height: 98vh;
   }
 
   .register-title {
@@ -449,12 +455,13 @@ html {
 
 @media (max-width: 480px) {
   .register-container {
-    padding: 1rem;
+    padding: 0.75rem;
   }
 
   .register-card {
-    padding: 1.5rem 1.25rem;
-    max-width: calc(100% - 2rem);
+    padding: 1rem 1rem;
+    max-width: calc(100% - 1.5rem);
+    max-height: 98vh;
   }
 
   .register-header {
