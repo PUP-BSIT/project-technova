@@ -60,4 +60,54 @@
     <app-report-logs *ngIf="currentView === 'report-logs'"></app-report-logs>
     <router-outlet *ngIf="currentView === 'settings'"></router-outlet>
   </main>
+
+  <!-- Logout Confirmation Modal -->
+  @if (showLogoutModal) {
+    <div class="modal-overlay" (click)="closeLogoutModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Confirm Logout</h3>
+          <button class="close-btn" (click)="closeLogoutModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <p>Are you sure you want to logout?</p>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-confirm" (click)="confirmLogout()">
+            Yes, Logout
+          </button>
+          <button class="btn-cancel" (click)="closeLogoutModal()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Notification Modal -->
+  @if (showNotificationModal) {
+    <div class="notification-modal" [ngClass]="'notification-' + notificationType">
+      <div class="notification-content">
+        <div class="notification-icon">
+          @if (notificationType === 'success') {
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          }
+          @if (notificationType === 'error') {
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          }
+        </div>
+        <p>{{ notificationMessage }}</p>
+        <button class="close-notification" (click)="closeNotificationModal()">×</button>
+      </div>
+    </div>
+  }
 </div>
