@@ -9,7 +9,9 @@ import com.campus.facility_reservation.security.JwtTokenProvider;
 import com.campus.facility_reservation.dto.RegisterRequest;
 import com.campus.facility_reservation.dto.UpdateProfileRequest;
 import com.campus.facility_reservation.dto.AuthResponse;
+import com.campus.facility_reservation.dto.ChangePasswordRequestDTO;
 import com.campus.facility_reservation.dto.UserResponse;
+import com.campus.facility_reservation.dto.ChangePasswordRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -113,12 +115,12 @@ public class AuthService {
         public AuthResponse login(String email, String password) {
                 // Find user by email
                 Optional<User> userOptional = userRepository.findByEmail(email);
-                
+
                 // Check if email is registered
                 if (userOptional.isEmpty()) {
                         throw new RuntimeException("Email not registered. Please sign up first.");
                 }
-                
+
                 User user = userOptional.get();
 
                 // Check if user is active
@@ -184,5 +186,32 @@ public class AuthService {
 
                 userRepository.save(user);
                 return new UserResponse(user);
+        }
+
+        // Change user password
+        public void changePassword(Long userId, ChangePasswordRequestDTO request) {
+                // Find the user
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                // Verify current password
+                if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                        throw new RuntimeException("Current password is incorrect");
+                }
+
+                // Verify new password and confirm password match
+                if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+                        throw new RuntimeException("New password and confirm password do not match");
+                }
+
+                // Validate new password is different from current
+                if (request.getCurrentPassword().equals(request.getNewPassword())) {
+                        throw new RuntimeException("New password must be different from current password");
+                }
+
+                // Update password
+                user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                user.setUpdatedAt(LocalDateTime.now());
+                userRepository.save(user);
         }
 }

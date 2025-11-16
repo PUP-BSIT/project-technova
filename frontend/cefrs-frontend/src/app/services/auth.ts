@@ -145,4 +145,8 @@ export class AuthService {
       })
     );
   }
+
+  changePassword(payload: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<any> {
+    return this.http.patch(`${this.userApiUrl}/change-password`, payload, { responseType: 'text' });
+  }
 }
