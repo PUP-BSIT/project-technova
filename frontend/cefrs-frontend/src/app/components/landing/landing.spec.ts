@@ -67,23 +67,23 @@ describe('LandingComponent', () => {
     expect(navbar).toBeTruthy();
   });
 
-  it('should render CTA section', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const ctaSection = compiled.querySelector('.cta-section');
-    expect(ctaSection).toBeTruthy();
-  });
-
   it('should render footer', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const footer = compiled.querySelector('.footer');
     expect(footer).toBeTruthy();
   });
 
-  it('should have Get Started button in navbar', () => {
+  it('should have Signup/Login button in navbar', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const getStartedBtn = compiled.querySelector('.navbar .btn-secondary');
-    expect(getStartedBtn).toBeTruthy();
-    expect(getStartedBtn?.textContent?.trim()).toBe('Get Started');
+    const signupLoginBtn = compiled.querySelector('.navbar .btn-nav-login');
+    expect(signupLoginBtn).toBeTruthy();
+    expect(signupLoginBtn?.textContent?.trim()).toBe('Signup/Login');
+  });
+
+  it('should have navigation links in navbar', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const navLinks = compiled.querySelectorAll('.navbar .nav-link');
+    expect(navLinks.length).toBeGreaterThan(0);
   });
 
   it('should have primary action buttons in hero section', () => {
