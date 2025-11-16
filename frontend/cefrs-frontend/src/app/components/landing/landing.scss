@@ -113,11 +113,13 @@ $spacing-3xl: 6rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: $spacing-lg;
 
     .logo {
       display: flex;
       align-items: center;
       gap: $spacing-md;
+      flex-shrink: 0;
 
       img {
         height: 70px;
@@ -134,35 +136,59 @@ $spacing-3xl: 6rem;
       }
     }
 
+    .nav-links {
+      display: flex;
+      gap: $spacing-lg;
+      align-items: center;
+      flex: 1;
+      justify-content: center;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+
+      .nav-link {
+        color: $text-primary;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 0.5rem 0;
+        position: relative;
+        transition: color 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          color: $primary-color;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: $primary-color;
+          transition: width 0.3s ease;
+        }
+
+        &:hover::after {
+          width: 100%;
+        }
+      }
+    }
+
     .nav-actions {
       display: flex;
       gap: $spacing-sm;
       align-items: center;
+      flex-shrink: 0;
     }
   }
 }
 
 // Buttons
 .btn-nav-login {
-  background: transparent;
-  color: $primary-color;
-  border: 2px solid $primary-color;
-  padding: 0.625rem 1.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: $font-family;
-
-  &:hover {
-    background: $primary-color;
-    color: $white;
-    transform: translateY(-2px);
-  }
-}
-
-.btn-nav-signup {
   background: $primary-color;
   color: $white;
   border: 2px solid $primary-color;
@@ -173,12 +199,17 @@ $spacing-3xl: 6rem;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: $font-family;
+  white-space: nowrap;
 
   &:hover {
     background: $primary-dark;
     border-color: $primary-dark;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(107, 24, 24, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
@@ -884,6 +915,31 @@ html {
 
   .navbar .nav-content {
     padding: 0 $spacing-md;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
+    .logo {
+      img {
+        height: 50px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .nav-links {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      padding: $spacing-sm 0;
+      border-top: 1px solid rgba(107, 24, 24, 0.1);
+      margin-top: $spacing-sm;
+    }
+
+    .nav-actions {
+      margin-left: auto;
+    }
   }
 }
 

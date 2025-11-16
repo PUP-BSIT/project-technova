@@ -6,9 +6,14 @@
         <img src="assets/logo-red.png" alt="CEFRS Logo" />
         <h2>CEFRS</h2>
       </div>
+      <div class="nav-links">
+        <a (click)="scrollToSection('overview', $event)" class="nav-link" href="#overview">Overview</a>
+        <a (click)="scrollToSection('features', $event)" class="nav-link" href="#features">Features</a>
+        <a (click)="scrollToSection('policies', $event)" class="nav-link" href="#policies">Policies</a>
+        <a (click)="scrollToSection('contact', $event)" class="nav-link" href="#contact">Contact</a>
+      </div>
       <div class="nav-actions">
-        <button class="btn-nav-login" (click)="goToRoleSelection()">Login</button>
-        <button class="btn-nav-signup" (click)="goToRoleSelection()">Sign Up</button>
+        <button class="btn-nav-login" (click)="goToRoleSelection()">Signup/Login</button>
       </div>
     </div>
   </nav>
@@ -23,11 +28,15 @@
       <p class="hero-tagline">
         Streamline your campus resource management with our comprehensive digital platform
       </p>
+      <div class="hero-actions">
+        <button class="btn-primary" (click)="goToRoleSelection()">Get Started</button>
+        <button class="btn-secondary" (click)="scrollToFeatures()">Learn More</button>
+      </div>
     </div>
   </section>
 
   <!-- Overview Section -->
-  <section class="overview">
+  <section id="overview" class="overview">
     <div class="overview-content">
       <h2 class="section-title">Overview</h2>
       <div class="overview-grid">
@@ -60,7 +69,7 @@
   </section>
 
   <!-- Features Section -->
-  <section class="features">
+  <section id="features" class="features">
     <div class="features-content">
       <h2 class="section-title">Key Features</h2>
       <p class="section-subtitle">Everything you need for efficient campus resource management</p>
@@ -153,7 +162,7 @@
   </section>
 
   <!-- Policies Section -->
-  <section class="policies">
+  <section id="policies" class="policies">
     <div class="policies-content">
       <h2 class="section-title">Policies & Guidelines</h2>
       <div class="policies-grid">
@@ -194,7 +203,7 @@
   </section>
 
   <!-- Contact/Support Section -->
-  <section class="contact">
+  <section id="contact" class="contact">
     <div class="contact-content">
       <h2 class="section-title">Contact & Support</h2>
       <p class="section-subtitle">Need help? We're here to assist you</p>

@@ -80,5 +80,19 @@ export class LandingComponent implements OnInit, AfterViewInit {
   goToAdminLogin() {
     this.router.navigate(['/admin-login']);
   }
+
+  scrollToFeatures() {
+    this.scrollToSection('features');
+  }
+
+  scrollToSection(sectionId: string, event?: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
 
