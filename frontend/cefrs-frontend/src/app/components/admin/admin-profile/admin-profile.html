@@ -42,6 +42,20 @@
                 <label>Email</label>
                 <input type="email" formControlName="email" [disabled]="true" />
               </div>
+
+              <!-- Add Address field -->
+              <div class="form-group form-group-full">
+                <label>Address</label>
+                <input
+                  type="text"
+                  formControlName="address"
+                  [disabled]="!isEditing"
+                  [class.invalid]="profileForm.get('address')?.touched && profileForm.get('address')?.invalid"
+                />
+                @if (profileForm.get('address')?.touched && profileForm.get('address')?.invalid) {
+                  <small class="error">Address is required.</small>
+                }
+              </div>
             </div>
           </form>
 
@@ -66,5 +80,3 @@
     </div>
   </div>
 </div>
-
-

@@ -54,6 +54,10 @@
   margin-bottom: 16px;
 }
 
+.form-group-full {
+  grid-column: 1 / -1;
+}
+
 .full-width {
   grid-column: 1 / -1;
 }
@@ -168,5 +172,3 @@ button {
   color: #721c24;
   border-radius: 4px;
 }
-
-
