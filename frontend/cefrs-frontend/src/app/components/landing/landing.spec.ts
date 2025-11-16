@@ -74,6 +74,7 @@ describe('LandingComponent', () => {
   });
 
   it('should have Signup/Login button in navbar', () => {
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const signupLoginBtn = compiled.querySelector('.navbar .btn-nav-login');
     expect(signupLoginBtn).toBeTruthy();
@@ -81,15 +82,19 @@ describe('LandingComponent', () => {
   });
 
   it('should have navigation links in navbar', () => {
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const navLinks = compiled.querySelectorAll('.navbar .nav-link');
     expect(navLinks.length).toBeGreaterThan(0);
+    expect(navLinks.length).toBe(4); // Overview, Features, Policies, Contact
   });
 
   it('should have primary action buttons in hero section', () => {
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const heroActions = compiled.querySelectorAll('.hero-actions button');
     expect(heroActions.length).toBeGreaterThan(0);
+    expect(heroActions.length).toBe(2);
   });
 });
 
