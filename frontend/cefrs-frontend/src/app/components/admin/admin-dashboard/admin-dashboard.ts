@@ -47,6 +47,11 @@ export class AdminDashboard implements OnInit {
   currentView: string = 'dashboard';
   user: any = null;
   isLoading = true;
+  showLogoutModal: boolean = false;
+
+  showNotificationModal: boolean = false;
+  notificationType: 'success' | 'error' = 'success';
+  notificationMessage: string = '';
 
   navItems: NavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: 'assets/dashboard.png' },
@@ -69,10 +74,10 @@ export class AdminDashboard implements OnInit {
       next: (data: any) => {
         this.isLoading = false;
         let displayName: string;
-        displayName = data.firstName && data.lastName 
-          ? `${data.firstName} ${data.lastName}` 
+        displayName = data.firstName && data.lastName
+          ? `${data.firstName} ${data.lastName}`
           : data.email || 'Admin';
-        
+
         this.user = {
           name: displayName,
           email: data.email || 'admin@example.com'
@@ -89,7 +94,6 @@ export class AdminDashboard implements OnInit {
     });
   }
 
-
   setCurrentView(view: string): void {
     this.currentView = view;
     if (view === 'settings') {
@@ -98,17 +102,48 @@ export class AdminDashboard implements OnInit {
   }
 
   logout(): void {
-    // Clear all authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('authToken');
-    sessionStorage.clear();
-    
-    // Reset user data
-    this.user = null;
-    
-    // Use authService logout
+    this.showLogoutModal = true;
+  }
+
+  confirmLogout(): void {
     this.authService.logout();
     this.router.navigate(['/admin-login']);
+    this.showLogoutModal = false;
+  }
+
+  closeLogoutModal(): void {
+    this.showLogoutModal = false;
+  }
+
+  showSuccess(message: string): void {
+    this.notificationType = 'success';
+    this.notificationMessage = message;
+    this.showNotificationModal = true;
+
+    setTimeout(() => {
+      this.showNotificationModal = false;
+    }, 3000);
+  }
+
+  showError(message: string): void {
+    this.notificationType = 'error';
+    this.notificationMessage = message;
+    this.showNotificationModal = true;
+
+    setTimeout(() => {
+      this.showNotificationModal = false;
+    }, 5000);
+  }
+
+  closeNotificationModal(): void {
+    this.showNotificationModal = false;
+  }
+
+  handleMessage(event: { type: 'success' | 'error', message: string }): void {
+    if (event.type === 'success') {
+      this.showSuccess(event.message);
+    } else {
+      this.showError(event.message);
+    }
   }
 }
