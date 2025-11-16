@@ -660,6 +660,14 @@ $font-family: 'Roboto', sans-serif;
   backdrop-filter: blur(2px);
 }
 
+.loading-message,
+.no-data-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748b;
+  font-size: 16px;
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .modal-container {
