@@ -89,6 +89,13 @@ describe('LandingComponent', () => {
     expect(navLinks.length).toBe(4); // Overview, Features, Policies, Contact
   });
 
+  it('should render CTA section', () => {
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const ctaSection = compiled.querySelector('.cta-section');
+    expect(ctaSection).toBeTruthy();
+  });
+
   it('should have primary action buttons in hero section', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
