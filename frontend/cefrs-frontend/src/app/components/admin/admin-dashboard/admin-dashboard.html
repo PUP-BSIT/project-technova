@@ -10,33 +10,40 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="navigation">
-      <button
-        *ngFor="let item of navItems"
-        [class.active]="currentView === item.id"
-        (click)="setCurrentView(item.id)"
-        class="nav-button">
-        {{ item.label }}
-      </button>
+    <nav class="nav-menu">
+      @for (item of navItems; track item.id) {
+        <button 
+          [class.active]="currentView === item.id"
+          (click)="setCurrentView(item.id)"
+          class="nav-item">
+          @if (item.id === 'dashboard') {
+            <img [src]="item.icon" [alt]="item.label + ' Icon'" class="icon" />
+          } @else {
+            <img [src]="item.icon" [alt]="item.label + ' Icon'" class="icon-2" />
+          }
+          {{ item.label }}
+        </button>
+      }
     </nav>
 
     <!-- User Profile -->
     <div class="user-profile">
-      <div class="user-avatar">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-          <circle cx="12" cy="8" r="4"/>
-          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-        </svg>
+      <div class="user-details">
+        @if (user) {
+          <div class="user-info">
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+        } @else {
+          <div class="user-info">
+            <div class="user-name">Loading...</div>
+            <div class="user-email">Please wait...</div>
+          </div>
+        }
       </div>
-      <div class="user-info">
-        <div class="user-name">Admin</div>
-        <div class="user-email">youradmin@example.com</div>
-      </div>
-      <button class="logout-button" (click)="logout()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
+      <button class="logout-btn" (click)="logout()" title="Logout">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
         </svg>
       </button>
     </div>
