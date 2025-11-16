@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AdminChangePasswordComponent } from './admin-change-password';
 
 describe('AdminChangePasswordComponent', () => {
@@ -7,7 +9,11 @@ describe('AdminChangePasswordComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminChangePasswordComponent]
+      imports: [
+        AdminChangePasswordComponent,
+        HttpClientTestingModule,
+        RouterTestingModule
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminChangePasswordComponent);
@@ -19,5 +25,3 @@ describe('AdminChangePasswordComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-
-
