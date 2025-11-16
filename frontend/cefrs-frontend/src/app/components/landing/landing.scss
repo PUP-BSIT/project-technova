@@ -38,7 +38,51 @@ $spacing-3xl: 6rem;
   font-family: $font-family;
   background-color: $background-gray;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
+
+// Scroll Animation Classes
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-animate.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+// Section titles get a different animation
+.section-title.scroll-animate {
+  transform: translateY(20px) scale(0.95);
+}
+
+.section-title.scroll-animate.animate-in {
+  transform: translateY(0) scale(1);
+}
+
+// Staggered animation delays for cards
+.overview-card:nth-child(1) { transition-delay: 0.1s; }
+.overview-card:nth-child(2) { transition-delay: 0.2s; }
+.overview-card:nth-child(3) { transition-delay: 0.3s; }
+
+.feature-card:nth-child(1) { transition-delay: 0.05s; }
+.feature-card:nth-child(2) { transition-delay: 0.1s; }
+.feature-card:nth-child(3) { transition-delay: 0.15s; }
+.feature-card:nth-child(4) { transition-delay: 0.2s; }
+.feature-card:nth-child(5) { transition-delay: 0.25s; }
+.feature-card:nth-child(6) { transition-delay: 0.3s; }
+
+.policy-item:nth-child(1) { transition-delay: 0.1s; }
+.policy-item:nth-child(2) { transition-delay: 0.2s; }
+.policy-item:nth-child(3) { transition-delay: 0.3s; }
+.policy-item:nth-child(4) { transition-delay: 0.4s; }
+
+.contact-card:nth-child(1) { transition-delay: 0.1s; }
+.contact-card:nth-child(2) { transition-delay: 0.2s; }
+.contact-card:nth-child(3) { transition-delay: 0.3s; }
 
 .landing-container {
   width: 100%;
@@ -55,6 +99,12 @@ $spacing-3xl: 6rem;
   top: 0;
   z-index: 1000;
   padding: $spacing-md 0;
+  transition: all 0.3s ease;
+
+  &.navbar-scrolled {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: $spacing-sm 0;
+  }
 
   .nav-content {
     max-width: 1200px;
@@ -216,6 +266,7 @@ $spacing-3xl: 6rem;
     z-index: 2;
     position: relative;
     max-width: 800px;
+    animation: fadeInUp 0.8s ease-out;
   }
 
   .hero-title {
@@ -699,6 +750,105 @@ $spacing-3xl: 6rem;
       opacity: 0.9;
     }
   }
+}
+
+// Keyframe Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Enhanced hover effects with animations
+.overview-card,
+.feature-card,
+.policy-item,
+.contact-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+// Parallax effect for hero section
+.hero {
+  position: relative;
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+// Smooth reveal animations
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Add subtle animation to feature icons
+.feature-icon {
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+// Add animation to contact icons
+.contact-icon {
+  transition: transform 0.3s ease;
+}
+
+.contact-card:hover .contact-icon {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+// Smooth scroll behavior
+html {
+  scroll-behavior: smooth;
 }
 
 // Responsive adjustments
