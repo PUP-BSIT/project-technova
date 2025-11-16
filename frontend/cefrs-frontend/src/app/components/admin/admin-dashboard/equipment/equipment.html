@@ -39,62 +39,66 @@
   </div>
 
   @if (isLoading) {
-    <div class="loading-container">
-      <p>Loading equipment...</p>
-    </div>
-  }
-
-  <div class="items-list">
-    @for (item of filteredEquipment; track item.id) {
-      <div class="item-card">
-        <div class="item-card-header">
-          <div>
-            <span class="item-id">E{{ item.id }}</span>
-          </div>
-          <div class="item-actions">
-            <button class="edit-button" (click)="editEquipment(item)">Edit</button>
-            <button class="delete-button" (click)="deleteEquipment(item)">Delete</button>
-          </div>
-        </div>
-        <h3 class="item-title">{{ item.name }}</h3>
-        <div class="item-details">
-          <div class="detail-item">
-            <span class="detail-label">Category:</span>
-            <span class="detail-value">{{ item.category }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Quantity:</span>
-            <span class="detail-value">{{ item.quantityAvailable }}/{{ item.quantityTotal }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Condition:</span>
-            <span class="condition-badge condition-good">{{ getConditionFromQuantity(item) }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Availability:</span>
-            <span [class]="'availability-badge availability-' + item.status.toLowerCase()">
-              {{ getAvailabilityText(item) }}
-            </span>
-          </div>
-        </div>
-        @if (item.quantityAvailable === 0) {
-          <div class="borrowed-info">
-            <div><strong>All units currently borrowed</strong></div>
-          </div>
-        }
-        @if (item.description) {
-          <div class="item-description">
-            <span class="detail-label">Description:</span>
-            <span>{{ item.description }}</span>
-          </div>
+    <div class="loading-message">Loading equipment...</div>
+  } @else {
+    @if (filteredEquipment.length === 0) {
+      <div class="no-data-message">
+        @if (searchText.trim() || selectedCategory !== 'All Categories' || selectedCondition !== 'All Conditions' || selectedAvailability !== 'All Availability') {
+          No equipment found matching your criteria.
+        } @else {
+          No equipment available.
         }
       </div>
-    } @empty {
-      <div class="empty-state">
-        <p>No equipment found</p>
+    } @else {
+      <div class="items-list">
+        @for (item of filteredEquipment; track item.id) {
+          <div class="item-card">
+            <div class="item-card-header">
+              <div>
+                <span class="item-id">E{{ item.id }}</span>
+              </div>
+              <div class="item-actions">
+                <button class="edit-button" (click)="editEquipment(item)">Edit</button>
+                <button class="delete-button" (click)="deleteEquipment(item)">Delete</button>
+              </div>
+            </div>
+            <h3 class="item-title">{{ item.name }}</h3>
+            <div class="item-details">
+              <div class="detail-item">
+                <span class="detail-label">Category:</span>
+                <span class="detail-value">{{ item.category }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Quantity:</span>
+                <span class="detail-value">{{ item.quantityAvailable }}/{{ item.quantityTotal }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Condition:</span>
+                <span class="condition-badge condition-good">{{ getConditionFromQuantity(item) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Availability:</span>
+                <span [class]="'availability-badge availability-' + item.status.toLowerCase()">
+                  {{ getAvailabilityText(item) }}
+                </span>
+              </div>
+            </div>
+            @if (item.quantityAvailable === 0) {
+              <div class="borrowed-info">
+                <div><strong>All units currently borrowed</strong></div>
+              </div>
+            }
+            @if (item.description) {
+              <div class="item-description">
+                <span class="detail-label">Description:</span>
+                <span>{{ item.description }}</span>
+              </div>
+            }
+          </div>
+        }
       </div>
     }
-  </div>
+  }
 </div>
 
 <!-- Add/Edit Equipment Modal -->
