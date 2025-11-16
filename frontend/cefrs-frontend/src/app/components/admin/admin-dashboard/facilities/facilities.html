@@ -20,39 +20,53 @@
     </select>
   </div>
 
-  <div class="items-list">
-    @for (facility of filteredFacilities; track facility.id) {
-      <div class="item-card">
-        <div class="item-card-header">
-          <div>
-            <span class="item-id">{{ facility.id }}</span>
-            <span [class]="'status-badge status-' + facility.status">{{ getStatusText(facility.status) }}</span>
-          </div>
-          <div class="item-actions">
-            <button class="edit-button" (click)="editFacility(facility)">Edit</button>
-            <button class="delete-button" (click)="deleteFacility(facility)">Delete</button>
-          </div>
-        </div>
-        <h3 class="item-title">{{ facility.name }}</h3>
-        <div class="item-details">
-          <div class="detail-item">
-            <span class="detail-label">Building:</span>
-            <span class="detail-value">{{ facility.building }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Capacity:</span>
-            <span class="detail-value">{{ facility.capacity }}</span>
-          </div>
-          @if (facility.description) {
-            <div class="detail-item">
-              <span class="detail-label">Description:</span>
-              <span class="detail-value">{{ facility.description }}</span>
+  @if (isLoading) {
+    <div class="loading-message">Loading facilities...</div>
+  } @else {
+    @if (filteredFacilities.length === 0) {
+      <div class="no-data-message">
+        @if (searchText.trim() || selectedStatus !== 'All Status') {
+          No facilities found matching your criteria.
+        } @else {
+          No facilities available.
+        }
+      </div>
+    } @else {
+      <div class="items-list">
+        @for (facility of filteredFacilities; track facility.id) {
+          <div class="item-card">
+            <div class="item-card-header">
+              <div>
+                <span class="item-id">{{ facility.id }}</span>
+                <span [class]="'status-badge status-' + facility.status">{{ getStatusText(facility.status) }}</span>
+              </div>
+              <div class="item-actions">
+                <button class="edit-button" (click)="editFacility(facility)">Edit</button>
+                <button class="delete-button" (click)="deleteFacility(facility)">Delete</button>
+              </div>
             </div>
-          }
-        </div>
+            <h3 class="item-title">{{ facility.name }}</h3>
+            <div class="item-details">
+              <div class="detail-item">
+                <span class="detail-label">Building:</span>
+                <span class="detail-value">{{ facility.building }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Capacity:</span>
+                <span class="detail-value">{{ facility.capacity }}</span>
+              </div>
+              @if (facility.description) {
+                <div class="detail-item">
+                  <span class="detail-label">Description:</span>
+                  <span class="detail-value">{{ facility.description }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
       </div>
     }
-  </div>
+  }
 </div>
 
 <!-- Add/Edit Facility Modal -->
