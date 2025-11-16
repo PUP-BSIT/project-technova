@@ -1,0 +1,265 @@
+<div class="landing-container">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="logo">
+        <img src="assets/logo-red.png" alt="CEFRS Logo" />
+        <h2>CEFRS</h2>
+      </div>
+      <div class="nav-links">
+        <a (click)="scrollToSection('overview', $event)" class="nav-link" href="#overview">Overview</a>
+        <a (click)="scrollToSection('features', $event)" class="nav-link" href="#features">Features</a>
+        <a (click)="scrollToSection('policies', $event)" class="nav-link" href="#policies">Policies</a>
+        <a (click)="scrollToSection('contact', $event)" class="nav-link" href="#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-nav-login" (click)="goToRoleSelection()">Signup/Login</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section - Title + Tagline -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Campus Equipment & Facility<br />
+        Reservation System
+      </h1>
+      <p class="hero-tagline">
+        Streamline your campus resource management with our comprehensive digital platform
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" (click)="goToRoleSelection()">Get Started</button>
+        <button class="btn-secondary" (click)="scrollToFeatures()">Learn More</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Overview Section -->
+  <section id="overview" class="overview">
+    <div class="overview-content">
+      <h2 class="section-title">Overview</h2>
+      <div class="overview-grid">
+        <div class="overview-card">
+          <h3>What is CEFRS?</h3>
+          <p>
+            The Campus Equipment & Facility Reservation System (CEFRS) is a web-based application 
+            designed to simplify the process of borrowing equipment and reserving facilities within 
+            educational institutions and organizations.
+          </p>
+        </div>
+        <div class="overview-card">
+          <h3>Who Can Use It?</h3>
+          <p>
+            Our platform serves three main user types: <strong>Students</strong> who need to reserve 
+            facilities or borrow equipment, <strong>Organizations</strong> managing campus resources, 
+            and <strong>Administrators</strong> who oversee and approve requests.
+          </p>
+        </div>
+        <div class="overview-card">
+          <h3>Why Choose CEFRS?</h3>
+          <p>
+            Replace manual forms and verbal requests with a centralized digital platform. 
+            Check real-time availability, submit requests online, receive notifications, 
+            and manage resources efficiently—all in one place.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="features-content">
+      <h2 class="section-title">Key Features</h2>
+      <p class="section-subtitle">Everything you need for efficient campus resource management</p>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Real-time Scheduling</h3>
+          <p class="feature-description">
+            View availability of rooms and equipment in real-time. Make informed decisions instantly.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <h3 class="feature-title">Digital Requests</h3>
+          <p class="feature-description">
+            Submit equipment borrowing and facility reservation requests online. No more paper forms.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Smart Notifications</h3>
+          <p class="feature-description">
+            Receive timely updates on request status, approvals, and important reminders.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Admin Dashboard</h3>
+          <p class="feature-description">
+            Comprehensive management tools to handle requests efficiently and prevent conflicts.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Mobile Responsive</h3>
+          <p class="feature-description">
+            Access the system from any device. Optimized for desktop, tablet, and mobile.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Secure Access</h3>
+          <p class="feature-description">
+            Robust authentication system ensuring secure access for students, organizations, and administrators.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Policies Section -->
+  <section id="policies" class="policies">
+    <div class="policies-content">
+      <h2 class="section-title">Policies & Guidelines</h2>
+      <div class="policies-grid">
+        <div class="policy-item">
+          <h3>Reservation Policy</h3>
+          <p>
+            Facilities must be reserved at least 24 hours in advance. Reservations are subject to 
+            approval by administrators. Cancellations should be made at least 12 hours before 
+            the scheduled time.
+          </p>
+        </div>
+        <div class="policy-item">
+          <h3>Equipment Borrowing</h3>
+          <p>
+            Equipment can be borrowed for a maximum period as specified per item. Users are 
+            responsible for the condition of borrowed equipment and must return items on time. 
+            Late returns may result in penalties.
+          </p>
+        </div>
+        <div class="policy-item">
+          <h3>User Responsibilities</h3>
+          <p>
+            All users must provide accurate information when making requests. Misuse of facilities 
+            or equipment may result in account suspension. Users must comply with campus regulations 
+            and guidelines.
+          </p>
+        </div>
+        <div class="policy-item">
+          <h3>Approval Process</h3>
+          <p>
+            Requests are reviewed by administrators within 24-48 hours. Approved requests will 
+            receive confirmation notifications. Users will be notified of any changes or 
+            cancellations.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2 class="cta-title">Ready to Get Started?</h2>
+      <p class="cta-subtitle">Join thousands of students and organizations using CEFRS to manage their campus resources efficiently.</p>
+      <div class="cta-actions">
+        <button class="btn-primary btn-primary-large" (click)="goToRoleSelection()">Get Started Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact/Support Section -->
+  <section id="contact" class="contact">
+    <div class="contact-content">
+      <h2 class="section-title">Contact & Support</h2>
+      <p class="section-subtitle">Need help? We're here to assist you</p>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <h3>Location</h3>
+          <p>Campus Administration Building</p>
+          <p>Room 101</p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+          </div>
+          <h3>Phone</h3>
+          <p>+63 (XXX) XXX-XXXX</p>
+          <p>Mon-Fri, 8:00 AM - 5:00 PM</p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <h3>Email</h3>
+          <p>support@cefrs.edu</p>
+          <p>info@cefrs.edu</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2024 Campus Equipment & Facility Reservation System. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+

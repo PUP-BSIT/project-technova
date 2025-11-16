@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { LandingComponent } from './components/landing/landing';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { LoginComponent } from './components/student/login/login';
 import { OrgLoginComponent } from './components/organization/org-login/org-login';
@@ -30,8 +31,8 @@ import { OrgReservationRequestComponent } from './components/organization/org-re
 import { OrgEquipmentBorrowingRequestComponent } from './components/organization/org-equipment-borrowing-request/org-equipment-borrowing-request';
 
 export const routes: Routes = [
-  { path: '', component: RoleSelectionComponent },
-  { path: 'role-selection', redirectTo: '', pathMatch: 'full' },
+  { path: '', component: LandingComponent },
+  { path: 'role-selection', component: RoleSelectionComponent },
   { path: 'login', component: LoginComponent },
   { path: 'org-login', component: OrgLoginComponent },
   { path: 'admin-login', component: AdminLogin },
