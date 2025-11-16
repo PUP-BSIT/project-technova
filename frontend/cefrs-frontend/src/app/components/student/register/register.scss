@@ -23,7 +23,7 @@ $color-success: #16a34a;
 body {
   margin: 0 !important;
   padding: 0 !important;
-  overflow-x: hidden;
+  overflow: hidden;
   background: $color-bg;
 }
 
@@ -31,49 +31,52 @@ html {
   margin: 0;
   padding: 0;
   background: $color-bg;
+  overflow: hidden;
+  height: 100%;
 }
 
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  min-width: 100vw;
+  height: 100vh;
+  width: 100vw;
   background: $color-bg;
   font-family: 'Roboto', sans-serif;
-  padding: 0;
+  padding: 2rem;
   margin: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .register-card {
   background: $color-card-bg;
   border-radius: 2rem;
-  padding: 3rem 4rem;
+  padding: 2rem 3rem;
   width: 100%;
   max-width: 680px;
   border: 1px solid $color-primary;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  margin: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .register-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .register-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: $color-primary;
   margin: 0 0 0.5rem 0;
 }
 
 .register-subtitle {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #666;
   margin: 0;
 }
@@ -83,7 +86,7 @@ html {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 3rem;
+  margin-bottom: 1.75rem;
   position: relative;
 }
 
@@ -115,8 +118,8 @@ html {
 }
 
 .stepper-circle {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: white;
   border: 2px solid $color-border;
@@ -124,18 +127,18 @@ html {
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: $color-placeholder;
   transition: all 0.3s ease;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 }
 
 .stepper-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: $color-muted;
   white-space: nowrap;
 }
@@ -174,13 +177,13 @@ html {
   font-weight: 600;
   color: #c2665d;
   letter-spacing: 0.05em;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.25rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #e5d5ce;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-label {
@@ -209,7 +212,7 @@ html {
 
 .form-input {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: 0.75rem 1rem;
   font-size: 0.9rem;
   border: 1.5px solid $color-border;
   border-radius: 0.5rem;
@@ -272,7 +275,7 @@ html {
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 2.5rem;
+  margin-top: 1.75rem;
 
   &.single-action {
     justify-content: flex-end;
@@ -288,8 +291,8 @@ html {
 .btn-submit,
 .btn-continue,
 .btn-prev {
-  padding: 0.875rem 3rem;
-  font-size: 1rem;
+  padding: 0.75rem 2.5rem;
+  font-size: 0.95rem;
   font-weight: 600;
   border: none;
   border-radius: 0.75rem;
@@ -390,16 +393,25 @@ html {
 
 // Responsive Design
 @media (max-width: 768px) {
+  .register-container {
+    padding: 1.5rem;
+  }
+
   .register-card {
-    padding: 2rem 1.5rem;
+    padding: 1.75rem 2rem;
+    max-width: calc(100% - 3rem);
   }
 
   .register-title {
     font-size: 1.5rem;
   }
 
+  .register-subtitle {
+    font-size: 0.875rem;
+  }
+
   .stepper {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .stepper-circle {
@@ -414,13 +426,13 @@ html {
 
   .form-input {
     font-size: 0.85rem;
-    padding: 0.75rem 0.875rem;
+    padding: 0.625rem 0.875rem;
   }
 
   .btn-next,
   .btn-submit,
   .btn-continue {
-    padding: 0.75rem 2rem;
+    padding: 0.625rem 2rem;
     font-size: 0.9rem;
   }
 
@@ -441,11 +453,41 @@ html {
   }
 
   .register-card {
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 1.25rem;
+    max-width: calc(100% - 2rem);
+  }
+
+  .register-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .register-title {
+    font-size: 1.35rem;
+  }
+
+  .register-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .stepper {
+    margin-bottom: 1.25rem;
   }
 
   .stepper-line {
     margin: 0 0.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    margin-bottom: 1rem;
+  }
+
+  .form-actions {
+    margin-top: 1.5rem;
   }
 
   .success-icon {
