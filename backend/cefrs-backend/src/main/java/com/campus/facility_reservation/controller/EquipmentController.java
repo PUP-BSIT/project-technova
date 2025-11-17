@@ -18,6 +18,9 @@ public class EquipmentController {
 
     private final EquipmentService equipmentService;
 
+    // Maximum Base64 image size (1.5MB in characters)
+    private static final int MAX_IMAGE_SIZE = 1_500_000;
+
     // GET /api/equipment
     @GetMapping
     public ResponseEntity<ApiResponse<List<EquipmentDTO>>> getAllEquipment() {
@@ -48,16 +51,30 @@ public class EquipmentController {
 
     // POST /api/equipment
     @PostMapping
-    public ResponseEntity<ApiResponse<EquipmentDTO>> createEquipment(@RequestBody EquipmentRequestDTO request) {
+    public ResponseEntity<ApiResponse<?>> createEquipment(@RequestBody EquipmentRequestDTO request) {
+        // Validate Base64 image size
+        if (request.getImageUrl() != null && request.getImageUrl().length() > MAX_IMAGE_SIZE) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse
+                            .error("Image size too large. Please use a smaller image (max 1MB after compression)."));
+        }
+
         EquipmentDTO equipment = equipmentService.createEquipment(request);
         return ResponseEntity.ok(ApiResponse.success("Equipment created successfully", equipment));
     }
 
     // PUT /api/equipment/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<EquipmentDTO>> updateEquipment(
+    public ResponseEntity<ApiResponse<?>> updateEquipment(
             @PathVariable Long id,
             @RequestBody EquipmentRequestDTO request) {
+        // Validate Base64 image size
+        if (request.getImageUrl() != null && request.getImageUrl().length() > MAX_IMAGE_SIZE) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse
+                            .error("Image size too large. Please use a smaller image (max 1MB after compression)."));
+        }
+
         EquipmentDTO equipment = equipmentService.updateEquipment(id, request);
         return ResponseEntity.ok(ApiResponse.success("Equipment updated successfully", equipment));
     }
