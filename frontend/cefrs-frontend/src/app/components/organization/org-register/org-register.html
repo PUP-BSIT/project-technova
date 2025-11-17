@@ -187,8 +187,31 @@
             (keypress)="onPhoneKeyPress($event)"
             (input)="onPhoneInput($event)"
             maxlength="11"
-            [class.error]="isFieldInvalid('phoneNumber')" />
-          @if (isFieldInvalid('phoneNumber')) {
+            [class.error]="isFieldInvalid('phoneNumber') || phoneNumberTaken" />
+
+          <!-- Checking message -->
+          @if (checkingPhoneNumber) {
+            <span class="validation-message checking">
+              Checking availability...
+            </span>
+          }
+
+          <!-- Phone taken error -->
+          @if (phoneNumberTaken && !checkingPhoneNumber) {
+            <span class="error-message">
+              This phone number is already registered
+            </span>
+          }
+
+          <!-- Available success -->
+          @if (!phoneNumberTaken && !checkingPhoneNumber && registerForm.get('phoneNumber')?.value?.length === 11 && registerForm.get('phoneNumber')?.valid) {
+            <span class="success-message">
+              ✓ Phone number is available
+            </span>
+          }
+
+          <!-- Regular validation error -->
+          @if (isFieldInvalid('phoneNumber') && !phoneNumberTaken && !checkingPhoneNumber) {
             <span class="error-message">
               {{ getFieldError('phoneNumber') || 'Please enter phone number' }}
             </span>

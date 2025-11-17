@@ -391,6 +391,26 @@ html {
   font-style: italic;
 }
 
+// Validation and States for phone number
+.form-group {
+  .validation-message {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.875rem;
+
+    &.checking {
+      color: #6c757d;
+    }
+  }
+
+  .success-message {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.875rem;
+    color: #28a745;
+  }
+}
+
 // Responsive Design
 @media (max-width: 768px) {
   .register-container {

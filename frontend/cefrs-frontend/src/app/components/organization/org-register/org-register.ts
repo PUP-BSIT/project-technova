@@ -18,6 +18,11 @@ export class OrgRegisterComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
+  // Phone number availability checking
+  phoneNumberTaken = false;
+  checkingPhoneNumber = false;
+  phoneNumberCheckTimeout: any;
+
   // Reactive Form
   registerForm: FormGroup;
 
@@ -113,6 +118,12 @@ export class OrgRegisterComponent implements OnInit {
       phone?.markAsTouched();
       address?.markAsTouched();
 
+      // Check if phone number is taken
+      if (this.phoneNumberTaken) {
+        this.errorMessage = 'This phone number is already registered';
+        return;
+      }
+
       if (email?.invalid || phone?.invalid || address?.invalid) {
         return;
       }
@@ -138,6 +149,12 @@ export class OrgRegisterComponent implements OnInit {
   submitForm() {
     // Mark all fields as touched to show validation errors
     this.registerForm.markAllAsTouched();
+
+    // Check if phone number is taken
+    if (this.phoneNumberTaken) {
+      this.errorMessage = 'This phone number is already registered. Please use a different number.';
+      return;
+    }
 
     // Check if passwords match
     if (this.registerForm.errors?.['passwordMismatch']) {
@@ -243,5 +260,38 @@ export class OrgRegisterComponent implements OnInit {
     const value = event.target.value.replace(/[^0-9]/g, '').slice(0, 11);
     // Update form control value
     this.registerForm.patchValue({ phoneNumber: value }, { emitEvent: false });
+    // Check phone availability
+    this.checkPhoneAvailability(value);
+  }
+
+  checkPhoneAvailability(phoneNumber: string): void {
+    // Clear previous timeout
+    if (this.phoneNumberCheckTimeout) {
+      clearTimeout(this.phoneNumberCheckTimeout);
+    }
+
+    // Reset validation state
+    this.phoneNumberTaken = false;
+
+    // Only check if phone number is valid (11 digits)
+    if (phoneNumber && phoneNumber.length === 11) {
+      this.checkingPhoneNumber = true;
+
+      // Debounce: wait 500ms after user stops typing
+      this.phoneNumberCheckTimeout = setTimeout(() => {
+        this.authService.checkPhoneNumberAvailability(phoneNumber).subscribe({
+          next: (isAvailable) => {
+            this.phoneNumberTaken = !isAvailable;
+            this.checkingPhoneNumber = false;
+          },
+          error: (err) => {
+            console.error('Error checking phone number:', err);
+            this.checkingPhoneNumber = false;
+          }
+        });
+      }, 500);
+    } else {
+      this.checkingPhoneNumber = false;
+    }
   }
 }

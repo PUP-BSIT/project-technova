@@ -29,6 +29,11 @@ export class RegisterComponent implements OnInit {
   showStudentIdError = false;
   showAddressError = false;
 
+  // Phone number availability checking
+  phoneNumberTaken = false;
+  checkingPhoneNumber = false;
+  phoneNumberCheckTimeout: any;
+
   formData = {
     firstName: '',
     middleName: '',
@@ -90,6 +95,12 @@ export class RegisterComponent implements OnInit {
       this.showPhoneError = !this.formData.phone.trim() || !this.isValidPhone(this.formData.phone);
       this.showAddressError = !this.formData.address.trim();
 
+      // Check if phone number is taken
+      if (this.phoneNumberTaken) {
+        this.showPhoneError = true;
+        return;
+      }
+
       if (this.showEmailError || this.showPhoneError || this.showAddressError) {
         return;
       }
@@ -143,9 +154,49 @@ export class RegisterComponent implements OnInit {
     let value = event.target.value.replace(/[^0-9]/g, '').slice(0, 11);
     // Update the model
     this.formData.phone = value;
+    // Check phone availability
+    this.checkPhoneAvailability(value);
+  }
+
+  checkPhoneAvailability(phoneNumber: string): void {
+    // Clear previous timeout
+    if (this.phoneNumberCheckTimeout) {
+      clearTimeout(this.phoneNumberCheckTimeout);
+    }
+
+    // Reset validation state
+    this.phoneNumberTaken = false;
+
+    // Only check if phone number is valid (11 digits)
+    if (phoneNumber && phoneNumber.length === 11) {
+      this.checkingPhoneNumber = true;
+
+      // Debounce: wait 500ms after user stops typing
+      this.phoneNumberCheckTimeout = setTimeout(() => {
+        this.authService.checkPhoneNumberAvailability(phoneNumber).subscribe({
+          next: (isAvailable) => {
+            this.phoneNumberTaken = !isAvailable;
+            this.checkingPhoneNumber = false;
+          },
+          error: (err) => {
+            console.error('Error checking phone number:', err);
+            this.checkingPhoneNumber = false;
+          }
+        });
+      }, 500);
+    } else {
+      this.checkingPhoneNumber = false;
+    }
   }
 
   submitForm() {
+    // Check if phone number is taken
+    if (this.phoneNumberTaken) {
+      this.errorMessage = 'This phone number is already registered. Please use a different number.';
+      this.showPhoneError = true;
+      return;
+    }
+
     // check if passwords match
     if (this.formData.password !== this.formData.confirmPassword) {
       this.passwordMismatch = true;
