@@ -181,9 +181,26 @@
             (keypress)="onPhoneKeyPress($event)"
             (input)="onPhoneInput($event)"
             maxlength="11"
-            [class.error]="showPhoneError"
+            [class.error]="showPhoneError || phoneNumberTaken"
         />
-        <span class="error-message" *ngIf="showPhoneError">
+
+        <!-- Checking message -->
+        <span class="validation-message checking" *ngIf="checkingPhoneNumber">
+          Checking availability...
+        </span>
+
+        <!-- Phone taken error -->
+        <span class="error-message" *ngIf="phoneNumberTaken && !checkingPhoneNumber">
+          This phone number is already registered
+        </span>
+
+        <!-- Available success -->
+        <span class="success-message" *ngIf="!phoneNumberTaken && !checkingPhoneNumber && formData.phone.length === 11 && isValidPhone(formData.phone)">
+          ✓ Phone number is available
+        </span>
+
+        <!-- Regular validation error -->
+        <span class="error-message" *ngIf="showPhoneError && !phoneNumberTaken && !checkingPhoneNumber">
           {{ !formData.phone.trim() ? 'Please enter a phone number' : 'Phone number must be exactly 11 digits' }}
         </span>
     </div>
