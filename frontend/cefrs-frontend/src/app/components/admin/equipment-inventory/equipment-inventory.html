@@ -107,70 +107,85 @@
       </thead>
       <tbody>
         @for (item of filteredEquipment; track item.id) {
-          <!-- Checkbox -->
-          <td class="col-checkbox">
-            <input
-              type="checkbox"
-              [(ngModel)]="item.selected"
-              (change)="toggleSelect(item)">
-          </td>
+          <tr [class.selected]="item.selected">
+            <!-- Checkbox -->
+            <td class="col-checkbox">
+              <input
+                type="checkbox"
+                [(ngModel)]="item.selected"
+                (change)="toggleSelect(item)">
+            </td>
 
-          <!-- Category Badge -->
-          <td class="col-category">
-            <span class="category-badge" [ngClass]="getCategoryBadgeClass(item.category)">
-              {{ item.category }}
-            </span>
-          </td>
+            <!-- Category Badge -->
+            <td class="col-category">
+              <span class="category-badge" [ngClass]="getCategoryBadgeClass(item.category)">
+                {{ item.category }}
+              </span>
+            </td>
 
-          <!-- Modified Date -->
-          <td class="col-modified">
-            <span class="last-modified">{{ item.lastModified | date: 'MMM d, yyyy' }}</span>
-          </td>
+            <!-- Modified Date -->
+            <td class="col-modified">
+              <span class="last-modified">{{ item.lastModified | date: 'MMM d, yyyy' }}</span>
+            </td>
 
-          <!-- Product (with image and details) -->
-          <td class="col-product">
-            <div class="product-info">
-              <div class="product-image">
-                <img [src]="item.imageUrl || 'assets/placeholder.png'"
-                     [alt]="item.name"
-                     onerror="this.src='assets/placeholder.png'">
-              </div>
-              <div class="product-details">
-                <div class="product-name">{{ item.name }}</div>
-                <div class="product-stock-info">
-                  <span class="stock-available">{{ item.quantityAvailable }} Available</span>
-                  <span class="stock-separator">•</span>
-                  <span class="stock-borrowed">{{ item.quantityBorrowed }} Borrowed</span>
-                  <span class="stock-separator">•</span>
-                  <span class="stock-condition" [class.low]="item.condition === 'Low Stock'">
-                    {{ item.condition }}
-                  </span>
+            <!-- Product (with image and details) -->
+            <td class="col-product">
+              <div class="product-info">
+                <div class="product-image">
+                  <img [src]="item.imageUrl || 'assets/placeholder.png'"
+                      [alt]="item.name"
+                      onerror="this.src='assets/placeholder.png'">
+                </div>
+                <div class="product-details">
+                  <div class="product-name">{{ item.name }}</div>
+                  <div class="product-stock-info">
+                    <span class="stock-available">{{ item.quantityAvailable }} Available</span>
+                    <span class="stock-separator">•</span>
+                    <span class="stock-borrowed">{{ item.quantityBorrowed }} Borrowed</span>
+                    <span class="stock-separator">•</span>
+                    <span class="stock-condition" [class.low]="item.condition === 'Low Stock'">
+                      {{ item.condition }}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </td>
+            </td>
 
-          <!-- SKU / Code -->
-          <td class="col-code">
-            <span class="code-badge">{{ item.code }}</span>
-          </td>
+            <!-- SKU / Code -->
+            <td class="col-code">
+              <span class="code-badge">{{ item.code }}</span>
+            </td>
 
-          <!-- Edit Quantity -->
-          <td class="col-quantity">
-            <div class="quantity-editor" *ngIf="!item.editing">
-              <span class="quantity-display">{{ item.quantityTotal }}</span>
-              <button class="btn-edit" (click)="startEdit(item)">Edit</button>
-            </div>
-            <div class="quantity-editor editing" *ngIf="item.editing">
-              <input
-                type="number"
-                class="quantity-input"
-                [(ngModel)]="item.tempQuantity"
-                min="0">
-              <button class="btn-save" (click)="saveQuantity(item)">Save</button>
-              <button class="btn-cancel" (click)="cancelEdit(item)">Cancel</button>
-            </div>
-          </td>
+            <!-- Edit Quantity -->
+            <td class="col-quantity">
+              <div class="quantity-editor" *ngIf="!item.editing">
+                <span class="quantity-display">{{ item.quantityTotal }}</span>
+                <button class="btn-edit" (click)="startEdit(item)">Edit</button>
+              </div>
+              <div class="quantity-editor editing" *ngIf="item.editing">
+                <input
+                  type="number"
+                  class="quantity-input"
+                  [(ngModel)]="item.tempQuantity"
+                  min="0">
+                <button class="btn-save" (click)="saveQuantity(item)">Save</button>
+                <button class="btn-cancel" (click)="cancelEdit(item)">Cancel</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                  <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+                <h3>No equipment found</h3>
+                <p>Try adjusting your filters or search query</p>
+              </div>
+            </td>
+          </tr>
         }
       </tbody>
     </table>
@@ -196,3 +211,40 @@
     </div>
   </div>
 </div>
+
+<!-- Success/Error Message Modal -->
+@if (showMessageModal) {
+  <div class="modal-overlay" (click)="closeMessageModal()">
+    <div class="modal-content message-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header" [ngClass]="messageType === 'success' ? 'success-header' : 'error-header'">
+        <h2>{{ messageType === 'success' ? 'Success' : 'Error' }}</h2>
+        <button class="close-btn" (click)="closeMessageModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p>{{ messageText }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ok" (click)="closeMessageModal()">OK</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Confirmation Modal -->
+@if (showConfirmModal) {
+  <div class="modal-overlay" (click)="closeConfirmModal()">
+    <div class="modal-content confirm-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Confirmation</h2>
+        <button class="close-btn" (click)="closeConfirmModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p>{{ confirmMessage }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeConfirmModal()">Cancel</button>
+        <button class="btn-confirm" (click)="confirmAction()">OK</button>
+      </div>
+    </div>
+  </div>
+}
