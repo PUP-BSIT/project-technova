@@ -165,27 +165,71 @@ export class Facilities implements OnInit, OnDestroy {
         return;
       }
 
-      // Validate file size (max 2MB for Base64)
-      if (file.size > 2 * 1024 * 1024) {
-        this.displayMessage('error', 'File size must be less than 2MB. Please compress your image.');
+      // Validate file size (max 5MB before compression)
+      if (file.size > 5 * 1024 * 1024) {
+        this.displayMessage('error', 'File size must be less than 5MB.');
         return;
       }
 
       this.selectedFile = file;
 
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.photoPreview = e.target?.result as string;
+      // Compress and create preview
+      this.compressImage(file);
+    }
+  }
 
-        // Check Base64 size
-        const base64Size = this.photoPreview.length;
-        if (base64Size > 50000) { // 50KB Base64
-          console.warn('Large Base64 image:', (base64Size / 1024).toFixed(2) + 'KB');
+  compressImage(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set maximum dimensions
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 600;
+
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate new dimensions while maintaining aspect ratio
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convert to Base64 with compression (0.7 quality = 70%)
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+        this.photoPreview = compressedBase64;
+
+        // Check final Base64 size
+        const base64Size = compressedBase64.length;
+        const sizeInKB = (base64Size / 1024).toFixed(2);
+        console.log('Compressed Base64 size:', sizeInKB + 'KB');
+
+        // Warn if still large (over 500KB Base64)
+        if (base64Size > 500000) {
+          console.warn('Large compressed image:', sizeInKB + 'KB. Consider reducing quality further.');
         }
       };
-      reader.readAsDataURL(file);
-    }
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   removePhoto(): void {
