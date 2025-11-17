@@ -571,6 +571,250 @@
   }
 }
 
+// Message Modal Styling
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.message-modal {
+  max-width: 450px;
+  width: 90%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  .modal-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .success-header {
+    background-color: #10b981;
+  }
+
+  .error-header {
+    background-color: #ef4444;
+  }
+
+  .modal-body {
+    padding: 30px 24px;
+    background: white;
+
+    p {
+      margin: 0;
+      font-size: 16px;
+      color: #374151;
+      text-align: center;
+      line-height: 1.5;
+    }
+  }
+
+  .modal-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: center;
+    background: white;
+
+    .btn-ok {
+      padding: 10px 32px;
+      background-color: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: #f9fafb;
+        border-color: #9ca3af;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}
+
+// Confirmation Modal
+.confirm-modal {
+  max-width: 480px;
+  width: 90%;
+
+  .modal-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #212529;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: #6c757d;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: color 0.2s;
+
+      &:hover {
+        color: #212529;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 32px 24px;
+    background: white;
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      color: #495057;
+      line-height: 1.6;
+    }
+  }
+
+  .modal-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: white;
+    border-top: 1px solid #e9ecef;
+
+    .btn-cancel {
+      padding: 10px 24px;
+      background-color: white;
+      color: #6c757d;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: #f8f9fa;
+        border-color: #adb5bd;
+        color: #495057;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+
+    .btn-confirm {
+      padding: 10px 24px;
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(13, 110, 253, 0.3);
+
+      &:hover {
+        background-color: #0b5ed7;
+        box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}
+
 // Responsive
 @media (max-width: 1200px) {
   .filters-bar {

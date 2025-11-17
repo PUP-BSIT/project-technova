@@ -51,6 +51,16 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   // Loading
   isLoading: boolean = false;
 
+  // Message Modal
+  showMessageModal: boolean = false;
+  messageType: 'success' | 'error' = 'success';
+  messageText: string = '';
+
+  // Confirmation Modal
+  showConfirmModal: boolean = false;
+  confirmMessage: string = '';
+  confirmCallback: (() => void) | null = null;
+
   constructor(private equipmentService: EquipmentService) { }
 
   ngOnInit(): void {
@@ -62,6 +72,35 @@ export class EquipmentInventory implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private displayMessage(type: 'success' | 'error', message: string): void {
+    this.messageType = type;
+    this.messageText = message;
+    this.showMessageModal = true;
+  }
+
+  closeMessageModal(): void {
+    this.showMessageModal = false;
+  }
+
+  private showConfirm(message: string, callback: () => void): void {
+    this.confirmMessage = message;
+    this.confirmCallback = callback;
+    this.showConfirmModal = true;
+  }
+
+  confirmAction(): void {
+    if (this.confirmCallback) {
+      this.confirmCallback();
+    }
+    this.closeConfirmModal();
+  }
+
+  closeConfirmModal(): void {
+    this.showConfirmModal = false;
+    this.confirmMessage = '';
+    this.confirmCallback = null;
+  }
+
   loadEquipment(): void {
     this.isLoading = true;
     this.equipmentService.getAllEquipment()
@@ -71,7 +110,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
           this.equipment = equipmentList.map(e => ({
             id: e.id,
             name: e.name,
-            code: `EQ-${e.id}`, // Generate code
+            code: `EQ-${e.id}`,
             category: e.category,
             quantityTotal: e.quantityTotal,
             quantityAvailable: e.quantityAvailable,
@@ -90,7 +129,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading equipment:', error);
           this.isLoading = false;
-          alert('Failed to load equipment');
+          this.displayMessage('error', 'Failed to load equipment');
         }
       });
   }
@@ -140,7 +179,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
 
   // Selection methods
   toggleSelectAll(): void {
-    this.selectAll = !this.selectAll;
     this.filteredEquipment.forEach(item => {
       item.selected = this.selectAll;
       if (this.selectAll) {
@@ -152,7 +190,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   }
 
   toggleSelect(item: EquipmentInventoryItem): void {
-    item.selected = !item.selected;
     if (item.selected) {
       this.selectedItems.add(item.id);
     } else {
@@ -180,7 +217,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
 
   saveQuantity(item: EquipmentInventoryItem): void {
     if (item.tempQuantity === undefined || item.tempQuantity < 0) {
-      alert('Please enter a valid quantity');
+      this.displayMessage('error', 'Please enter a valid quantity');
       return;
     }
 
@@ -201,11 +238,11 @@ export class EquipmentInventory implements OnInit, OnDestroy {
           item.editing = false;
           item.tempQuantity = undefined;
           item.condition = this.getConditionFromQuantity(item.quantityAvailable, item.quantityTotal);
-          alert('Quantity updated successfully!');
+          this.displayMessage('success', 'Quantity updated successfully!');
         },
         error: (error) => {
           console.error('Error updating quantity:', error);
-          alert('Failed to update quantity');
+          this.displayMessage('error', 'Failed to update quantity');
         }
       });
   }
@@ -213,14 +250,17 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   // Bulk update
   updateBulkQuantity(): void {
     if (this.selectedItems.size === 0) {
-      alert('Please select items to update');
+      this.displayMessage('error', 'Please select items to update');
       return;
     }
 
-    if (!confirm(`Update ${this.selectedItems.size} items to quantity ${this.bulkQuantity}?`)) {
-      return;
-    }
+    this.showConfirm(
+      `Update ${this.selectedItems.size} items to quantity ${this.bulkQuantity}?`,
+      () => this.executeBulkUpdate()
+    );
+  }
 
+  private executeBulkUpdate(): void {
     const updates = Array.from(this.selectedItems).map(id => {
       const item = this.equipment.find(e => e.id === id);
       if (!item) return null;
@@ -235,10 +275,9 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       });
     }).filter(Boolean);
 
-    // Execute all updates (simplified - should use forkJoin in production)
     Promise.all(updates.map(u => u?.toPromise()))
       .then(() => {
-        alert('Bulk update completed!');
+        this.displayMessage('success', 'Bulk update completed!');
         this.loadEquipment();
         this.selectedItems.clear();
         this.selectAll = false;
@@ -246,7 +285,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       })
       .catch(error => {
         console.error('Bulk update error:', error);
-        alert('Some updates failed. Please try again.');
+        this.displayMessage('error', 'Some updates failed. Please try again.');
       });
   }
 
