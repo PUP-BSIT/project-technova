@@ -63,21 +63,6 @@
       background: #45a049;
     }
   }
-
-  .btn-help {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #e0e0e0;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.2s;
-
-    &:hover {
-      background: #d0d0d0;
-    }
-  }
 }
 
 // Filters Bar
