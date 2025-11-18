@@ -146,7 +146,29 @@ export class AuthService {
     );
   }
 
-  changePassword(payload: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<any> {
-    return this.http.patch(`${this.userApiUrl}/change-password`, payload, { responseType: 'text' });
+  forgotPassword(email: string): Observable<any> {
+    console.log('Sending password reset email to:', email);
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email }).pipe(
+      tap((response) => {
+        console.log('Password reset email sent:', response);
+      }),
+      catchError((error) => {
+        console.error('Forgot password error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    console.log('Resetting password with token');
+    return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword }).pipe(
+      tap((response) => {
+        console.log('Password reset successful:', response);
+      }),
+      catchError((error) => {
+        console.error('Reset password error:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }
