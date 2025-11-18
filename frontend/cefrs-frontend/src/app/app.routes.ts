@@ -29,6 +29,7 @@ import { OrgMyReservationsComponent } from './components/organization/org-my-res
 import { OrgMyBorrowingsComponent } from './components/organization/org-my-borrowings/org-my-borrowings';
 import { OrgReservationRequestComponent } from './components/organization/org-reservation-request/org-reservation-request';
 import { OrgEquipmentBorrowingRequestComponent } from './components/organization/org-equipment-borrowing-request/org-equipment-borrowing-request';
+import { ResetPassword } from './components/admin/reset-password/reset-password';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -39,6 +40,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'org-register', component: OrgRegisterComponent },
   { path: 'admin-register', component: AdminRegister },
+  { path: 'reset-password', component: ResetPassword },
 
   // Admin Dashboard (Protected)
   {

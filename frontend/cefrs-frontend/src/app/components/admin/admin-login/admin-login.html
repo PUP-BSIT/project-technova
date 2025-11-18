@@ -76,4 +76,73 @@
       </div>
     </form>
   </div>
+
+  <!-- Forgot Password Modal -->
+  @if (showForgotPasswordModal) {
+    <div class="modal-overlay" (click)="closeForgotPasswordModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        @if (!forgotPasswordSuccess) {
+          <h2>Reset Password</h2>
+          <p class="modal-description">
+            Enter your email address and we'll send you a link to reset your password.
+          </p>
+
+          <div class="form-group">
+            <label for="forgot-email">Email Address</label>
+            <input
+              type="email"
+              id="forgot-email"
+              [(ngModel)]="forgotPasswordEmail"
+              placeholder="admin@example.com"
+              [disabled]="forgotPasswordLoading"
+            />
+            @if (forgotPasswordError) {
+              <div class="error-message">{{ forgotPasswordError }}</div>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              (click)="closeForgotPasswordModal()"
+              [disabled]="forgotPasswordLoading"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn-submit"
+              (click)="submitForgotPassword()"
+              [disabled]="forgotPasswordLoading"
+            >
+              @if (forgotPasswordLoading) {
+                Sending...
+              } @else {
+                Send Reset Link
+              }
+            </button>
+          </div>
+        } @else {
+          <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h2>Check Your Email</h2>
+            <p class="modal-description">
+              We've sent a password reset link to <strong>{{ forgotPasswordEmail }}</strong>
+            </p>
+            <p class="modal-note">
+              The link will expire in 1 hour. If you don't see the email, check your spam folder.
+            </p>
+            <button
+              type="button"
+              class="btn-submit full-width"
+              (click)="closeForgotPasswordModal()"
+            >
+              Got it
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>

@@ -30,7 +30,7 @@ $radius: 20px;
 
 .admin-login-card {
   background: $card-bg;
-  padding: 60px 80px; 
+  padding: 60px 80px;
   border-radius: $radius;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: left;
@@ -96,13 +96,13 @@ $radius: 20px;
       position: relative;
       width: 100%;
       display: block;
-      
+
       input {
         padding-right: 45px;
         width: 100%;
         box-sizing: border-box;
       }
-      
+
       .toggle-password {
         position: absolute;
         right: 12px;
@@ -117,11 +117,11 @@ $radius: 20px;
         justify-content: center;
         color: #6b7280;
         transition: color 0.3s ease;
-        
+
         &:hover {
           color: darken(#6b7280, 20%);
         }
-        
+
         svg {
           width: 20px;
           height: 20px;
@@ -203,5 +203,151 @@ $radius: 20px;
         text-decoration: underline;
       }
     }
+  }
+}
+
+// Modal styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease;
+
+  h2 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+  }
+
+  .modal-description {
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-note {
+    color: #999;
+    font-size: 14px;
+    margin-top: 16px;
+    line-height: 1.4;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+
+  button {
+    flex: 1;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-cancel {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    color: #666;
+
+    &:hover:not(:disabled) {
+      background: #e8e8e8;
+    }
+  }
+
+  .btn-submit {
+    background: #007bff;
+    border: none;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #0056b3;
+    }
+  }
+}
+
+.success-content {
+  text-align: center;
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 24px;
+    animation: scaleIn 0.4s ease;
+  }
+
+  .full-width {
+    width: 100%;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
   }
 }
