@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 interface LoginResponse {
   accessToken: string;
@@ -26,8 +27,11 @@ interface UserProfile {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/api/auth';
-  private userApiUrl = '/api/user';
+  // Use environment.apiBaseUrl so dev vs prod targets are configurable.
+  // In `environment.ts` this will be `http://localhost:8080` for dev,
+  // and in `environment.prod.ts` it will be `''` to use relative paths.
+  private apiUrl = `${environment.apiBaseUrl}/api/auth`;
+  private userApiUrl = `${environment.apiBaseUrl}/api/user`;
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
