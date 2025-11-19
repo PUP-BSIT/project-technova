@@ -1,4 +1,4 @@
-.profile-layout {
+v.profile-layout {
   display: flex;
   min-height: 100vh;
   width: 100%;
@@ -158,9 +158,10 @@
 }
 
 // Responsive Design
-@media (max-width: 768px) {
+@media (max-width: 425px) {
   .main-content {
     margin-left: 0;
+    width: 100%;
     padding: 0.5rem;
   }
   
@@ -170,4 +171,3 @@
     }
   }
 }
-
