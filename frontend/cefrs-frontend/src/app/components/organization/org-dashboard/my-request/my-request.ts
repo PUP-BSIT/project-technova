@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReservationService } from '../../../../services/reservation.service';
 import { EquipmentBorrowingService } from '../../../../services/equipment-borrowing.service';
+import { FacilityService } from '../../../../services/facility.service';
+import { EquipmentService } from '../../../../services/equipment.service';
 
 interface Request {
   id: string;
@@ -15,6 +17,7 @@ interface Request {
   returnDate?: string;
   dayOfEvent?: string;
   adminNotes: string;
+  imageUrl?: string;
 }
 
 @Component({
@@ -30,6 +33,8 @@ export class OrgMyRequestComponent implements OnInit {
   selectedType = 'All Types';
   private reservationService = inject(ReservationService);
   private borrowingService = inject(EquipmentBorrowingService);
+  private facilityService = inject(FacilityService);
+  private equipmentService = inject(EquipmentService);
 
   allRequests: Request[] = [];
 
@@ -98,6 +103,25 @@ export class OrgMyRequestComponent implements OnInit {
         const aRaw = a.createdAtRaw || a.requestDate;
         const bRaw = b.createdAtRaw || b.requestDate;
         return (new Date(bRaw).getTime() || 0) - (new Date(aRaw).getTime() || 0);
+      });
+
+      // fetch images for items
+      reservations.forEach((r: any) => {
+        if (r.facilityId) {
+          this.facilityService.getFacilityById(r.facilityId).toPromise().then(f => {
+            const idx = this.allRequests.findIndex(it => it.id === `RES-${r.id}`);
+            if (idx !== -1) this.allRequests[idx].imageUrl = f?.imageUrl || '';
+          }).catch(() => {});
+        }
+      });
+
+      borrowings.forEach((b: any) => {
+        if (b.equipmentId) {
+          this.equipmentService.getEquipmentById(b.equipmentId).toPromise().then(e => {
+            const idx = this.allRequests.findIndex(it => it.id === `BOR-${b.id}`);
+            if (idx !== -1) this.allRequests[idx].imageUrl = e?.imageUrl || '';
+          }).catch(() => {});
+        }
       });
     }).catch(err => {
       console.error('Error loading requests', err);

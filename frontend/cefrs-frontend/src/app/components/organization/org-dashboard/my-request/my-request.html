@@ -22,15 +22,19 @@
     <div class="requests-detail-list">
       @for (request of filteredRequests; track request.id) {
       <div class="request-detail-card">
-        <div class="request-id">{{ request.id }}</div>
-        <div class="request-header">
-          <h3>{{ request.title }}</h3>
-          <div class="request-badges">
-            <span class="type-badge">{{ request.type }}</span>
-            <span class="status-badge" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
-          </div>
+        <div class="request-image">
+          <img [src]="request.imageUrl || 'assets/placeholder.png'" alt="{{ request.title }}" />
         </div>
-        <div class="request-details">
+        <div class="request-body">
+          <div class="request-id">{{ request.id }}</div>
+          <div class="request-header">
+            <h3>{{ request.title }}</h3>
+            <div class="request-badges">
+              <span class="type-badge">{{ request.type }}</span>
+              <span class="status-badge" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
+            </div>
+          </div>
+          <div class="request-details">
           @if (request.quantity) {
             <div class="detail-row"><strong>Quantity:</strong> {{ request.quantity }}pc@if (request.quantity > 1) {s}</div>
           }
@@ -42,14 +46,15 @@
             <div class="detail-row"><strong>Day of event:</strong> {{ request.dayOfEvent }}</div>
           }
           <div class="detail-row"><strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}</div>
-        </div>
-        <div class="request-actions">
+          </div>
+          <div class="request-actions">
           @if (request.type === 'Equipment' && (request.status === 'Approved' || request.status === 'Borrowed' || request.status === 'Overdue')) {
             <button class="action-btn return-btn" (click)="markAsReturned(request)">Mark Returned</button>
           }
           @if (request.type === 'Facility' && (request.status === 'Approved' || request.status === 'Pending')) {
             <button class="action-btn return-btn" (click)="markReservationCompleted(request)">Mark Returned</button>
           }
+          </div>
         </div>
       </div>
     } @empty {

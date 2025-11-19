@@ -211,6 +211,74 @@ $z-index-sidebar: 1000;
   }
 }
 
+/* Modal styles (copied from admin modal for consistent look) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+
+  h3 { margin: 0; color: #111827; font-size: 1.25rem; }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #9ca3af;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+
+    &:hover { background: #f3f4f6; color: #374151; }
+  }
+}
+
+.modal-body { padding: 1.5rem; p { margin: 0; color: #4b5563; font-size: 1rem; line-height: 1.5; } }
+
+.modal-footer {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  justify-content: flex-end;
+
+  button { padding: 0.625rem 1.25rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+
+  .btn-confirm { background: #ef4444; color: white; &:hover { background: #dc2626; } }
+  .btn-cancel { background: #f3f4f6; color: #374151; &:hover { background: #e5e7eb; } }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
 .skeleton-loading {
   .user-name {
     background: $white-opacity-20;

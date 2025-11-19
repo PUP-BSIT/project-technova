@@ -60,5 +60,26 @@
       </svg>
     </button>
   </div>
+  
+  <!-- Logout Confirmation Modal -->
+  @if (showLogoutModal) {
+    <div class="modal-overlay" (click)="closeLogoutModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Confirm Logout</h3>
+          <button class="close-btn" (click)="closeLogoutModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <p>Are you sure you want to logout?</p>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-confirm" (click)="confirmLogout()">Yes, Logout</button>
+          <button class="btn-cancel" (click)="closeLogoutModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
 </aside>
 

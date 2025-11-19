@@ -8,8 +8,6 @@ import { Dashboard } from './dashboard/dashboard';
 import { OrgFacilitiesComponent } from './facilities/facilities';
 import { OrgEquipmentComponent } from './equipment/equipment';
 import { OrgMyRequestComponent } from './my-request/my-request';
-import { OrgMyTransactionComponent } from './my-transaction/my-transaction';
-
 @Component({
   selector: 'app-org-dashboard',
   standalone: true,
@@ -21,8 +19,7 @@ import { OrgMyTransactionComponent } from './my-transaction/my-transaction';
     OrgSidebarComponent,
     OrgFacilitiesComponent,
     OrgEquipmentComponent,
-    OrgMyRequestComponent,
-    OrgMyTransactionComponent
+    OrgMyRequestComponent
   ],
   templateUrl: './org-dashboard.html',
   styleUrls: ['./org-dashboard.scss']

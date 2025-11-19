@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReservationService } from '../../../../services/reservation.service';
 import { EquipmentBorrowingService } from '../../../../services/equipment-borrowing.service';
+import { EquipmentService } from '../../../../services/equipment.service';
+import { FacilityService } from '../../../../services/facility.service';
 
 interface Request {
   id: string;
@@ -15,6 +17,7 @@ interface Request {
   dayOfEvent?: string;
   adminNotes: string;
   createdAtRaw?: string;
+  imageUrl?: string;
 }
 
 @Component({
@@ -27,6 +30,8 @@ interface Request {
 export class MyRequests implements OnInit {
   private reservationService = inject(ReservationService);
   private borrowingService = inject(EquipmentBorrowingService);
+  private equipmentService = inject(EquipmentService);
+  private facilityService = inject(FacilityService);
 
   allRequests: Request[] = [];
   searchQuery = '';
@@ -55,7 +60,8 @@ export class MyRequests implements OnInit {
         requestDate: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : (r.reservationDate || ''),
         createdAtRaw: r.createdAt,
         dayOfEvent: r.reservationDate || '',
-        adminNotes: r.adminNotes || ''
+        adminNotes: r.adminNotes || '',
+        imageUrl: ''
       }));
 
       const borMapped = borrowings.map(b => ({
@@ -67,13 +73,43 @@ export class MyRequests implements OnInit {
         requestDate: b.createdAt ? new Date(b.createdAt).toLocaleDateString() : (b.borrowDate || ''),
         createdAtRaw: b.createdAt,
         returnDate: b.actualReturnDate || b.expectedReturnDate || '',
-        adminNotes: b.adminNotes || ''
+        adminNotes: b.adminNotes || '',
+        imageUrl: ''
       }));
 
       this.allRequests = [...resMapped, ...borMapped].sort((a, b) => {
         const aRaw = a.createdAtRaw || a.requestDate;
         const bRaw = b.createdAtRaw || b.requestDate;
         return (new Date(bRaw).getTime() || 0) - (new Date(aRaw).getTime() || 0);
+      });
+
+      // Fetch images for facilities and equipment where possible
+      // For reservations (facilities)
+      reservations.forEach((r: any) => {
+        if (r.facilityId) {
+          this.facilityService.getFacilityById(r.facilityId).toPromise().then(f => {
+            const idx = this.allRequests.findIndex(it => it.id === `RES-${r.id}`);
+            if (idx !== -1) {
+              this.allRequests[idx].imageUrl = f?.imageUrl || '';
+            }
+          }).catch(() => {
+            // ignore image errors
+          });
+        }
+      });
+
+      // For borrowings (equipment)
+      borrowings.forEach((b: any) => {
+        if (b.equipmentId) {
+          this.equipmentService.getEquipmentById(b.equipmentId).toPromise().then(e => {
+            const idx = this.allRequests.findIndex(it => it.id === `BOR-${b.id}`);
+            if (idx !== -1) {
+              this.allRequests[idx].imageUrl = e?.imageUrl || '';
+            }
+          }).catch(() => {
+            // ignore image errors
+          });
+        }
       });
     }).catch(err => {
       console.error('Error fetching my requests', err);
