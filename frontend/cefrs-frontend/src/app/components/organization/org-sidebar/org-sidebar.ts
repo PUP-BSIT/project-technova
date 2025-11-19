@@ -21,6 +21,7 @@ export class OrgSidebarComponent implements OnInit {
 
   user: any = null;
   isLoading = true;
+  showLogoutModal: boolean = false;
 
   ngOnInit(): void {
     this.loadUserProfile();
@@ -76,17 +77,19 @@ export class OrgSidebarComponent implements OnInit {
   }
 
   logout(): void {
-    // Clear all authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('authToken');
-    sessionStorage.clear();
-    
-    // Reset user data
+    // Show confirmation modal instead of immediate logout
+    this.showLogoutModal = true;
+  }
+
+  confirmLogout(): void {
+    this.authService.logout();
     this.user = null;
-    
-    // Navigate to role selection
+    this.showLogoutModal = false;
     this.router.navigate(['./role-selection']);
+  }
+
+  closeLogoutModal(): void {
+    this.showLogoutModal = false;
   }
 }
 
