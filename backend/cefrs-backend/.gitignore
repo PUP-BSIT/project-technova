@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Environment variables - NEVER COMMIT!
+.env
+.env.local
+.env.*.local
+
+# Sensitive configs
+**/application-local.properties
+**/application-secrets.properties
