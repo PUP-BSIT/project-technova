@@ -22,7 +22,16 @@ This system replaces manual forms and verbal requests with a **centralized digit
 ---
 ## 🌐 Webhost/Live Demo
 - **Live Demo:** <br />
-[![(CEFRS) Campus Equipment & Facility Reservation System](https://img.shields.io/badge/CEFRS-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://mediumblue-raven-507899.hostingersite.com/)
+[![(CEFRS) Campus Equipment & Facility Reservation System](https://img.shields.io/badge/CEFRS-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://cefrs.site/)
+---
+
+## 👤 Sample Account
+
+To explore **Student User** without registering:
+
+- **Email:** `johndoe@gmail.com`
+- **Password:** `Johndoe@123`
+
 ---
 
 ## 🗓️ Project Timeline
