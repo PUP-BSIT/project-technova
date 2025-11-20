@@ -62,6 +62,17 @@ $z-index-sidebar: 1000;
   left: 0;
   top: 0;
   z-index: $z-index-sidebar;
+  transition: transform $transition-fast ease, box-shadow $transition-fast ease;
+
+  &.is-collapsed {
+    transform: translateX(-110%);
+    pointer-events: none;
+  }
+
+  &.is-mobile {
+    width: $sidebar-width-mobile;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  }
 }
 
 .logo-section {

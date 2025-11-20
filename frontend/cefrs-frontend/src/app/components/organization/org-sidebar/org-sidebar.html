@@ -1,4 +1,6 @@
-<aside class="sidebar">
+<aside class="sidebar"
+  [class.is-collapsed]="!isSidebarOpen"
+  [class.is-mobile]="isMobileView">
   <div class="logo-section">
     <div class="logo-image">
       <img src="assets/logo-white.png" alt="CEFRS Logo" />

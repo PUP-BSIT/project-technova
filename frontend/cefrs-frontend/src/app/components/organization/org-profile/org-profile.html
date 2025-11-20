@@ -1,5 +1,29 @@
-<div class="profile-layout">
-  <app-org-sidebar currentView="settings" (viewChanged)="onViewChanged($event)"></app-org-sidebar>
+<div class="profile-layout"
+  [class.sidebar-open]="isSidebarOpen"
+  [class.sidebar-closed]="!isSidebarOpen"
+  [class.is-mobile]="isMobileView">
+
+  @if (isMobileView) {
+    <button
+      class="mobile-menu-button"
+      type="button"
+      (click)="toggleSidebar()"
+      [attr.aria-expanded]="isSidebarOpen"
+      aria-label="Toggle navigation menu">
+      <span class="hamburger" [class.is-open]="isSidebarOpen"></span>
+    </button>
+  }
+
+  <app-org-sidebar 
+    currentView="settings"
+    [isSidebarOpen]="isSidebarOpen"
+    [isMobileView]="isMobileView"
+    (viewChanged)="onViewChanged($event)">
+  </app-org-sidebar>
+
+  @if (isMobileView && isSidebarOpen) {
+    <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+  }
   
   <div class="main-content">
     <div class="profile-container">

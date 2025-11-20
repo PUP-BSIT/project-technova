@@ -55,6 +55,9 @@ $spacing-2xl: 24px;
 $spacing-3xl: 32px;
 $spacing-4xl: 48px;
 
+// Layout
+$sidebar-width: 280px;
+
 // Border Radius
 $radius-sm: 4px;
 $radius-md: 6px;
@@ -73,12 +76,114 @@ $transition-base: 0.3s;
 .dashboard-container {
   display: flex;
   min-height: 100vh;
+  position: relative;
+
+  &.sidebar-open:not(.is-mobile) .main-content {
+    margin-left: $sidebar-width;
+  }
+
+  &.sidebar-closed:not(.is-mobile) .main-content {
+    margin-left: 0;
+  }
+
+  &.is-mobile {
+    flex-direction: column;
+  }
 }
 
 .main-content {
-  margin-left: 280px;
+  margin-left: 0;
   flex: 1;
   padding: 0;
+  transition: margin-left $transition-base ease;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+}
+
+.mobile-menu-button {
+  position: fixed;
+  top: $spacing-xl;
+  left: $spacing-xl;
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+  background: $white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  box-shadow: $shadow-md;
+  cursor: pointer;
+  transition: background $transition-base ease, transform $transition-base ease;
+
+  &:hover {
+    background: $gray-lighter;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  .hamburger {
+    position: relative;
+    width: 24px;
+    height: 2px;
+    background: $primary-color;
+    display: inline-block;
+    transition: background $transition-base ease;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 24px;
+      height: 2px;
+      background: $primary-color;
+      transition: transform $transition-base ease, top $transition-base ease;
+    }
+
+    &::before {
+      top: -8px;
+    }
+
+    &::after {
+      top: 8px;
+    }
+
+    &.is-open {
+      background: transparent;
+
+      &::before {
+        top: 0;
+        transform: rotate(45deg);
+      }
+
+      &::after {
+        top: 0;
+        transform: rotate(-45deg);
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .mobile-menu-button {
+    display: flex;
+  }
+
+  .dashboard-container.is-mobile .main-content {
+    padding-top: 80px;
+    margin-left: 0;
+  }
 }
 
 // Common component styles

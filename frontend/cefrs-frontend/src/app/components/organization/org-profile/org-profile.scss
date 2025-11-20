@@ -3,15 +3,108 @@
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
+  position: relative;
+
+  &.sidebar-open:not(.is-mobile) .main-content {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+  }
+
+  &.sidebar-closed:not(.is-mobile) .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  &.is-mobile {
+    flex-direction: column;
+  }
 }
 
 .main-content {
-  margin-left: 280px;
+  margin-left: 0;
   flex: 1;
   padding: 1rem;
   min-height: 100vh;
   overflow-y: auto;
-  width: calc(100% - 280px);
+  width: 100%;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+}
+
+.mobile-menu-button {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    background: #f5f5f5;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  .hamburger {
+    position: relative;
+    width: 24px;
+    height: 2px;
+    background: #6d1818;
+    display: inline-block;
+    transition: background 0.3s ease;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 24px;
+      height: 2px;
+      background: #6d1818;
+      transition: transform 0.3s ease, top 0.3s ease;
+    }
+
+    &::before {
+      top: -8px;
+    }
+
+    &::after {
+      top: 8px;
+    }
+
+    &.is-open {
+      background: transparent;
+
+      &::before {
+        top: 0;
+        transform: rotate(45deg);
+      }
+
+      &::after {
+        top: 0;
+        transform: rotate(-45deg);
+      }
+    }
+  }
 }
 
 .profile-container {
@@ -148,6 +241,16 @@
       color: #d93025;
       border: 1px solid #f5c6cb;
     }
+  }
+}
+
+@media (max-width: 1024px) {
+  .mobile-menu-button {
+    display: flex;
+  }
+
+  .profile-layout.is-mobile .main-content {
+    padding-top: 80px;
   }
 }
 

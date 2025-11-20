@@ -17,6 +17,8 @@ export class OrgSidebarComponent implements OnInit {
   private authService = inject(AuthService);
 
   @Input() currentView = 'dashboard';
+  @Input() isSidebarOpen: boolean = true;
+  @Input() isMobileView: boolean = false;
   @Output() viewChanged = new EventEmitter<string>();
 
   user: any = null;
