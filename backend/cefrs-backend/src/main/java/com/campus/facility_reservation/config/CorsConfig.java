@@ -6,6 +6,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+
 @Configuration
 public class CorsConfig {
 
@@ -13,12 +15,19 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        
+
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:4200"); // Angular default port
+
+        // Allow both localhost (dev) and production domain
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:4200", // Local development
+                "https://cefrs.site", // Production
+                "https://www.cefrs.site" // Production with www
+        ));
+
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        
+
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
