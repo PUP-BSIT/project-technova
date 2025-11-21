@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ProfileService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/user'; 
+  private apiUrl = '/api/user';
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('accessToken') || '';

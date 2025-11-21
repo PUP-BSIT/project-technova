@@ -20,9 +20,9 @@ export interface AuditLog {
   providedIn: 'root'
 })
 export class AuditLogService {
-  private apiUrl = 'http://localhost:8080/api/audit';
+  private apiUrl = '/api/audit';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getMyAuditLogs(): Observable<AuditLog[]> {
     return this.http.get<AuditLog[]>(`${this.apiUrl}/my-logs`);

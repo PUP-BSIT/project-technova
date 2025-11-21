@@ -33,7 +33,7 @@ interface ApiResponse<T> {
   providedIn: 'root'
 })
 export class EquipmentService {
-  private apiUrl = 'http://localhost:8080/api/equipment';
+  private apiUrl = '/api/equipment';
 
   constructor(private http: HttpClient) { }
 
