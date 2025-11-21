@@ -25,7 +25,7 @@ interface ApiResponse<T> {
     providedIn: 'root'
 })
 export class FacilityService {
-    private apiUrl = 'http://localhost:8080/api/facilities';
+    private apiUrl = '/api/facilities';
 
     constructor(private http: HttpClient) { }
 

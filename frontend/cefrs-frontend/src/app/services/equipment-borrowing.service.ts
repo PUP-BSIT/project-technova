@@ -36,7 +36,7 @@ export interface EquipmentBorrowing {
   providedIn: 'root'
 })
 export class EquipmentBorrowingService {
-  private apiUrl = 'http://localhost:8080/api/equipment-borrowing';
+  private apiUrl = '/api/equipment-borrowing';
 
   constructor(private http: HttpClient) { }
 

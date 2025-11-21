@@ -61,7 +61,7 @@ interface EquipmentBorrowing {
   providedIn: 'root'
 })
 export class CalendarService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = '/api';
 
   constructor(private http: HttpClient) { }
 
