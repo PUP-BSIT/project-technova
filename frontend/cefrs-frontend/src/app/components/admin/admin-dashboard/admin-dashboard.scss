@@ -213,6 +213,7 @@ $font-family: 'Roboto', sans-serif;
   max-width: 400px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
+  font-family: $font-family;
 }
 
 .modal-header {
