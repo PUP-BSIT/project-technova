@@ -5,7 +5,7 @@ import { FacilityService, FacilityDTO } from './facility.service';
 describe('FacilityService', () => {
     let service: FacilityService;
     let httpTestingController: HttpTestingController;
-    const apiUrl = 'http://localhost:8080/api/facilities';
+    const apiUrl = '/api/facilities';
     // Define a mock token for testing the Authorization header
     const mockToken = 'test-access-token';
 
