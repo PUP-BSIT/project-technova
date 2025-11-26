@@ -73,12 +73,16 @@ describe('LandingComponent', () => {
     expect(footer).toBeTruthy();
   });
 
-  it('should have Signup/Login button in navbar', () => {
+  it('should render Signup and Login controls in navbar', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    const signupLoginBtn = compiled.querySelector('.navbar .btn-nav-login');
-    expect(signupLoginBtn).toBeTruthy();
-    expect(signupLoginBtn?.textContent?.trim()).toBe('Signup/Login');
+    const signupBtn = compiled.querySelector('.navbar .btn-nav-secondary');
+    const loginBtn = compiled.querySelector('.navbar .btn-nav-login');
+
+    expect(signupBtn).toBeTruthy();
+    expect(signupBtn?.textContent?.trim()).toBe('Sign Up');
+    expect(loginBtn).toBeTruthy();
+    expect(loginBtn?.textContent?.includes('Log In')).toBeTrue();
   });
 
   it('should have navigation links in navbar', () => {
@@ -87,13 +91,6 @@ describe('LandingComponent', () => {
     const navLinks = compiled.querySelectorAll('.navbar .nav-link');
     expect(navLinks.length).toBeGreaterThan(0);
     expect(navLinks.length).toBe(4); // Overview, Features, Policies, Contact
-  });
-
-  it('should render CTA section', () => {
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const ctaSection = compiled.querySelector('.cta-section');
-    expect(ctaSection).toBeTruthy();
   });
 
   it('should have primary action buttons in hero section', () => {

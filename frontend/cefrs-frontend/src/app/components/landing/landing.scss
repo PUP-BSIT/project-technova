@@ -238,6 +238,82 @@ $spacing-3xl: 6rem;
   }
 }
 
+.btn-nav-secondary {
+  background: $primary-color;
+  color: $white;
+  border: 2px solid $primary-color;
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: $font-family;
+  white-space: nowrap;
+
+  &:hover {
+    background: $primary-dark;
+    border-color: $primary-dark;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 24, 24, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.nav-login-menu {
+  position: relative;
+
+  .icon-chevron {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .login-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: $white;
+    border: 1px solid rgba(107, 24, 24, 0.15);
+    border-radius: 0.75rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    padding: 0.5rem;
+    display: none;
+    min-width: 220px;
+    z-index: 1200;
+
+    button {
+      width: 100%;
+      background: transparent;
+      border: none;
+      text-align: left;
+      padding: 0.65rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: $text-primary;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+      font-family: $font-family;
+
+      &:hover {
+        background: rgba(107, 24, 24, 0.08);
+        color: $primary-color;
+      }
+    }
+  }
+
+  &.open {
+    .login-dropdown {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+}
+
 .btn-primary,
 .btn-primary-large {
   background: $primary-color;
@@ -368,6 +444,7 @@ $spacing-3xl: 6rem;
   background: $card-background;
   padding: $spacing-3xl $spacing-lg;
   position: relative;
+  scroll-margin-top: 120px;
 
   .overview-content {
     max-width: 1200px;
@@ -413,6 +490,46 @@ $spacing-3xl: 6rem;
       strong {
         color: $primary-color;
         font-weight: 600;
+      }
+    }
+  }
+
+  .overview-highlights {
+    margin-top: $spacing-2xl;
+    background: $white;
+    border-radius: 1rem;
+    padding: $spacing-xl;
+    border: 1px solid rgba(107, 24, 24, 0.1);
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $primary-color;
+      margin-bottom: $spacing-md;
+    }
+
+    ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: $spacing-sm $spacing-lg;
+
+      li {
+        position: relative;
+        padding-left: 1.75rem;
+        color: $text-secondary;
+        font-size: 1rem;
+        line-height: 1.5;
+
+        &::before {
+          content: '•';
+          position: absolute;
+          left: 0;
+          top: 0;
+          color: $secondary-color;
+          font-size: 1.5rem;
+          line-height: 1;
+        }
       }
     }
   }
@@ -513,6 +630,7 @@ $spacing-3xl: 6rem;
   background: $white;
   padding: $spacing-3xl $spacing-lg;
   position: relative;
+  scroll-margin-top: 120px;
 
   .features-content {
     max-width: 1200px;
@@ -600,77 +718,13 @@ $spacing-3xl: 6rem;
   }
 }
 
-// CTA Section
-.cta-section {
-  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-  padding: $spacing-3xl $spacing-lg;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.1;
-  }
-
-  .cta-content {
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 2;
-  }
-
-  .cta-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: $white;
-    margin-bottom: $spacing-md;
-    letter-spacing: -0.5px;
-
-    @media (max-width: 768px) {
-      font-size: 2rem;
-    }
-  }
-
-  .cta-subtitle {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: $spacing-xl;
-    line-height: 1.6;
-
-    @media (max-width: 768px) {
-      font-size: 1.1rem;
-    }
-  }
-
-  .cta-actions {
-    display: flex;
-    justify-content: center;
-  }
-
-  .btn-primary-large {
-    background: $white;
-    color: $primary-color;
-
-    &:hover {
-      background: $card-background;
-      color: $primary-dark;
-      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
-    }
-  }
-}
 
 // Policies Section
 .policies {
   background: $card-background;
   padding: $spacing-3xl $spacing-lg;
   position: relative;
+  scroll-margin-top: 120px;
 
   .policies-content {
     max-width: 1200px;
@@ -721,6 +775,7 @@ $spacing-3xl: 6rem;
   background: $white;
   padding: $spacing-3xl $spacing-lg;
   position: relative;
+  scroll-margin-top: 120px;
 
   .contact-content {
     max-width: 1200px;
@@ -931,10 +986,6 @@ html {
   }
 
   .contact {
-    padding: $spacing-2xl $spacing-md;
-  }
-
-  .cta-section {
     padding: $spacing-2xl $spacing-md;
   }
 

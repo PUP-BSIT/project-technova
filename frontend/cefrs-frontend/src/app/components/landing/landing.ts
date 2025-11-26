@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
@@ -10,6 +10,8 @@ import { Router, RouterModule } from '@angular/router';
   styleUrls: ['./landing.scss']
 })
 export class LandingComponent implements OnInit, AfterViewInit {
+  showLoginMenu = false;
+
   constructor(private router: Router) {}
 
   ngOnInit(): void {
@@ -63,6 +65,16 @@ export class LandingComponent implements OnInit, AfterViewInit {
       el.classList.add('scroll-animate');
       observer.observe(el);
     });
+  }
+
+  toggleLoginMenu(event: Event): void {
+    event.stopPropagation();
+    this.showLoginMenu = !this.showLoginMenu;
+  }
+
+  @HostListener('document:click')
+  closeLoginMenu(): void {
+    this.showLoginMenu = false;
   }
 
   goToRoleSelection() {
