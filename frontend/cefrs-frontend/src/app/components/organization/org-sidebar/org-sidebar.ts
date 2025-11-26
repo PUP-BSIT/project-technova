@@ -32,11 +32,14 @@ export class OrgSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    // Initialize viewport evaluation early to avoid ExpressionChangedAfterItHasBeenCheckedError
+    this.evaluateViewport();
   }
 
   ngAfterViewInit(): void {
-    this.evaluateViewport();
+    // Re-evaluate viewport after view init to ensure sidenav is available
     if (this.sidenav) {
+      this.evaluateViewport();
       this.sidenav.openedChange.subscribe(opened => {
         this.isSidebarOpen = opened;
       });
