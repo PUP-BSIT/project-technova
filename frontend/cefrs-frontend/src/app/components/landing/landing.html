@@ -13,7 +13,17 @@
         <a (click)="scrollToSection('contact', $event)" class="nav-link" href="#contact">Contact</a>
       </div>
       <div class="nav-actions">
-        <button class="btn-nav-login" (click)="goToRoleSelection()">Signup/Login</button>
+        <button class="btn-nav-secondary" (click)="goToRoleSelection()">Sign Up</button>
+        <div class="nav-login-menu" [class.open]="showLoginMenu">
+          <button class="btn-nav-login" (click)="toggleLoginMenu($event)">
+            Log In
+            <span class="icon-chevron">&#9662;</span>
+          </button>
+          <div class="login-dropdown" (click)="$event.stopPropagation()">
+            <button (click)="goToStudentLogin()">Student Login</button>
+            <button (click)="goToOrgLogin()">Organization Login</button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -26,7 +36,7 @@
         Reservation System
       </h1>
       <p class="hero-tagline">
-        Streamline your campus resource management with our comprehensive digital platform
+        A web-based platform that replaces manual forms with a centralized hub for borrowing equipment and reserving facilities across schools and organizations.
       </p>
       <div class="hero-actions">
         <button class="btn-primary" (click)="goToRoleSelection()">Get Started</button>
@@ -43,27 +53,31 @@
         <div class="overview-card">
           <h3>What is CEFRS?</h3>
           <p>
-            The Campus Equipment & Facility Reservation System (CEFRS) is a web-based application 
-            designed to simplify the process of borrowing equipment and reserving facilities within 
-            educational institutions and organizations.
+            The Campus Equipment Borrowing & Facility Reservation System streamlines reservations by keeping every request, approval, and notification inside one coordinated experience.
           </p>
         </div>
         <div class="overview-card">
           <h3>Who Can Use It?</h3>
           <p>
-            Our platform serves three main user types: <strong>Students</strong> who need to reserve 
-            facilities or borrow equipment, <strong>Organizations</strong> managing campus resources, 
-            and <strong>Administrators</strong> who oversee and approve requests.
+            <strong>Students</strong>, <strong>staff</strong>, and <strong>organizations</strong> can browse availability, submit requests, and track progress, while <strong>administrators</strong> keep resources organized in real time.
           </p>
         </div>
         <div class="overview-card">
           <h3>Why Choose CEFRS?</h3>
           <p>
-            Replace manual forms and verbal requests with a centralized digital platform. 
-            Check real-time availability, submit requests online, receive notifications, 
-            and manage resources efficiently—all in one place.
+            Replace verbal requests with a digital workflow so everyone checks availability, sends requests, and receives confirmations from a single trusted system.
           </p>
         </div>
+      </div>
+
+      <div class="overview-highlights">
+        <h3>With CEFRS you can:</h3>
+        <ul>
+          <li>Check real-time availability of equipment and facilities</li>
+          <li>Submit borrowing or reservation requests online</li>
+          <li>Receive reservation notifications and reminders</li>
+          <li>Allow administrators to efficiently manage campus resources</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -113,9 +127,9 @@
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
           </div>
-          <h3 class="feature-title">Smart Notifications</h3>
+          <h3 class="feature-title">Notifications</h3>
           <p class="feature-description">
-            Receive timely updates on request status, approvals, and important reminders.
+            Get timely updates on reservation status, approvals, reminders, and any changes.
           </p>
         </div>
 
@@ -152,9 +166,9 @@
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
           </div>
-          <h3 class="feature-title">Secure Access</h3>
+          <h3 class="feature-title">User Authentication</h3>
           <p class="feature-description">
-            Robust authentication system ensuring secure access for students, organizations, and administrators.
+            Secure login and registration flows keep student, organization, and administrator access protected.
           </p>
         </div>
       </div>
@@ -198,17 +212,6 @@
             cancellations.
           </p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <div class="cta-content">
-      <h2 class="cta-title">Ready to Get Started?</h2>
-      <p class="cta-subtitle">Join thousands of students and organizations using CEFRS to manage their campus resources efficiently.</p>
-      <div class="cta-actions">
-        <button class="btn-primary btn-primary-large" (click)="goToRoleSelection()">Get Started Now</button>
       </div>
     </div>
   </section>
