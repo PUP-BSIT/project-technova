@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../../services/profile.service';
@@ -16,13 +16,14 @@ import { StudentSidebarComponent } from '../student-sidebar/student-sidebar';
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
-export class StudentProfileComponent implements OnInit {
+export class StudentProfileComponent implements OnInit, AfterViewInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(StudentSidebarComponent) sidebarComponent!: StudentSidebarComponent;
 
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   profileForm!: FormGroup;
   user: any = null;
@@ -31,12 +32,21 @@ export class StudentProfileComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
   isSidebarOpen = true;
+  isMobileView = false;
 
   ngOnInit(): void {
     this.loadProfile();
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 100);
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize isMobileView after view is initialized
+    if (this.sidebarComponent) {
+      this.isMobileView = this.sidebarComponent.isMobileView;
+      this.cdr.detectChanges();
+    }
   }
 
   loadProfile(): void {
@@ -166,11 +176,9 @@ export class StudentProfileComponent implements OnInit {
   toggleSidebar(): void {
     if (this.sidebarComponent) {
       this.sidebarComponent.toggleSidebar();
+      // Update isMobileView after toggle
+      this.isMobileView = this.sidebarComponent.isMobileView;
     }
-  }
-
-  get isMobileView(): boolean {
-    return this.sidebarComponent?.isMobileView || false;
   }
 }
 

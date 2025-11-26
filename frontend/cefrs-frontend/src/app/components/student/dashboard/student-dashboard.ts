@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
@@ -28,14 +28,23 @@ import { MyRequests } from './my-requests/my-requests';
   templateUrl: './student-dashboard.html',
   styleUrls: ['./student-dashboard.scss']
 })
-export class StudentDashboard {
+export class StudentDashboard implements AfterViewInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(StudentSidebarComponent) sidebarComponent!: StudentSidebarComponent;
   
   currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' = 'dashboard';
   isSidebarOpen = true;
+  isMobileView = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+
+  ngAfterViewInit(): void {
+    // Initialize isMobileView after view is initialized
+    if (this.sidebarComponent) {
+      this.isMobileView = this.sidebarComponent.isMobileView;
+      this.cdr.detectChanges();
+    }
+  }
 
   setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings'): void {
     this.currentView = view;
@@ -52,10 +61,8 @@ export class StudentDashboard {
   toggleSidebar(): void {
     if (this.sidebarComponent) {
       this.sidebarComponent.toggleSidebar();
+      // Update isMobileView after toggle
+      this.isMobileView = this.sidebarComponent.isMobileView;
     }
-  }
-
-  get isMobileView(): boolean {
-    return this.sidebarComponent?.isMobileView || false;
   }
 }
