@@ -1,3 +1,10 @@
+// Breakpoints
+$breakpoint-xs: 320px;
+$breakpoint-s: 480px;
+$breakpoint-m: 768px;
+$breakpoint-l: 1024px;
+$breakpoint-xl: 1280px;
+
 // Variables
 $card-background: #ffffff;
 $text-primary: #333333;
@@ -11,31 +18,82 @@ $font-family: 'Roboto', sans-serif;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+// Responsive Mixins
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'xs' {
+    @media (max-width: #{$breakpoint-xs}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 's' {
+    @media (min-width: #{$breakpoint-xs + 1}) and (max-width: #{$breakpoint-s}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'm' {
+    @media (min-width: #{$breakpoint-s + 1}) and (max-width: #{$breakpoint-m}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'tablet' {
+    @media (min-width: #{$breakpoint-m + 1}) and (max-width: #{$breakpoint-l}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'l' {
+    @media (min-width: #{$breakpoint-l + 1}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'mobile-all' {
+    @media (max-width: #{$breakpoint-m}) {
+      @content;
+    }
+  }
+}
+
 .view-container {
   padding: 32px;
   background: #f5f5f5;
   min-height: 100vh;
+
+  @include respond-to('mobile-all') {
+    padding: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 16px;
+  }
 }
 
-// Header Section
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
 
-  @media (max-width: 768px) {
+  @include respond-to('mobile-all') {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+    margin-bottom: 20px;
   }
 }
 
 .page-title {
-  font-size: 32px;
-  font-weight: 500;
-  color: $text-primary;
-  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+
+  @include respond-to('mobile-all') {
+    font-size: 24px;
+  }
+
+  @include respond-to('s') {
+    margin-left: 50px;
+    font-size: 24px;
+  }
 }
 
 .refresh-button {
@@ -53,6 +111,18 @@ $font-family: 'Roboto', sans-serif;
   cursor: pointer;
   transition: all 0.3s;
 
+  @include respond-to('mobile-all') {
+    width: 100%;
+    justify-content: center;
+    font-size: 13px;
+    padding: 9px 16px;
+  }
+
+  @include respond-to('s') {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+
   &:hover:not(:disabled) {
     background: darken($primary-color, 10%);
     transform: translateY(-1px);
@@ -66,6 +136,10 @@ $font-family: 'Roboto', sans-serif;
   .refresh-icon {
     font-size: 18px;
     display: inline-block;
+
+    @include respond-to('s') {
+      font-size: 16px;
+    }
   }
 
   &:active:not(:disabled) .refresh-icon {
@@ -74,15 +148,10 @@ $font-family: 'Roboto', sans-serif;
 }
 
 @keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-// Loading State
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -93,10 +162,27 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 8px;
   @include card-shadow;
 
+  @include respond-to('mobile-all') {
+    min-height: 300px;
+  }
+
+  @include respond-to('s') {
+    min-height: 250px;
+  }
+
   p {
     margin-top: 16px;
     font-size: 16px;
     color: $text-secondary;
+
+    @include respond-to('mobile-all') {
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    @include respond-to('s') {
+      font-size: 13px;
+    }
   }
 }
 
@@ -107,6 +193,17 @@ $font-family: 'Roboto', sans-serif;
   border-top: 4px solid $primary-color;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+
+  @include respond-to('mobile-all') {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+  }
+
+  @include respond-to('s') {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 @keyframes spin {
@@ -114,7 +211,6 @@ $font-family: 'Roboto', sans-serif;
   100% { transform: rotate(360deg); }
 }
 
-// Tab Navigation
 .tab-navigation {
   display: flex;
   gap: 0;
@@ -123,6 +219,11 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 8px 8px 0 0;
   overflow: hidden;
   @include card-shadow;
+
+  @include respond-to('mobile-all') {
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
 }
 
 .tab-button {
@@ -138,6 +239,18 @@ $font-family: 'Roboto', sans-serif;
   cursor: pointer;
   transition: all 0.3s;
 
+  @include respond-to('mobile-all') {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid $border-color;
+    border-left: 4px solid transparent;
+  }
+
+  @include respond-to('s') {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
   &:hover {
     background: #fafafa;
   }
@@ -146,10 +259,14 @@ $font-family: 'Roboto', sans-serif;
     border-bottom-color: $primary-color;
     color: $primary-color;
     background: white;
+
+    @include respond-to('mobile-all') {
+      border-bottom: 1px solid $border-color;
+      border-left-color: $primary-color;
+    }
   }
 }
 
-// Tab Content
 .tab-content {
   animation: fadeIn 0.3s ease-in;
 }
@@ -165,19 +282,26 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
-// Stats Grid
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   margin-bottom: 32px;
 
-  @media (max-width: 1200px) {
+  @include respond-to('tablet') {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 
-  @media (max-width: 768px) {
+  @include respond-to('mobile-all') {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  @include respond-to('s') {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
 
@@ -188,29 +312,56 @@ $font-family: 'Roboto', sans-serif;
   border-left: 4px solid $primary-color;
   @include card-shadow;
 
+  @include respond-to('mobile-all') {
+    padding: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 12px;
+  }
+
   .stat-label {
     font-size: 14px;
     color: $text-secondary;
     margin-bottom: 8px;
     font-weight: 500;
+
+    @include respond-to('mobile-all') {
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    @include respond-to('s') {
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
   }
 
   .stat-value {
     font-size: 36px;
     font-weight: 600;
     color: $primary-color;
+
+    @include respond-to('mobile-all') {
+      font-size: 28px;
+    }
+
+    @include respond-to('s') {
+      font-size: 24px;
+    }
   }
 }
 
-// Charts
 .charts-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
   margin-bottom: 32px;
 
-  @media (max-width: 968px) {
+  @include respond-to('mobile-all') {
     grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
   }
 }
 
@@ -220,8 +371,20 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 8px;
   @include card-shadow;
 
+  @include respond-to('mobile-all') {
+    padding: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 12px;
+  }
+
   &.half-width {
     width: 95%;
+
+    @include respond-to('mobile-all') {
+      width: 100%;
+    }
   }
 
   .chart-title {
@@ -229,6 +392,16 @@ $font-family: 'Roboto', sans-serif;
     font-weight: 600;
     margin-bottom: 16px;
     color: $text-primary;
+
+    @include respond-to('mobile-all') {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    @include respond-to('s') {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
   }
 
   .chart-placeholder {
@@ -238,6 +411,14 @@ $font-family: 'Roboto', sans-serif;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    @include respond-to('mobile-all') {
+      min-height: 200px;
+    }
+
+    @include respond-to('s') {
+      min-height: 150px;
+    }
   }
 
   .chart-legend {
@@ -247,6 +428,17 @@ $font-family: 'Roboto', sans-serif;
     margin-bottom: 16px;
     width: 100%;
 
+    @include respond-to('mobile-all') {
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @include respond-to('s') {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     .legend-item {
       display: flex;
       align-items: center;
@@ -254,11 +446,21 @@ $font-family: 'Roboto', sans-serif;
       font-size: 12px;
       color: $text-secondary;
 
+      @include respond-to('s') {
+        font-size: 11px;
+        gap: 6px;
+      }
+
       .legend-color {
         width: 20px;
         height: 3px;
         background: $primary-color;
         display: inline-block;
+
+        @include respond-to('s') {
+          width: 16px;
+          height: 2px;
+        }
       }
     }
   }
@@ -271,34 +473,72 @@ $font-family: 'Roboto', sans-serif;
     .axis-label {
       font-size: 12px;
       fill: $text-secondary;
+
+      @include respond-to('s') {
+        font-size: 10px;
+      }
     }
 
     .legend-text {
       font-size: 11px;
       fill: $text-secondary;
+
+      @include respond-to('s') {
+        font-size: 9px;
+      }
     }
   }
 }
 
-// Table
 .table-container {
   background: white;
   padding: 24px;
   border-radius: 8px;
   @include card-shadow;
   margin-bottom: 32px;
+  overflow-x: auto;
+
+  @include respond-to('mobile-all') {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  @include respond-to('s') {
+    padding: 12px;
+  }
 
   .table-title {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 16px;
     color: $text-primary;
+
+    @include respond-to('mobile-all') {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    @include respond-to('s') {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
   }
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px;
+
+  @include respond-to('mobile-all') {
+    font-size: 12px;
+    min-width: 500px;
+  }
+
+  @include respond-to('s') {
+    font-size: 11px;
+    min-width: 450px;
+  }
 
   thead {
     background: #f9fafb;
@@ -310,6 +550,16 @@ $font-family: 'Roboto', sans-serif;
       font-weight: 600;
       color: $text-secondary;
       border-bottom: 2px solid $border-color;
+
+      @include respond-to('mobile-all') {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      @include respond-to('s') {
+        padding: 6px 8px;
+        font-size: 11px;
+      }
     }
   }
 
@@ -331,11 +581,20 @@ $font-family: 'Roboto', sans-serif;
       padding: 16px;
       font-size: 14px;
       color: $text-primary;
+
+      @include respond-to('mobile-all') {
+        padding: 10px;
+        font-size: 12px;
+      }
+
+      @include respond-to('s') {
+        padding: 8px;
+        font-size: 11px;
+      }
     }
   }
 }
 
-// Rank Badge
 .rank-badge {
   display: inline-flex;
   align-items: center;
@@ -347,13 +606,30 @@ $font-family: 'Roboto', sans-serif;
   color: white;
   font-weight: 600;
   font-size: 14px;
+
+  @include respond-to('mobile-all') {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  @include respond-to('s') {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
 }
 
-// Progress Bar
 .progress-cell {
   display: flex;
   align-items: center;
   gap: 12px;
+
+  @include respond-to('mobile-all') {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
 }
 
 .progress-bar {
@@ -363,6 +639,12 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 4px;
   overflow: hidden;
   min-width: 100px;
+
+  @include respond-to('mobile-all') {
+    width: 100%;
+    height: 6px;
+    min-width: auto;
+  }
 }
 
 .progress-fill {
@@ -375,16 +657,33 @@ $font-family: 'Roboto', sans-serif;
   font-size: 13px;
   color: $text-secondary;
   white-space: nowrap;
-  min-width: 40px;
+
+  @include respond-to('mobile-all') {
+    font-size: 11px;
+    white-space: normal;
+  }
+
+  @include respond-to('s') {
+    font-size: 10px;
+  }
 }
 
-// Status Badges
 .status-badge {
   padding: 4px 12px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
+
+  @include respond-to('mobile-all') {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  @include respond-to('s') {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
 
   &.status-high-demand {
     background: #fef3c7;
@@ -405,13 +704,13 @@ $font-family: 'Roboto', sans-serif;
     background: #fecaca;
     color: #991b1b;
   }
-    &.status-completed {
-      background: #cfe2ff;
-      color: #084298;
-    }
+
+  &.status-completed {
+    background: #cfe2ff;
+    color: #084298;
+  }
 }
 
-// Empty State
 .empty-state {
   background: $card-background;
   padding: 64px 32px;
@@ -419,9 +718,27 @@ $font-family: 'Roboto', sans-serif;
   @include card-shadow;
   text-align: center;
 
+  @include respond-to('mobile-all') {
+    padding: 40px 20px;
+  }
+
+  @include respond-to('s') {
+    padding: 30px 16px;
+  }
+
   .empty-icon {
     font-size: 64px;
     margin-bottom: 16px;
+
+    @include respond-to('mobile-all') {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    @include respond-to('s') {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
   }
 
   h3 {
@@ -429,37 +746,58 @@ $font-family: 'Roboto', sans-serif;
     font-weight: 600;
     color: $text-primary;
     margin-bottom: 8px;
+
+    @include respond-to('mobile-all') {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    @include respond-to('s') {
+      font-size: 16px;
+    }
   }
 
   p {
     font-size: 16px;
     color: $text-secondary;
     margin: 0;
+
+    @include respond-to('mobile-all') {
+      font-size: 14px;
+    }
+
+    @include respond-to('s') {
+      font-size: 13px;
+    }
   }
 }
 
-// Responsive adjustments
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
+.table-container {
+  &::-webkit-scrollbar {
+    height: 8px;
 
-  .charts-row {
-    grid-template-columns: 1fr;
-  }
-
-  .data-table {
-    font-size: 12px;
-
-    thead th,
-    tbody td {
-      padding: 8px;
+    @include respond-to('mobile-all') {
+      height: 6px;
     }
   }
 
-  .rank-badge {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+
+    &:hover {
+      background: #555;
+    }
+  }
+}
+
+@include respond-to('mobile-all') {
+  button {
+    min-height: 44px;
   }
 }
