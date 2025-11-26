@@ -1,19 +1,25 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../../services/profile.service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { OrgSidebarComponent } from '../org-sidebar/org-sidebar';
 
 @Component({
   selector: 'app-org-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, OrgSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatSidenavModule, MatButtonModule, MatIconModule, OrgSidebarComponent],
   templateUrl: './org-profile.html',
   styleUrls: ['./org-profile.scss']
 })
 export class OrgProfileComponent implements OnInit {
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+  @ViewChild(OrgSidebarComponent) sidebarComponent!: OrgSidebarComponent;
+
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private router = inject(Router);
@@ -25,12 +31,8 @@ export class OrgProfileComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
   isSidebarOpen = true;
-  isMobileView = false;
-  private readonly DESKTOP_BREAKPOINT = 1024;
-  private initialized = false;
 
   ngOnInit(): void {
-    this.evaluateViewport();
     this.loadProfile();
     // Ensure proper display on component initialization
     setTimeout(() => {
@@ -166,43 +168,15 @@ export class OrgProfileComponent implements OnInit {
         // Already on settings/profile, no need to navigate
         break;
     }
-
-    if (this.isMobileView) {
-      this.isSidebarOpen = false;
-    }
   }
 
   toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
-  closeSidebar(): void {
-    if (this.isSidebarOpen) {
-      this.isSidebarOpen = false;
+    if (this.sidebarComponent) {
+      this.sidebarComponent.toggleSidebar();
     }
   }
 
-  @HostListener('window:resize')
-  onWindowResize(): void {
-    this.evaluateViewport();
-  }
-
-  private evaluateViewport(): void {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const previousMobileState = this.isMobileView;
-    const nextMobileState = window.innerWidth < this.DESKTOP_BREAKPOINT;
-    this.isMobileView = nextMobileState;
-
-    if (!nextMobileState && previousMobileState) {
-      this.isSidebarOpen = true;
-    }
-
-    if (!this.initialized) {
-      this.isSidebarOpen = !this.isMobileView;
-      this.initialized = true;
-    }
+  get isMobileView(): boolean {
+    return this.sidebarComponent?.isMobileView || false;
   }
 }
