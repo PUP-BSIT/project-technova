@@ -1,22 +1,29 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../../services/profile.service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { StudentSidebarComponent } from '../student-sidebar/student-sidebar';
 
 @Component({
   selector: 'app-student-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, StudentSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatSidenavModule, MatButtonModule, MatIconModule, StudentSidebarComponent],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
-export class StudentProfileComponent implements OnInit {
+export class StudentProfileComponent implements OnInit, AfterViewInit {
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+  @ViewChild(StudentSidebarComponent) sidebarComponent!: StudentSidebarComponent;
+
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   profileForm!: FormGroup;
   user: any = null;
@@ -26,15 +33,20 @@ export class StudentProfileComponent implements OnInit {
   errorMessage = '';
   isSidebarOpen = true;
   isMobileView = false;
-  private readonly DESKTOP_BREAKPOINT = 1024;
-  private initialized = false;
 
   ngOnInit(): void {
-    this.evaluateViewport();
     this.loadProfile();
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 100);
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize isMobileView after view is initialized
+    if (this.sidebarComponent) {
+      this.isMobileView = this.sidebarComponent.isMobileView;
+      this.cdr.detectChanges();
+    }
   }
 
   loadProfile(): void {
@@ -159,43 +171,13 @@ export class StudentProfileComponent implements OnInit {
       case 'settings':
         break;
     }
-
-    if (this.isMobileView) {
-      this.isSidebarOpen = false;
-    }
   }
 
   toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
-  closeSidebar(): void {
-    if (this.isSidebarOpen) {
-      this.isSidebarOpen = false;
-    }
-  }
-
-  @HostListener('window:resize')
-  onWindowResize(): void {
-    this.evaluateViewport();
-  }
-
-  private evaluateViewport(): void {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const previousMobileState = this.isMobileView;
-    const nextMobileState = window.innerWidth < this.DESKTOP_BREAKPOINT;
-    this.isMobileView = nextMobileState;
-
-    if (!nextMobileState && previousMobileState) {
-      this.isSidebarOpen = true;
-    }
-
-    if (!this.initialized) {
-      this.isSidebarOpen = !this.isMobileView;
-      this.initialized = true;
+    if (this.sidebarComponent) {
+      this.sidebarComponent.toggleSidebar();
+      // Update isMobileView after toggle
+      this.isMobileView = this.sidebarComponent.isMobileView;
     }
   }
 }

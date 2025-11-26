@@ -1,32 +1,37 @@
-<div class="dashboard-container"
-  [class.sidebar-open]="isSidebarOpen"
-  [class.sidebar-closed]="!isSidebarOpen"
-  [class.is-mobile]="isMobileView">
-  @if (isMobileView) {
-    <button
-      class="mobile-menu-button"
-      type="button"
-      (click)="toggleSidebar()"
-      [attr.aria-expanded]="isSidebarOpen"
-      aria-label="Toggle navigation menu">
-      <span class="hamburger" [class.is-open]="isSidebarOpen"></span>
-    </button>
-  }
+<mat-sidenav-container class="dashboard-container">
+  <mat-sidenav 
+    #sidenav
+    [opened]="isSidebarOpen"
+    (openedChange)="isSidebarOpen = $event"
+    [mode]="isMobileView ? 'over' : 'side'"
+    [fixedInViewport]="!isMobileView"
+    [fixedTopGap]="0"
+    [fixedBottomGap]="0"
+    class="sidebar-sidenav">
+    <app-org-sidebar 
+      [currentView]="currentView" 
+      [sidenav]="sidenav"
+      (viewChanged)="onSidebarViewChange($event)">
+    </app-org-sidebar>
+  </mat-sidenav>
 
-  <!-- Sidebar Component -->
-  <app-org-sidebar 
-    [currentView]="currentView" 
-    [isSidebarOpen]="isSidebarOpen"
-    [isMobileView]="isMobileView"
-    (viewChanged)="onSidebarViewChange($event)">
-  </app-org-sidebar>
+  <mat-sidenav-content class="main-content">
+    @if (isMobileView) {
+      <button
+        mat-icon-button
+        class="hamburger-button"
+        type="button"
+        (click)="toggleSidebar()"
+        [attr.aria-expanded]="isSidebarOpen"
+        aria-label="Toggle navigation menu">
+        <span class="hamburger-icon" [class.is-open]="isSidebarOpen">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    }
 
-  @if (isMobileView && isSidebarOpen) {
-    <div class="sidebar-overlay" (click)="closeSidebar()"></div>
-  }
-
-  <!-- Main Content -->
-  <main class="main-content">
     @if (currentView === 'settings') {
       <router-outlet></router-outlet>
     }
@@ -46,5 +51,5 @@
     @if (currentView === 'requests') {
       <app-org-my-request></app-org-my-request>
     }
-  </main>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

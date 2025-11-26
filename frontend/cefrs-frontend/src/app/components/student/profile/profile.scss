@@ -1,109 +1,118 @@
 .profile-layout {
-  display: flex;
   min-height: 100vh;
-  width: 100%;
-  overflow-x: hidden;
+  height: 100vh;
   position: relative;
 
-  &.sidebar-open:not(.is-mobile) .main-content {
-    margin-left: 280px;
-    width: calc(100% - 280px);
+  ::ng-deep .mat-drawer-container {
+    background-color: transparent;
+    height: 100vh;
+    overflow: hidden;
   }
 
-  &.sidebar-closed:not(.is-mobile) .main-content {
-    margin-left: 0;
-    width: 100%;
+  ::ng-deep .mat-drawer {
+    width: 280px;
+    background-color: transparent;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
   }
 
-  &.is-mobile {
+  ::ng-deep .mat-drawer-inner-container {
+    overflow: hidden !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  ::ng-deep .mat-drawer-inner-container > app-student-sidebar {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
+}
+
+.sidebar-sidenav {
+  width: 280px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .main-content {
-  margin-left: 0;
-  flex: 1;
-  padding: 1rem;
+  padding: 0;
   min-height: 100vh;
-  overflow-y: auto;
-  width: 100%;
-  transition: margin-left 0.3s ease;
 }
 
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
-  z-index: 900;
+.profile-container-wrapper {
+  padding: 1rem;
 }
 
-.mobile-menu-button {
+.hamburger-button {
   position: fixed;
-  top: 1rem;
-  left: 1rem;
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
   background: #ffffff;
-  display: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1200;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
 
   &:hover {
     background: #f5f5f5;
-    transform: translateY(-2px);
   }
 
-  &:active {
-    transform: scale(0.96);
-  }
-
-  .hamburger {
-    position: relative;
+  .hamburger-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     width: 24px;
-    height: 2px;
-    background: #6d1818;
-    display: inline-block;
-    transition: background 0.3s ease;
+    height: 18px;
+    cursor: pointer;
 
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      width: 24px;
+    span {
+      width: 100%;
       height: 2px;
-      background: #6d1818;
-      transition: transform 0.3s ease, top 0.3s ease;
-    }
-
-    &::before {
-      top: -8px;
-    }
-
-    &::after {
-      top: 8px;
+      background-color: #6d1818;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      transform-origin: center;
     }
 
     &.is-open {
-      background: transparent;
-
-      &::before {
-        top: 0;
-        transform: rotate(45deg);
+      span:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
       }
 
-      &::after {
-        top: 0;
-        transform: rotate(-45deg);
+      span:nth-child(2) {
+        opacity: 0;
+      }
+
+      span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
       }
     }
+  }
+}
+
+@media (max-width: 1024px) {
+  .hamburger-button {
+    display: block;
+  }
+
+  .main-content {
+    padding-top: 80px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hamburger-button {
+    display: none;
   }
 }
 

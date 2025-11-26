@@ -51,26 +51,25 @@ $animation-pulse: 1.5s;
 // Z-Index
 $z-index-sidebar: 1000;
 
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
 .sidebar {
-  width: $sidebar-width;
+  width: 100%;
+  height: 100%;
   background: $sidebar-gradient;
   color: $white;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  left: 0;
-  top: 0;
-  z-index: $z-index-sidebar;
-  transition: transform $transition-fast ease, box-shadow $transition-fast ease;
-
-  &.is-collapsed {
-    transform: translateX(-110%);
-    pointer-events: none;
-  }
+  overflow: hidden; // Prevent sidebar from scrolling, only nav-menu scrolls
+  box-sizing: border-box;
 
   &.is-mobile {
-    width: $sidebar-width-mobile;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
   }
 }
@@ -82,6 +81,7 @@ $z-index-sidebar: 1000;
   flex-direction: column;
   align-items: center;
   gap: $spacing-lg;
+  flex-shrink: 0; // Prevent logo section from shrinking
 }
 
 .logo-image {
@@ -104,8 +104,13 @@ $z-index-sidebar: 1000;
 }
 
 .nav-menu {
-  flex: 1;
+  flex: 1 1 auto;
   padding: $spacing-lg 0;
+  overflow-y: auto !important; // Only nav-menu scrolls
+  overflow-x: hidden !important;
+  min-height: 0 !important; // Important for flex children to allow scrolling
+  max-height: 100%; // Prevent from exceeding parent
+  -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
 }
 
 .nav-item {
@@ -152,6 +157,8 @@ $z-index-sidebar: 1000;
   gap: $spacing-md;
   border-top: 1px solid $white-opacity-10;
   justify-content: space-between;
+  flex-shrink: 0; // Keep user-profile always visible at bottom
+  margin-top: auto; // Push to bottom
 }
 
 .user-details {
@@ -310,13 +317,9 @@ $z-index-sidebar: 1000;
   }
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    width: $sidebar-width-mobile;
-  }
-
+@media (max-width: 1024px) {
   .logo-section {
-    padding: $spacing-lg $spacing-md;
+    padding: $spacing-xl $spacing-md;
     gap: $spacing-md;
   }
 
@@ -330,12 +333,20 @@ $z-index-sidebar: 1000;
   }
 
   .nav-item {
-    padding: $spacing-md $spacing-lg;
-    font-size: $font-size-sm;
+    padding: $spacing-lg $spacing-xl;
+    font-size: $font-size-md;
+    min-height: 50px;
+  }
+
+  .icon,
+  .icon-2 {
+    width: 22px;
+    height: 22px;
+    margin-right: $spacing-md;
   }
 
   .user-profile {
-    padding: $spacing-lg;
+    padding: $spacing-lg $spacing-md;
   }
 
   .user-name {
@@ -357,23 +368,69 @@ $z-index-sidebar: 1000;
   }
 }
 
-@media (max-width: 480px) {
-  .sidebar {
-    width: 200px;
+@media (max-width: 768px) {
+  .logo-section {
+    padding: $spacing-lg $spacing-md;
+    gap: $spacing-sm;
   }
 
   .logo-image {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
   }
 
   .logo-text {
-    font-size: 24px;
+    font-size: 26px;
   }
 
   .nav-item {
-    padding: $spacing-sm $spacing-md;
-    font-size: 14px;
+    padding: $spacing-xl $spacing-lg;
+    font-size: $font-size-md;
+    min-height: 56px; // Better touch target for mobile
+  }
+
+  .icon,
+  .icon-2 {
+    width: 24px;
+    height: 24px;
+    margin-right: $spacing-lg;
+  }
+
+  .user-profile {
+    padding: $spacing-md $spacing-lg;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-section {
+    padding: $spacing-md;
+    gap: $spacing-xs;
+  }
+
+  .logo-image {
+    width: 70px;
+    height: 70px;
+  }
+
+  .logo-text {
+    font-size: 22px;
+  }
+
+  .nav-menu {
+    padding: $spacing-md 0;
+  }
+
+  .nav-item {
+    padding: $spacing-xl $spacing-md;
+    font-size: $font-size-md;
+    min-height: 60px; // Good touch target for small mobile
+  }
+
+  .icon,
+  .icon-2 {
+    width: 26px;
+    height: 26px;
+    margin-right: $spacing-md;
   }
 
   .user-profile {

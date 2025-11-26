@@ -1,31 +1,38 @@
-<div class="profile-layout"
-  [class.sidebar-open]="isSidebarOpen"
-  [class.sidebar-closed]="!isSidebarOpen"
-  [class.is-mobile]="isMobileView">
+<mat-sidenav-container class="profile-layout">
+  <mat-sidenav 
+    #sidenav
+    [opened]="isSidebarOpen"
+    (openedChange)="isSidebarOpen = $event"
+    [mode]="isMobileView ? 'over' : 'side'"
+    [fixedInViewport]="!isMobileView"
+    [fixedTopGap]="0"
+    [fixedBottomGap]="0"
+    class="sidebar-sidenav">
+    <app-student-sidebar 
+      currentView="settings" 
+      [sidenav]="sidenav"
+      (viewChanged)="onViewChanged($event)">
+    </app-student-sidebar>
+  </mat-sidenav>
 
-  @if (isMobileView) {
-    <button 
-      class="mobile-menu-button" 
-      type="button" 
-      (click)="toggleSidebar()"
-      [attr.aria-expanded]="isSidebarOpen"
-      aria-label="Toggle navigation menu">
-      <span class="hamburger" [class.is-open]="isSidebarOpen"></span>
-    </button>
-  }
+  <mat-sidenav-content class="main-content">
+    @if (isMobileView) {
+      <button
+        mat-icon-button
+        class="hamburger-button"
+        type="button"
+        (click)="toggleSidebar()"
+        [attr.aria-expanded]="isSidebarOpen"
+        aria-label="Toggle navigation menu">
+        <span class="hamburger-icon" [class.is-open]="isSidebarOpen">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    }
 
-  <app-student-sidebar 
-    currentView="settings" 
-    [isSidebarOpen]="isSidebarOpen"
-    [isMobileView]="isMobileView"
-    (viewChanged)="onViewChanged($event)">
-  </app-student-sidebar>
-
-  @if (isMobileView && isSidebarOpen) {
-    <div class="sidebar-overlay" (click)="closeSidebar()"></div>
-  }
-  
-  <div class="main-content">
+    <div class="profile-container-wrapper">
     <div class="profile-container">
       <div class="nav-header">
         <h1 class="page-title">Personal Data</h1>
@@ -127,6 +134,7 @@
         </div>
       }
     </div>
-  </div>
-</div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
 
