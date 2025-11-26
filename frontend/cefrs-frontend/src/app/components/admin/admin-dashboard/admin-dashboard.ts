@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -53,6 +53,10 @@ export class AdminDashboard implements OnInit {
   notificationType: 'success' | 'error' = 'success';
   notificationMessage: string = '';
 
+  // Mobile responsive properties
+  isMobileView: boolean = false;
+  sidenavOpen: boolean = false;
+
   navItems: NavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: 'assets/dashboard.png' },
     { id: 'manage-request', label: 'Manage Request', icon: 'assets/manage.png' },
@@ -66,6 +70,29 @@ export class AdminDashboard implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.checkScreenSize();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkScreenSize();
+  }
+
+  private checkScreenSize(): void {
+    this.isMobileView = window.innerWidth < 1024; // Below 1024px is considered mobile/tablet
+    if (!this.isMobileView) {
+      this.sidenavOpen = false; // Close sidenav when switching to desktop
+    }
+  }
+
+  toggleSidenav(): void {
+    this.sidenavOpen = !this.sidenavOpen;
+  }
+
+  closeSidenav(): void {
+    if (this.isMobileView) {
+      this.sidenavOpen = false;
+    }
   }
 
   private loadUserProfile(): void {
@@ -99,6 +126,7 @@ export class AdminDashboard implements OnInit {
     if (view === 'settings') {
       this.router.navigate(['/admin-dashboard/settings/profile']);
     }
+    this.closeSidenav(); // Close sidenav after navigation on mobile
   }
 
   logout(): void {

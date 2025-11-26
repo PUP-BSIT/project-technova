@@ -1,3 +1,10 @@
+// Breakpoints
+$breakpoint-xs: 320px;
+$breakpoint-s: 480px;
+$breakpoint-m: 768px;
+$breakpoint-l: 1024px;
+$breakpoint-xl: 1280px;
+
 // Variables
 $card-background: #f5f5dc;
 $text-primary: #333333;
@@ -18,18 +25,70 @@ $font-family: 'Roboto', sans-serif;
   font-family: $font-family;
 }
 
+// Responsive Mixins
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'xs' {
+    @media (max-width: #{$breakpoint-xs}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 's' {
+    @media (min-width: #{$breakpoint-xs + 1}) and (max-width: #{$breakpoint-s}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'm' {
+    @media (min-width: #{$breakpoint-s + 1}) and (max-width: #{$breakpoint-m}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'tablet' {
+    @media (min-width: #{$breakpoint-m + 1}) and (max-width: #{$breakpoint-l}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'l' {
+    @media (min-width: #{$breakpoint-l + 1}) {
+      @content;
+    }
+  }
+  @else if $breakpoint == 'mobile-all' {
+    @media (max-width: #{$breakpoint-m}) {
+      @content;
+    }
+  }
+}
+
 .view-container {
   padding: 32px;
+
+  @include respond-to('mobile-all') {
+    padding: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 16px;
+  }
 }
 
 .page-title {
-  font-size: 32px;
-  font-weight: 500;
-  margin-bottom: 32px;
-  color: $text-primary;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+
+  @include respond-to('mobile-all') {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  @include respond-to('s') {
+    margin-left: 50px;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
 }
 
-// Filter Section
 .filter-section {
   display: flex;
   gap: 16px;
@@ -37,10 +96,21 @@ $font-family: 'Roboto', sans-serif;
   flex-wrap: wrap;
   align-items: center;
 
+  @include respond-to('mobile-all') {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
   .search-box {
     flex: 1;
     min-width: 300px;
     position: relative;
+
+    @include respond-to('mobile-all') {
+      min-width: 100%;
+      width: 100%;
+    }
 
     input {
       width: 95%;
@@ -49,6 +119,17 @@ $font-family: 'Roboto', sans-serif;
       border-radius: 6px;
       font-size: 16px;
       font-family: $font-family;
+
+      @include respond-to('mobile-all') {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 40px 10px 12px;
+      }
+
+      @include respond-to('s') {
+        font-size: 13px;
+        padding: 9px 36px 9px 10px;
+      }
 
       &:focus {
         outline: none;
@@ -63,12 +144,29 @@ $font-family: 'Roboto', sans-serif;
       top: 50%;
       transform: translateY(-50%);
       color: $text-secondary;
+
+      @include respond-to('mobile-all') {
+        right: 8px;
+      }
+
+      svg {
+        @include respond-to('s') {
+          width: 18px;
+          height: 18px;
+        }
+      }
     }
   }
 
   .filter-dropdowns {
     display: flex;
     gap: 12px;
+
+    @include respond-to('mobile-all') {
+      width: 100%;
+      flex-direction: column;
+      gap: 8px;
+    }
   }
 
   .filter-dropdown {
@@ -80,6 +178,17 @@ $font-family: 'Roboto', sans-serif;
     background: white;
     cursor: pointer;
 
+    @include respond-to('mobile-all') {
+      width: 100%;
+      font-size: 14px;
+      padding: 10px 12px;
+    }
+
+    @include respond-to('s') {
+      font-size: 13px;
+      padding: 9px 10px;
+    }
+
     &:focus {
       outline: none;
       border-color: $primary-color;
@@ -87,11 +196,18 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
-// Request Cards
 .requests-list {
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @include respond-to('mobile-all') {
+    gap: 16px;
+  }
+
+  @include respond-to('s') {
+    gap: 12px;
+  }
 }
 
 .request-card {
@@ -100,16 +216,25 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 8px;
   @include card-shadow;
 
+  @include respond-to('mobile-all') {
+    padding: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 12px;
+  }
+
   .request-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
 
-    @media (max-width: 768px) {
+    @include respond-to('mobile-all') {
       flex-direction: column;
       align-items: flex-start;
       gap: 12px;
+      margin-bottom: 12px;
     }
   }
 
@@ -117,6 +242,16 @@ $font-family: 'Roboto', sans-serif;
     font-weight: 600;
     font-size: 18px;
     margin-right: 12px;
+
+    @include respond-to('mobile-all') {
+      font-size: 16px;
+      margin-right: 8px;
+    }
+
+    @include respond-to('s') {
+      font-size: 14px;
+      margin-right: 6px;
+    }
   }
 
   .status-badge {
@@ -125,6 +260,16 @@ $font-family: 'Roboto', sans-serif;
     font-size: 14px;
     font-weight: 500;
     text-transform: capitalize;
+
+    @include respond-to('mobile-all') {
+      font-size: 12px;
+      padding: 3px 10px;
+    }
+
+    @include respond-to('s') {
+      font-size: 11px;
+      padding: 2px 8px;
+    }
 
     &.status-pending {
       background: #fcd34d;
@@ -146,6 +291,16 @@ $font-family: 'Roboto', sans-serif;
     font-size: 20px;
     font-weight: 500;
     margin-bottom: 16px;
+
+    @include respond-to('mobile-all') {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    @include respond-to('s') {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
   }
 
   .request-details-grid {
@@ -154,8 +309,10 @@ $font-family: 'Roboto', sans-serif;
     gap: 12px;
     margin-bottom: 12px;
 
-    @media (max-width: 768px) {
+    @include respond-to('mobile-all') {
       grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
     }
   }
 
@@ -163,13 +320,36 @@ $font-family: 'Roboto', sans-serif;
     display: flex;
     gap: 8px;
 
+    @include respond-to('s') {
+      flex-direction: column;
+      gap: 4px;
+    }
+
     .detail-label {
       font-weight: 500;
       color: $text-secondary;
+      font-size: 14px;
+
+      @include respond-to('mobile-all') {
+        font-size: 13px;
+      }
+
+      @include respond-to('s') {
+        font-size: 12px;
+      }
     }
 
     .detail-value {
       color: $text-primary;
+      font-size: 14px;
+
+      @include respond-to('mobile-all') {
+        font-size: 13px;
+      }
+
+      @include respond-to('s') {
+        font-size: 12px;
+      }
     }
   }
 
@@ -177,10 +357,15 @@ $font-family: 'Roboto', sans-serif;
     display: flex;
     gap: 8px;
     align-items: center;
+
+    @include respond-to('mobile-all') {
+      width: 100%;
+      flex-direction: column;
+      gap: 6px;
+    }
   }
 }
 
-// Buttons
 .approve-button {
   @include button-reset;
   padding: 8px 24px;
@@ -191,21 +376,27 @@ $font-family: 'Roboto', sans-serif;
   font-size: 16px;
   transition: background 0.2s;
 
+  @include respond-to('mobile-all') {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  @include respond-to('s') {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
   &:hover {
     background: #16a34a;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
-.action-status-label {
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  &.status-approved { background: #7fe87f; color: #1a5c1a; }
-  &.status-declined { background: #fca5a5; color: #7f1d1d; }
-  &.status-pending { background: #fcd34d; color: #78350f; }
-  &.status-completed { background: #cfe2ff; color: #084298; }
-}
 .decline-button {
   @include button-reset;
   padding: 8px 24px;
@@ -216,12 +407,92 @@ $font-family: 'Roboto', sans-serif;
   font-size: 16px;
   transition: background 0.2s;
 
+  @include respond-to('mobile-all') {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  @include respond-to('s') {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
   &:hover {
     background: #dc2626;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
-// Modal Styles
+.return-button {
+  @include button-reset;
+  padding: 8px 20px;
+  background: #10b981;
+  color: #ffffff;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s;
+
+  @include respond-to('mobile-all') {
+    width: 100%;
+    font-size: 13px;
+    padding: 9px 16px;
+  }
+
+  @include respond-to('s') {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  &:hover {
+    background: #0ea46a;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.action-status-label {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+
+  @include respond-to('mobile-all') {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  @include respond-to('s') {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  &.status-approved { 
+    background: #7fe87f; 
+    color: #1a5c1a; 
+  }
+  &.status-declined { 
+    background: #fca5a5; 
+    color: #7f1d1d; 
+  }
+  &.status-pending { 
+    background: #fcd34d; 
+    color: #78350f; 
+  }
+  &.status-completed { 
+    background: #cfe2ff; 
+    color: #084298; 
+  }
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -250,6 +521,16 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 600;
   margin-bottom: 24px;
   color: $text-primary;
+
+  @include respond-to('mobile-all') {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  @include respond-to('s') {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
 }
 
 .modal-info {
@@ -258,10 +539,26 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 6px;
   margin-bottom: 24px;
 
+  @include respond-to('mobile-all') {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 10px;
+    margin-bottom: 14px;
+  }
+
   .info-row {
     display: flex;
     gap: 8px;
     margin-bottom: 8px;
+
+    @include respond-to('mobile-all') {
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
 
     &:last-child {
       margin-bottom: 0;
@@ -270,16 +567,42 @@ $font-family: 'Roboto', sans-serif;
     .info-label {
       font-weight: 500;
       color: $text-secondary;
+      font-size: 14px;
+
+      @include respond-to('mobile-all') {
+        font-size: 13px;
+      }
+
+      @include respond-to('s') {
+        font-size: 12px;
+      }
     }
 
     .info-value {
       color: $text-primary;
+      font-size: 14px;
+
+      @include respond-to('mobile-all') {
+        font-size: 13px;
+      }
+
+      @include respond-to('s') {
+        font-size: 12px;
+      }
     }
   }
 }
 
 .modal-form-group {
   margin-bottom: 20px;
+
+  @include respond-to('mobile-all') {
+    margin-bottom: 16px;
+  }
+
+  @include respond-to('s') {
+    margin-bottom: 14px;
+  }
 }
 
 .modal-label {
@@ -288,6 +611,16 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   margin-bottom: 8px;
   color: $text-primary;
+
+  @include respond-to('mobile-all') {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  @include respond-to('s') {
+    font-size: 13px;
+    margin-bottom: 5px;
+  }
 }
 
 .modal-textarea {
@@ -300,6 +633,18 @@ $font-family: 'Roboto', sans-serif;
   font-size: 14px;
   resize: vertical;
   box-sizing: border-box;
+
+  @include respond-to('mobile-all') {
+    font-size: 13px;
+    padding: 10px;
+    min-height: 100px;
+  }
+
+  @include respond-to('s') {
+    font-size: 12px;
+    padding: 9px;
+    min-height: 80px;
+  }
 
   &:focus {
     outline: none;
@@ -317,17 +662,38 @@ $font-family: 'Roboto', sans-serif;
   gap: 8px;
   margin-bottom: 24px;
 
+  @include respond-to('mobile-all') {
+    margin-bottom: 16px;
+  }
+
+  @include respond-to('s') {
+    margin-bottom: 14px;
+  }
+
   input[type="checkbox"] {
     width: 18px;
     height: 18px;
     cursor: pointer;
     accent-color: #6366f1;
+
+    @include respond-to('s') {
+      width: 16px;
+      height: 16px;
+    }
   }
 
   label {
     font-size: 14px;
     color: $text-primary;
     cursor: pointer;
+
+    @include respond-to('mobile-all') {
+      font-size: 13px;
+    }
+
+    @include respond-to('s') {
+      font-size: 12px;
+    }
   }
 }
 
@@ -335,6 +701,11 @@ $font-family: 'Roboto', sans-serif;
   display: flex;
   gap: 12px;
   justify-content: flex-start;
+
+  @include respond-to('mobile-all') {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 .modal-button {
@@ -344,6 +715,17 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 16px;
   transition: all 0.2s;
+
+  @include respond-to('mobile-all') {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 24px;
+  }
+
+  @include respond-to('s') {
+    font-size: 13px;
+    padding: 9px 20px;
+  }
 
   &.modal-button-confirm {
     background: $primary-color;
@@ -371,12 +753,21 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
-// Loading and Error States
 .loading-message {
   text-align: center;
   padding: 48px;
   color: $text-secondary;
   font-size: 18px;
+
+  @include respond-to('mobile-all') {
+    padding: 32px 16px;
+    font-size: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 24px 12px;
+    font-size: 14px;
+  }
 }
 
 .error-message {
@@ -389,6 +780,20 @@ $font-family: 'Roboto', sans-serif;
   justify-content: space-between;
   align-items: center;
 
+  @include respond-to('mobile-all') {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  @include respond-to('s') {
+    padding: 10px;
+    font-size: 13px;
+  }
+
   .retry-button {
     @include button-reset;
     padding: 8px 16px;
@@ -396,6 +801,16 @@ $font-family: 'Roboto', sans-serif;
     color: white;
     border-radius: 4px;
     font-size: 14px;
+
+    @include respond-to('mobile-all') {
+      width: 100%;
+      font-size: 13px;
+    }
+
+    @include respond-to('s') {
+      font-size: 12px;
+      padding: 7px 14px;
+    }
 
     &:hover {
       background: #a00;
@@ -411,6 +826,17 @@ $font-family: 'Roboto', sans-serif;
   margin-bottom: 24px;
   font-size: 16px;
   border: 1px solid #99f6e4;
+
+  @include respond-to('mobile-all') {
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  @include respond-to('s') {
+    padding: 10px;
+    font-size: 13px;
+  }
 }
 
 .no-requests {
@@ -418,34 +844,38 @@ $font-family: 'Roboto', sans-serif;
   padding: 48px;
   color: $text-secondary;
   font-size: 18px;
+
+  @include respond-to('mobile-all') {
+    padding: 32px 16px;
+    font-size: 16px;
+  }
+
+  @include respond-to('s') {
+    padding: 24px 12px;
+    font-size: 14px;
+  }
+
+  p {
+    margin: 0;
+  }
 }
 
-// Responsive adjustments
-@media (max-width: 768px) {
+@include respond-to('mobile-all') {
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
   .modal-container {
-    padding: 24px;
-  }
-
-  .modal-actions {
-    flex-direction: column;
-    
-    .modal-button {
-      width: 100%;
+    &::-webkit-scrollbar {
+      width: 4px;
     }
-  }
-}
 
-.return-button {
-  @include button-reset;
-  padding: 8px 20px;
-  background: #10b981;
-  color: #ffffff;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 14px;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #0ea46a;
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 2px;
+    }
   }
 }

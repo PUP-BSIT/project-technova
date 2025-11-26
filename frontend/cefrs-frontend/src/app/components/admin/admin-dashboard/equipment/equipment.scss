@@ -6,6 +6,12 @@ $border-color: #e0e0e0;
 $primary-color: #69040C;
 $font-family: 'Roboto', sans-serif;
 
+// Breakpoints
+$mobile-s: 375px;
+$mobile-m: 425px;
+$mobile-l: 768px;
+$tablet: 1024px;
+
 // Mixins
 @mixin card-shadow {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -20,13 +26,32 @@ $font-family: 'Roboto', sans-serif;
 
 .view-container {
   padding: 32px;
+
+  @media (max-width: $mobile-l) {
+    padding: 20px 16px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 16px 12px;
+  }
 }
 
 .page-title {
-  font-size: 32px;
-  font-weight: 500;
-  margin-bottom: 32px;
-  color: $text-primary;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+
+  @media (max-width: $mobile-l) {
+    font-size: 26px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: $mobile-m) {
+    margin-left: 50px;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
 }
 
 // Filter Section
@@ -37,10 +62,20 @@ $font-family: 'Roboto', sans-serif;
   flex-wrap: wrap;
   align-items: center;
 
+  @media (max-width: $mobile-l) {
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
   .search-box {
     flex: 1;
     min-width: 300px;
     position: relative;
+
+    @media (max-width: $mobile-l) {
+      min-width: 100%;
+      order: 2;
+    }
 
     input {
       width: 92%;
@@ -49,6 +84,16 @@ $font-family: 'Roboto', sans-serif;
       border-radius: 6px;
       font-size: 16px;
       font-family: $font-family;
+
+      @media (max-width: $mobile-l) {
+        width: 100%;
+        padding: 10px 40px 10px 12px;
+        font-size: 15px;
+      }
+
+      @media (max-width: $mobile-m) {
+        font-size: 14px;
+      }
 
       &:focus {
         outline: none;
@@ -69,6 +114,13 @@ $font-family: 'Roboto', sans-serif;
   .filter-dropdowns {
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
+
+    @media (max-width: $mobile-l) {
+      width: 100%;
+      order: 3;
+      gap: 8px;
+    }
   }
 
   .filter-dropdown {
@@ -79,6 +131,17 @@ $font-family: 'Roboto', sans-serif;
     font-family: $font-family;
     background: white;
     cursor: pointer;
+
+    @media (max-width: $mobile-l) {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    @media (max-width: $mobile-m) {
+      font-size: 13px;
+      padding: 9px 10px;
+    }
 
     &:focus {
       outline: none;
@@ -92,6 +155,14 @@ $font-family: 'Roboto', sans-serif;
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media (max-width: $mobile-l) {
+    gap: 16px;
+  }
+
+  @media (max-width: $mobile-m) {
+    gap: 12px;
+  }
 }
 
 .item-card {
@@ -100,16 +171,25 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 8px;
   @include card-shadow;
 
+  @media (max-width: $mobile-l) {
+    padding: 16px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 14px;
+  }
+
   .item-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
 
-    @media (max-width: 768px) {
+    @media (max-width: $mobile-l) {
       flex-direction: column;
       align-items: flex-start;
       gap: 12px;
+      margin-bottom: 12px;
     }
   }
 
@@ -117,66 +197,98 @@ $font-family: 'Roboto', sans-serif;
     font-weight: 600;
     font-size: 18px;
     margin-right: 12px;
+
+    @media (max-width: $mobile-l) {
+      font-size: 16px;
+    }
+
+    @media (max-width: $mobile-m) {
+      font-size: 15px;
+    }
   }
 
   .item-title {
     font-size: 20px;
     font-weight: 500;
     margin-bottom: 16px;
+
+    @media (max-width: $mobile-l) {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: $mobile-m) {
+      font-size: 16px;
+    }
   }
 
   .item-details {
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    @media (max-width: $mobile-m) {
+      gap: 6px;
+    }
   }
 
   .detail-item {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 
     .detail-label {
       font-weight: 500;
       color: $text-secondary;
+      font-size: 14px;
+
+      @media (max-width: $mobile-m) {
+        font-size: 13px;
+      }
     }
 
     .detail-value {
       color: $text-primary;
+      font-size: 14px;
+
+      @media (max-width: $mobile-m) {
+        font-size: 13px;
+      }
     }
   }
 
   .item-actions {
     display: flex;
     gap: 8px;
-  }
 
-  .condition-badge {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
+    @media (max-width: $mobile-l) {
+      width: 100%;
+      gap: 6px;
+    }
 
-    &.condition-good {
-      background: #d1fae5;
-      color: #065f46;
+    button {
+      @media (max-width: $mobile-l) {
+        flex: 1;
+      }
     }
   }
 
+  .condition-badge,
   .availability-badge {
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 14px;
     font-weight: 500;
 
-    &.availability-available {
-      background: #dbeafe;
-      color: #1e40af;
+    @media (max-width: $mobile-m) {
+      font-size: 12px;
+      padding: 2px 6px;
     }
+  }
 
-    &.availability-borrowed {
-      background: #dbeafe;
-      color: #1e40af;
-    }
+  .condition-badge.condition-good {
+    background: #d1fae5;
+    color: #065f46;
   }
 
   .availability-badge {
@@ -203,6 +315,17 @@ $font-family: 'Roboto', sans-serif;
     border-radius: 6px;
     font-size: 14px;
 
+    @media (max-width: $mobile-l) {
+      margin-top: 12px;
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    @media (max-width: $mobile-m) {
+      padding: 10px;
+      font-size: 12px;
+    }
+
     div {
       margin-bottom: 4px;
 
@@ -210,9 +333,20 @@ $font-family: 'Roboto', sans-serif;
         margin-bottom: 0;
       }
     }
+  }
 
-    strong {
-      font-weight: 600;
+  .item-description {
+    margin-top: 12px;
+    font-size: 14px;
+
+    @media (max-width: $mobile-m) {
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .detail-label {
+      display: block;
+      margin-bottom: 4px;
     }
   }
 }
@@ -227,6 +361,18 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 16px;
   transition: background 0.2s;
+
+  @media (max-width: $mobile-l) {
+    width: 100%;
+    order: 1;
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  @media (max-width: $mobile-m) {
+    font-size: 14px;
+    padding: 9px 16px;
+  }
 
   &:hover {
     background: #16a34a;
@@ -243,6 +389,16 @@ $font-family: 'Roboto', sans-serif;
   font-size: 16px;
   transition: background 0.2s;
 
+  @media (max-width: $mobile-l) {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
   &:hover {
     background: #2563eb;
   }
@@ -257,6 +413,16 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 16px;
   transition: background 0.2s;
+
+  @media (max-width: $mobile-l) {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 
   &:hover {
     background: #dc2626;
@@ -276,6 +442,14 @@ $font-family: 'Roboto', sans-serif;
   align-items: center;
   z-index: 1000;
   padding: 20px;
+
+  @media (max-width: $mobile-l) {
+    padding: 12px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 8px;
+  }
 }
 
 .modal-container {
@@ -286,14 +460,32 @@ $font-family: 'Roboto', sans-serif;
   max-height: 90vh;
   overflow-y: auto;
 
+  @media (max-width: $mobile-l) {
+    padding: 20px;
+    max-height: 85vh;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 16px;
+    max-height: 90vh;
+  }
+
   &.modal-form-container {
     max-width: 800px;
     width: 100%;
+
+    @media (max-width: $mobile-l) {
+      max-width: 95%;
+    }
   }
 
   &.modal-delete-container {
     max-width: 500px;
     width: 100%;
+
+    @media (max-width: $mobile-l) {
+      max-width: 90%;
+    }
   }
 }
 
@@ -302,6 +494,16 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 600;
   margin-bottom: 24px;
   color: $text-primary;
+
+  @media (max-width: $mobile-l) {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: $mobile-m) {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
 }
 
 // Form Styles
@@ -310,6 +512,16 @@ $font-family: 'Roboto', sans-serif;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 24px;
+
+  @media (max-width: $mobile-l) {
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: $mobile-m) {
+    gap: 14px;
+    margin-bottom: 16px;
+  }
 }
 
 .form-row {
@@ -317,8 +529,9 @@ $font-family: 'Roboto', sans-serif;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 
-  @media (max-width: 768px) {
+  @media (max-width: $mobile-l) {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 }
 
@@ -336,48 +549,28 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   margin-bottom: 8px;
   color: $text-primary;
-}
 
-.form-helper-text {
-  font-size: 13px;
-  color: $text-secondary;
-  margin: -4px 0 12px 0;
+  @media (max-width: $mobile-m) {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
 }
 
 .form-input,
-.form-select {
-  padding: 12px;
-  border: 1px solid $border-color;
-  border-radius: 6px;
-  font-family: $font-family;
-  font-size: 14px;
-  background: white;
-  box-sizing: border-box;
-
-  &:focus {
-    outline: none;
-    border-color: $primary-color;
-  }
-
-  &::placeholder {
-    color: #999999;
-  }
-}
-
-.form-select {
-  cursor: pointer;
-}
-
+.form-select,
 .form-textarea {
   padding: 12px;
   border: 1px solid $border-color;
   border-radius: 6px;
   font-family: $font-family;
   font-size: 14px;
-  min-height: 100px;
-  resize: vertical;
   background: white;
   box-sizing: border-box;
+
+  @media (max-width: $mobile-m) {
+    padding: 10px;
+    font-size: 13px;
+  }
 
   &:focus {
     outline: none;
@@ -386,6 +579,15 @@ $font-family: 'Roboto', sans-serif;
 
   &::placeholder {
     color: #999999;
+  }
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+
+  @media (max-width: $mobile-m) {
+    min-height: 80px;
   }
 }
 
@@ -403,6 +605,14 @@ $font-family: 'Roboto', sans-serif;
   transition: all 0.3s;
   background: white;
 
+  @media (max-width: $mobile-l) {
+    padding: 32px 20px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 24px 16px;
+  }
+
   &:hover {
     border-color: #94A3B8;
     background: #F8FAFC;
@@ -413,8 +623,17 @@ $font-family: 'Roboto', sans-serif;
     justify-content: center;
     margin-bottom: 16px;
 
+    @media (max-width: $mobile-m) {
+      margin-bottom: 12px;
+    }
+
     svg {
       opacity: 0.7;
+
+      @media (max-width: $mobile-m) {
+        width: 40px;
+        height: 40px;
+      }
     }
   }
 
@@ -423,12 +642,21 @@ $font-family: 'Roboto', sans-serif;
     color: $text-primary;
     margin: 0 0 8px 0;
     font-weight: 500;
+
+    @media (max-width: $mobile-m) {
+      font-size: 14px;
+    }
   }
 
   .upload-or {
     font-size: 14px;
     color: $text-secondary;
     margin: 12px 0;
+
+    @media (max-width: $mobile-m) {
+      font-size: 13px;
+      margin: 10px 0;
+    }
   }
 
   .browse-button {
@@ -440,6 +668,11 @@ $font-family: 'Roboto', sans-serif;
     font-weight: 500;
     font-size: 14px;
     transition: background 0.2s;
+
+    @media (max-width: $mobile-m) {
+      padding: 8px 20px;
+      font-size: 13px;
+    }
 
     &:hover {
       background: #4F46E5;
@@ -458,6 +691,14 @@ $font-family: 'Roboto', sans-serif;
     border-radius: 8px;
     display: block;
     border: 1px solid $border-color;
+
+    @media (max-width: $mobile-l) {
+      max-height: 200px;
+    }
+
+    @media (max-width: $mobile-m) {
+      max-height: 150px;
+    }
   }
 
   .remove-photo-button {
@@ -475,6 +716,11 @@ $font-family: 'Roboto', sans-serif;
     justify-content: center;
     transition: background 0.2s;
 
+    @media (max-width: $mobile-m) {
+      width: 28px;
+      height: 28px;
+    }
+
     &:hover {
       background: #dc2626;
     }
@@ -482,6 +728,11 @@ $font-family: 'Roboto', sans-serif;
     svg {
       width: 16px;
       height: 16px;
+
+      @media (max-width: $mobile-m) {
+        width: 14px;
+        height: 14px;
+      }
     }
   }
 }
@@ -493,16 +744,34 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 6px;
   margin-bottom: 24px;
 
+  @media (max-width: $mobile-l) {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
   p {
     margin: 0 0 8px 0;
     color: $text-primary;
     font-size: 16px;
     line-height: 1.5;
 
+    @media (max-width: $mobile-m) {
+      font-size: 14px;
+    }
+
     &:last-child {
       margin-bottom: 0;
       color: $text-secondary;
       font-size: 14px;
+
+      @media (max-width: $mobile-m) {
+        font-size: 13px;
+      }
     }
 
     strong {
@@ -517,6 +786,11 @@ $font-family: 'Roboto', sans-serif;
   display: flex;
   gap: 12px;
   justify-content: flex-start;
+
+  @media (max-width: $mobile-l) {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
 }
 
 .modal-button {
@@ -526,6 +800,17 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 16px;
   transition: all 0.2s;
+
+  @media (max-width: $mobile-l) {
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
 
   &.modal-button-confirm {
     background: $primary-color;
@@ -562,17 +847,29 @@ $font-family: 'Roboto', sans-serif;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 
+  @media (max-width: $mobile-m) {
+    width: 95%;
+  }
+
   .modal-header {
     padding: 20px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
+    @media (max-width: $mobile-m) {
+      padding: 16px 20px;
+    }
+
     h2 {
       margin: 0;
       font-size: 20px;
       font-weight: 600;
       color: white;
+
+      @media (max-width: $mobile-m) {
+        font-size: 18px;
+      }
     }
 
     .close-btn {
@@ -607,12 +904,20 @@ $font-family: 'Roboto', sans-serif;
     padding: 30px 24px;
     background: white;
 
+    @media (max-width: $mobile-m) {
+      padding: 24px 20px;
+    }
+
     p {
       margin: 0;
       font-size: 16px;
       color: #374151;
       text-align: center;
       line-height: 1.5;
+
+      @media (max-width: $mobile-m) {
+        font-size: 14px;
+      }
     }
   }
 
@@ -621,6 +926,10 @@ $font-family: 'Roboto', sans-serif;
     display: flex;
     justify-content: center;
     background: white;
+
+    @media (max-width: $mobile-m) {
+      padding: 14px 20px 20px;
+    }
 
     .btn-ok {
       padding: 10px 32px;
@@ -632,6 +941,11 @@ $font-family: 'Roboto', sans-serif;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
+
+      @media (max-width: $mobile-m) {
+        padding: 9px 28px;
+        font-size: 13px;
+      }
 
       &:hover {
         background-color: #f9fafb;
@@ -645,44 +959,20 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
-// Modal Overlay
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(2px);
-}
-
 .loading-message,
 .no-data-message {
   text-align: center;
   padding: 60px 20px;
   color: #64748b;
   font-size: 16px;
-}
 
-// Responsive adjustments
-@media (max-width: 768px) {
-  .modal-container {
-    padding: 24px;
+  @media (max-width: $mobile-l) {
+    padding: 40px 20px;
+    font-size: 15px;
   }
 
-  .modal-actions {
-    flex-direction: column;
-
-    .modal-button {
-      width: 100%;
-    }
-  }
-
-  .file-upload-area {
-    padding: 32px 24px;
+  @media (max-width: $mobile-m) {
+    padding: 30px 16px;
+    font-size: 14px;
   }
 }

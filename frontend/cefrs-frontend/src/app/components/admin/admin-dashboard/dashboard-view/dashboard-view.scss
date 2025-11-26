@@ -4,6 +4,12 @@ $text-primary: #333333;
 $text-secondary: #666666;
 $font-family: 'Roboto', sans-serif;
 
+// Breakpoints
+$mobile-s: 375px;
+$mobile-m: 425px;
+$mobile-l: 768px;
+$tablet: 1024px;
+
 // Mixins
 @mixin card-shadow {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -18,13 +24,44 @@ $font-family: 'Roboto', sans-serif;
 
 .view-container {
   padding: 32px;
+
+  @media (max-width: $mobile-l) {
+    padding: 20px 16px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 16px 12px;
+  }
 }
 
 .page-title {
-  font-size: 32px;
-  font-weight: 500;
-  margin-bottom: 32px;
-  color: $text-primary;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+
+  @media (max-width: $mobile-l) {
+    font-size: 26px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: $mobile-m) {
+    margin-left: 50px;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+}
+
+.loading-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: $text-secondary;
+  font-size: 16px;
+
+  @media (max-width: $mobile-l) {
+    padding: 30px 16px;
+    font-size: 15px;
+  }
 }
 
 // Stats Grid
@@ -34,12 +71,21 @@ $font-family: 'Roboto', sans-serif;
   gap: 24px;
   margin-bottom: 48px;
 
-  @media (max-width: 1200px) {
+  @media (max-width: $tablet) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: $mobile-l) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: $mobile-m) {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
@@ -49,16 +95,42 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 8px;
   @include card-shadow;
 
+  @media (max-width: $mobile-l) {
+    padding: 20px;
+    border-radius: 6px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 16px;
+  }
+
   .stat-label {
     font-size: 16px;
     color: $text-secondary;
     margin-bottom: 12px;
+
+    @media (max-width: $mobile-l) {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: $mobile-m) {
+      font-size: 13px;
+    }
   }
 
   .stat-value {
     font-size: 48px;
     font-weight: 500;
     color: $text-primary;
+
+    @media (max-width: $mobile-l) {
+      font-size: 36px;
+    }
+
+    @media (max-width: $mobile-m) {
+      font-size: 32px;
+    }
   }
 }
 
@@ -69,16 +141,37 @@ $font-family: 'Roboto', sans-serif;
   border-radius: 8px;
   @include card-shadow;
 
+  @media (max-width: $mobile-l) {
+    padding: 20px;
+    border-radius: 6px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 16px;
+  }
+
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
 
+    @media (max-width: $mobile-l) {
+      margin-bottom: 16px;
+    }
+
     .card-title {
       font-size: 24px;
       font-weight: 500;
       margin: 0;
+
+      @media (max-width: $mobile-l) {
+        font-size: 20px;
+      }
+
+      @media (max-width: $mobile-m) {
+        font-size: 18px;
+      }
     }
 
     .view-all-button {
@@ -86,6 +179,10 @@ $font-family: 'Roboto', sans-serif;
       color: $text-primary;
       font-size: 16px;
       transition: color 0.2s;
+
+      @media (max-width: $mobile-l) {
+        font-size: 14px;
+      }
 
       &:hover {
         color: #69040C;
@@ -97,6 +194,27 @@ $font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    @media (max-width: $mobile-l) {
+      gap: 12px;
+    }
+  }
+
+  .no-requests {
+    text-align: center;
+    padding: 40px 20px;
+    color: $text-secondary;
+    font-size: 16px;
+
+    @media (max-width: $mobile-l) {
+      padding: 30px 16px;
+      font-size: 15px;
+    }
+
+    @media (max-width: $mobile-m) {
+      padding: 24px 12px;
+      font-size: 14px;
+    }
   }
 
   .request-item {
@@ -108,9 +226,15 @@ $font-family: 'Roboto', sans-serif;
     border-radius: 6px;
     gap: 16px;
 
-    @media (max-width: 768px) {
+    @media (max-width: $mobile-l) {
       flex-direction: column;
       align-items: flex-start;
+      padding: 16px;
+      gap: 12px;
+    }
+
+    @media (max-width: $mobile-m) {
+      padding: 14px;
     }
 
     .request-info {
@@ -118,12 +242,28 @@ $font-family: 'Roboto', sans-serif;
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
+      flex: 1;
+
+      @media (max-width: $mobile-l) {
+        width: 100%;
+        gap: 8px;
+      }
 
       .request-badge {
         padding: 4px 12px;
         border-radius: 4px;
         font-size: 14px;
         font-weight: 500;
+
+        @media (max-width: $mobile-l) {
+          font-size: 13px;
+          padding: 4px 10px;
+        }
+
+        @media (max-width: $mobile-m) {
+          font-size: 12px;
+          padding: 3px 8px;
+        }
 
         &.equipment {
           background: #7fe87f;
@@ -139,11 +279,30 @@ $font-family: 'Roboto', sans-serif;
       .request-name {
         font-weight: 500;
         font-size: 16px;
+
+        @media (max-width: $mobile-l) {
+          font-size: 15px;
+        }
+
+        @media (max-width: $mobile-m) {
+          font-size: 14px;
+        }
       }
 
       .request-details {
         font-size: 14px;
         color: $text-secondary;
+        width: 100%;
+        margin-top: 4px;
+
+        @media (max-width: $mobile-l) {
+          font-size: 13px;
+          margin-top: 2px;
+        }
+
+        @media (max-width: $mobile-m) {
+          font-size: 12px;
+        }
       }
     }
 
@@ -151,6 +310,17 @@ $font-family: 'Roboto', sans-serif;
       display: flex;
       gap: 8px;
       flex-shrink: 0;
+
+      @media (max-width: $mobile-l) {
+        width: 100%;
+        gap: 8px;
+      }
+
+      button {
+        @media (max-width: $mobile-l) {
+          flex: 1;
+        }
+      }
     }
   }
 }
@@ -165,9 +335,24 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 16px;
   transition: background 0.2s;
+  white-space: nowrap;
+
+  @media (max-width: $mobile-l) {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
 
   &:hover {
     background: #16a34a;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
@@ -180,8 +365,23 @@ $font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 16px;
   transition: background 0.2s;
+  white-space: nowrap;
+
+  @media (max-width: $mobile-l) {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
 
   &:hover {
     background: #dc2626;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
