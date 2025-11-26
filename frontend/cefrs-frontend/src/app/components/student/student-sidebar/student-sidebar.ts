@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, inject, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatSidenav } from '@angular/material/sidenav';
 import { ProfileService } from '../../../services/profile.service';
 import { AuthService } from '../../../services/auth';
 
@@ -11,15 +12,19 @@ import { AuthService } from '../../../services/auth';
   templateUrl: './student-sidebar.html',
   styleUrls: ['./student-sidebar.scss']
 })
-export class StudentSidebarComponent implements OnInit {
+export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
   private router = inject(Router);
   private profileService = inject(ProfileService);
   private authService = inject(AuthService);
 
   @Input() currentView: string = 'dashboard';
-  @Input() isSidebarOpen: boolean = true;
-  @Input() isMobileView: boolean = false;
+  @Input() sidenav!: MatSidenav;
   @Output() viewChanged = new EventEmitter<string>();
+
+  isSidebarOpen = true;
+  isMobileView = false;
+  private readonly DESKTOP_BREAKPOINT = 1024;
+  private initialized = false;
 
   user: any = null;
   isLoading = true;
@@ -27,6 +32,24 @@ export class StudentSidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+  }
+
+  ngAfterViewInit(): void {
+    this.evaluateViewport();
+    if (this.sidenav) {
+      this.sidenav.openedChange.subscribe(opened => {
+        this.isSidebarOpen = opened;
+      });
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup if needed
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.evaluateViewport();
   }
 
   private loadUserProfile(): void {
@@ -63,11 +86,44 @@ export class StudentSidebarComponent implements OnInit {
     this.currentView = view;
     this.viewChanged.emit(view);
     
+    // Close sidebar on mobile after navigation
+    if (this.isMobileView && this.sidenav) {
+      this.sidenav.close();
+    }
+    
     // Only handle settings navigation since it goes to a different route
     if (view === 'settings') {
       this.router.navigate(['/profile']);
     }
     // All other views are handled by the parent component (student-dashboard)
+  }
+
+  toggleSidebar(): void {
+    if (this.sidenav) {
+      this.sidenav.toggle();
+    }
+  }
+
+  private evaluateViewport(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const previousMobileState = this.isMobileView;
+    const nextMobileState = window.innerWidth < this.DESKTOP_BREAKPOINT;
+    this.isMobileView = nextMobileState;
+
+    if (!nextMobileState && previousMobileState && this.sidenav) {
+      this.sidenav.open();
+    }
+
+    if (!this.initialized) {
+      this.isSidebarOpen = !this.isMobileView;
+      if (this.sidenav) {
+        this.sidenav.opened = !this.isMobileView;
+      }
+      this.initialized = true;
+    }
   }
 
   logout(): void {
