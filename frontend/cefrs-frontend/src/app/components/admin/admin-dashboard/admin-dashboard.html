@@ -1,6 +1,24 @@
-<div class="app-container">
+<div class="app-container" [class.mobile-view]="isMobileView">
+  <!-- Mobile Header -->
+  @if (isMobileView) {
+    <header class="mobile-header">
+      <button class="menu-toggle" (click)="toggleSidenav()" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </header>
+  }
+
+  <!-- Sidenav Overlay (Mobile Only) -->
+  @if (isMobileView && sidenavOpen) {
+    <div class="sidenav-overlay" (click)="closeSidenav()"></div>
+  }
+
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.open]="sidenavOpen" [class.mobile]="isMobileView">
     <!-- Logo -->
     <div class="logo-section">
       <div class="logo-image">

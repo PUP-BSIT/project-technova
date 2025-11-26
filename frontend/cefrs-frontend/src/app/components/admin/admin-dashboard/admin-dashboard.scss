@@ -7,10 +7,17 @@ $text-primary: #333333;
 $text-secondary: #666666;
 $border-color: #e0e0e0;
 
-$sidebar-width: 265px;
-$sidebar-width-container: 271px;
+$sidebar-width: 280px;
+$sidebar-width-container: 280px;
+$mobile-header-height: 60px;
 
 $font-family: 'Roboto', sans-serif;
+
+// Breakpoints
+$mobile-s: 375px;
+$mobile-m: 425px;
+$mobile-l: 768px;
+$tablet: 1024px;
 
 // Mixins
 @mixin button-reset {
@@ -32,11 +39,89 @@ $font-family: 'Roboto', sans-serif;
   display: flex;
   height: 100vh;
   background: $background-color;
+  position: relative;
+
+  &.mobile-view {
+    flex-direction: column;
+  }
+}
+
+// Mobile Header
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $mobile-header-height;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 1001;
+
+  @media (max-width: $tablet - 1px) {
+    display: flex;
+  }
+
+  .menu-toggle {
+    @include button-reset;
+    color: white;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+    background: linear-gradient(180deg, #6d1818 0%, #4a0f0f 100%);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 16px;
+
+    img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    span {
+      font-size: 20px;
+      font-weight: 500;
+    }
+  }
+}
+
+// Sidenav Overlay
+.sidenav-overlay {
+  display: none;
+
+  @media (max-width: $tablet - 1px) {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.3s ease;
+  }
 }
 
 // Sidebar
 .sidebar {
-  width: 280px;
+  width: $sidebar-width;
   background: linear-gradient(180deg, #6d1818 0%, #4a0f0f 100%);
   color: white;
   display: flex;
@@ -46,11 +131,54 @@ $font-family: 'Roboto', sans-serif;
   left: 0;
   top: 0;
   z-index: 1000;
+  transition: transform 0.3s ease;
+
+  // Mobile styles
+  @media (max-width: $tablet - 1px) {
+    transform: translateX(-100%);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+
+    &.open {
+      transform: translateX(0);
+    }
+  }
+
+  // Close button for mobile
+  .sidenav-close {
+    display: none;
+
+    @media (max-width: $tablet - 1px) {
+      display: flex;
+      @include button-reset;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+      z-index: 10;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 }
 
 .nav-menu {
   flex: 1;
   padding: 16px 0;
+  overflow-y: auto;
+
+  @media (max-width: $tablet - 1px) {
+    padding-top: 8px;
+  }
 
   .nav-item {
     @include button-reset;
@@ -63,6 +191,11 @@ $font-family: 'Roboto', sans-serif;
     transition: all 0.2s;
     display: flex;
     align-items: center;
+
+    @media (max-width: $mobile-l) {
+      padding: 14px 20px;
+      font-size: 16px;
+    }
 
     &:hover {
       background: rgba(255, 255, 255, 0.1);
@@ -80,6 +213,12 @@ $font-family: 'Roboto', sans-serif;
   height: 20px;
   margin-right: 12px;
   vertical-align: middle;
+
+  @media (max-width: $mobile-l) {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+  }
 }
 
 .icon-2 {
@@ -87,6 +226,12 @@ $font-family: 'Roboto', sans-serif;
   height: 26px;
   margin-right: 12px;
   vertical-align: middle;
+
+  @media (max-width: $mobile-l) {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+  }
 }
 
 .logo-section {
@@ -96,11 +241,31 @@ $font-family: 'Roboto', sans-serif;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: $tablet - 1px) {
+    padding: 20px 16px 16px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: $mobile-l) {
+    padding: 16px 16px 12px;
+    gap: 12px;
+  }
 }
 
 .logo-image {
   width: 100px;
   height: 100px;
+
+  @media (max-width: $mobile-l) {
+    width: 80px;
+    height: 80px;
+  }
+
+  @media (max-width: $mobile-m) {
+    width: 70px;
+    height: 70px;
+  }
 
   img {
     width: 100%;
@@ -115,6 +280,14 @@ $font-family: 'Roboto', sans-serif;
   line-height: 0.6;
   font-family: $font-family;
   text-align: center;
+
+  @media (max-width: $mobile-l) {
+    font-size: 30px;
+  }
+
+  @media (max-width: $mobile-m) {
+    font-size: 26px;
+  }
 }
 
 .user-details {
@@ -132,6 +305,10 @@ $font-family: 'Roboto', sans-serif;
   align-items: center;
   gap: 12px;
   justify-content: space-between;
+
+  @media (max-width: $mobile-l) {
+    padding: 16px 20px;
+  }
 }
 
 .user-info {
@@ -142,6 +319,10 @@ $font-family: 'Roboto', sans-serif;
     font-weight: 500;
     font-size: 16px;
     margin-bottom: 2px;
+
+    @media (max-width: $mobile-l) {
+      font-size: 15px;
+    }
   }
 
   .user-email {
@@ -150,6 +331,10 @@ $font-family: 'Roboto', sans-serif;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    @media (max-width: $mobile-l) {
+      font-size: 12px;
+    }
   }
 }
 
@@ -181,6 +366,11 @@ $font-family: 'Roboto', sans-serif;
   svg {
     width: 20px;
     height: 20px;
+
+    @media (max-width: $mobile-l) {
+      width: 18px;
+      height: 18px;
+    }
   }
 }
 
@@ -189,6 +379,14 @@ $font-family: 'Roboto', sans-serif;
   margin-left: $sidebar-width-container;
   flex: 1;
   padding: 0;
+  overflow-y: auto;
+  height: 100vh;
+
+  @media (max-width: $tablet - 1px) {
+    margin-left: 0;
+    margin-top: 0;
+    height: calc(100vh - #{$mobile-header-height});
+  }
 }
 
 // Logout Modal Styles
@@ -204,6 +402,7 @@ $font-family: 'Roboto', sans-serif;
   justify-content: center;
   z-index: 10000;
   animation: fadeIn 0.2s ease;
+  padding: 16px;
 }
 
 .modal-content {
@@ -214,6 +413,11 @@ $font-family: 'Roboto', sans-serif;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
   font-family: $font-family;
+
+  @media (max-width: $mobile-m) {
+    width: 95%;
+    border-radius: 8px;
+  }
 }
 
 .modal-header {
@@ -223,10 +427,18 @@ $font-family: 'Roboto', sans-serif;
   padding: 1.5rem;
   border-bottom: 1px solid #e5e7eb;
 
+  @media (max-width: $mobile-l) {
+    padding: 1.25rem;
+  }
+
   h3 {
     margin: 0;
     color: #111827;
     font-size: 1.25rem;
+
+    @media (max-width: $mobile-l) {
+      font-size: 1.125rem;
+    }
   }
 
   .close-btn {
@@ -252,11 +464,19 @@ $font-family: 'Roboto', sans-serif;
 .modal-body {
   padding: 1.5rem;
 
+  @media (max-width: $mobile-l) {
+    padding: 1.25rem;
+  }
+
   p {
     margin: 0;
     color: #4b5563;
     font-size: 1rem;
     line-height: 1.5;
+
+    @media (max-width: $mobile-l) {
+      font-size: 0.9375rem;
+    }
   }
 }
 
@@ -267,6 +487,11 @@ $font-family: 'Roboto', sans-serif;
   border-top: 1px solid #e5e7eb;
   justify-content: flex-end;
 
+  @media (max-width: $mobile-l) {
+    padding: 1.25rem;
+    flex-direction: column-reverse;
+  }
+
   button {
     padding: 0.625rem 1.25rem;
     border: none;
@@ -274,6 +499,11 @@ $font-family: 'Roboto', sans-serif;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s;
+
+    @media (max-width: $mobile-l) {
+      width: 100%;
+      padding: 0.75rem;
+    }
   }
 
   .btn-confirm {
@@ -295,11 +525,76 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
+// Notification Modal
+.notification-modal {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  animation: slideInRight 0.3s ease;
+
+  @media (max-width: $mobile-l) {
+    top: calc(#{$mobile-header-height} + 12px);
+    right: 12px;
+    left: 12px;
+  }
+
+  .notification-content {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+
+    @media (max-width: $mobile-l) {
+      min-width: auto;
+      padding: 14px;
+    }
+
+    p {
+      flex: 1;
+      margin: 0;
+      font-size: 14px;
+
+      @media (max-width: $mobile-l) {
+        font-size: 13px;
+      }
+    }
+
+    .close-notification {
+      @include button-reset;
+      font-size: 24px;
+      color: #666;
+      padding: 0 4px;
+      line-height: 1;
+
+      &:hover {
+        color: #333;
+      }
+    }
+  }
+
+  &.notification-success {
+    .notification-icon {
+      color: #22c55e;
+    }
+  }
+
+  &.notification-error {
+    .notification-icon {
+      color: #ef4444;
+    }
+  }
+}
+
+// Animations
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -310,9 +605,19 @@ $font-family: 'Roboto', sans-serif;
     transform: translateY(20px);
     opacity: 0;
   }
-
   to {
     transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
     opacity: 1;
   }
 }
