@@ -32,6 +32,16 @@ public class EquipmentBorrowingService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    // Return overlapping bookings for an equipment within a date range
+    public List<EquipmentBorrowingDTO> getBookingsForEquipment(Long equipmentId, String startDateStr, String endDateStr) {
+        java.time.LocalDate startDate = java.time.LocalDate.parse(startDateStr);
+        java.time.LocalDate endDate = java.time.LocalDate.parse(endDateStr);
+        com.campus.facility_reservation.model.Equipment equipment = equipmentRepository.findById(equipmentId)
+                .orElseThrow(() -> new RuntimeException("Equipment not found"));
+        List<com.campus.facility_reservation.model.EquipmentBorrowing> bookings = borrowingRepository.findOverlappingBorrowings(equipment, startDate, endDate);
+        return bookings.stream().map(this::convertToDTO).collect(java.util.stream.Collectors.toList());
+    }
     
     public List<EquipmentBorrowingDTO> getUserBorrowings(Long userId) {
         User user = userRepository.findById(userId)
@@ -60,13 +70,15 @@ public class EquipmentBorrowingService {
         Equipment equipment = equipmentRepository.findById(request.getEquipmentId())
                 .orElseThrow(() -> new RuntimeException("Equipment not found"));
         
-        // Check availability
-        if (equipment.getQuantityAvailable() < request.getQuantity()) {
-            throw new RuntimeException("Not enough equipment available");
-        }
-        
         LocalDate borrowDate = LocalDate.parse(request.getBorrowDate());
         LocalDate returnDate = LocalDate.parse(request.getExpectedReturnDate());
+
+        // Check availability for the requested date range by summing overlapping approved/borrowed quantities
+        Integer overlapping = borrowingRepository.getOverlappingBorrowedQuantity(equipment, borrowDate, returnDate);
+        int availableForRange = equipment.getQuantityTotal() - (overlapping != null ? overlapping : 0);
+        if (availableForRange < request.getQuantity()) {
+            throw new RuntimeException("Not enough equipment available for the requested date range");
+        }
         
         EquipmentBorrowing borrowing = new EquipmentBorrowing();
         borrowing.setUser(user);
@@ -94,31 +106,52 @@ public class EquipmentBorrowingService {
         
         BorrowingStatus status = BorrowingStatus.valueOf(approval.getStatus().toUpperCase());
         BorrowingStatus oldStatus = borrowing.getStatus();
-        
+
+        // If approving now, ensure approved+borrowed overlapping quantities + this request <= total
+        if (status == BorrowingStatus.APPROVED && oldStatus != BorrowingStatus.APPROVED) {
+            Equipment equipment = borrowing.getEquipment();
+            Integer overlapping = borrowingRepository.getOverlappingBorrowedQuantity(equipment, borrowing.getBorrowDate(), borrowing.getExpectedReturnDate());
+            int alreadyReserved = overlapping != null ? overlapping : 0;
+            // overlapping does NOT include this borrowing (it hasn't been approved yet), so check capacity
+            if (alreadyReserved + borrowing.getQuantity() > equipment.getQuantityTotal()) {
+                throw new RuntimeException("Not enough equipment available to approve this request for the selected dates");
+            }
+        }
+
         borrowing.setStatus(status);
         borrowing.setAdminNotes(approval.getAdminNotes());
         borrowing.setApprovedBy(admin);
         borrowing.setApprovedAt(LocalDateTime.now());
-        
+
         Equipment equipment = borrowing.getEquipment();
-        
-        // Update equipment quantity
-        if (status == BorrowingStatus.APPROVED && oldStatus == BorrowingStatus.PENDING) {
-            // Deduct from available quantity
+
+        // Update equipment quantity only when the item is actually BORROWED or RETURNED
+        if (status == BorrowingStatus.BORROWED && oldStatus != BorrowingStatus.BORROWED) {
+            // Before marking as BORROWED ensure availability still holds for the borrow period
+            Integer overlapping = borrowingRepository.getOverlappingBorrowedQuantity(equipment, borrowing.getBorrowDate(), borrowing.getExpectedReturnDate());
+            int alreadyBorrowed = overlapping != null ? overlapping : 0;
+            // If the previous state was APPROVED and already counted in overlapping, subtract it
+            if (oldStatus == BorrowingStatus.APPROVED) {
+                alreadyBorrowed -= borrowing.getQuantity();
+            }
+            if (alreadyBorrowed + borrowing.getQuantity() > equipment.getQuantityTotal()) {
+                throw new RuntimeException("Not enough equipment available to mark as borrowed");
+            }
             equipment.setQuantityAvailable(equipment.getQuantityAvailable() - borrowing.getQuantity());
             equipmentRepository.save(equipment);
-        } else if (status == BorrowingStatus.RETURNED) {
+        } else if (status == BorrowingStatus.RETURNED && oldStatus == BorrowingStatus.BORROWED) {
             // Return to available quantity
             equipment.setQuantityAvailable(equipment.getQuantityAvailable() + borrowing.getQuantity());
             equipmentRepository.save(equipment);
-            
+
             if (approval.getActualReturnDate() != null) {
                 borrowing.setActualReturnDate(LocalDate.parse(approval.getActualReturnDate()));
             } else {
                 borrowing.setActualReturnDate(LocalDate.now());
             }
         } else if (status == BorrowingStatus.REJECTED && oldStatus == BorrowingStatus.APPROVED) {
-            // Return quantity if previously approved
+            // Return quantity if previously approved AND it was deducted earlier (legacy paths)
+            // In current flow we don't deduct on APPROVED, so this mainly protects older data.
             equipment.setQuantityAvailable(equipment.getQuantityAvailable() + borrowing.getQuantity());
             equipmentRepository.save(equipment);
         }
