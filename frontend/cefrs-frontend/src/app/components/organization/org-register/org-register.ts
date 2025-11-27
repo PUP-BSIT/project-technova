@@ -208,6 +208,10 @@ export class OrgRegisterComponent implements OnInit {
     this.router.navigate(['/org-dashboard']);
   }
 
+  goToLanding(): void {
+    this.router.navigate(['/']);
+  }
+
   // Helper methods to check field validity
   isFieldInvalid(fieldName: string): boolean {
     const field = this.registerForm.get(fieldName);

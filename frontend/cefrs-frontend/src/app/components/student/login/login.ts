@@ -123,5 +123,9 @@ export class LoginComponent implements OnInit {
   goToRegister(): void {
     this.router.navigate(['/register'], { queryParams: { role: this.selectedRole } });
   }
+
+  goToLanding(): void {
+    this.router.navigate(['/']);
+  }
 }
 

@@ -263,7 +263,8 @@ $spacing-3xl: 6rem;
   }
 }
 
-.nav-login-menu {
+.nav-login-menu,
+.nav-signup-menu {
   position: relative;
 
   .icon-chevron {
@@ -271,7 +272,8 @@ $spacing-3xl: 6rem;
     font-size: 0.75rem;
   }
 
-  .login-dropdown {
+  .login-dropdown,
+  .signup-dropdown {
     position: absolute;
     top: calc(100% + 0.5rem);
     right: 0;
@@ -306,12 +308,17 @@ $spacing-3xl: 6rem;
   }
 
   &.open {
-    .login-dropdown {
+    .login-dropdown,
+    .signup-dropdown {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
     }
   }
+}
+
+.nav-signup-menu {
+  margin-right: 1rem;
 }
 
 .btn-primary,

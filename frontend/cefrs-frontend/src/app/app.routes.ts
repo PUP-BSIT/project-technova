@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LandingComponent } from './components/landing/landing';
-import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { LoginComponent } from './components/student/login/login';
 import { OrgLoginComponent } from './components/organization/org-login/org-login';
 import { AdminLogin } from './components/admin/admin-login/admin-login';
@@ -33,7 +32,6 @@ import { ResetPassword } from './components/admin/reset-password/reset-password'
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
-  { path: 'role-selection', component: RoleSelectionComponent },
   { path: 'login', component: LoginComponent },
   { path: 'org-login', component: OrgLoginComponent },
   { path: 'admin-login', component: AdminLogin },

@@ -259,5 +259,9 @@ export class RegisterComponent implements OnInit {
   goToDashboard() {
     this.router.navigate(['/student-dashboard']);
   }
+
+  goToLanding(): void {
+    this.router.navigate(['/']);
+  }
 }
 

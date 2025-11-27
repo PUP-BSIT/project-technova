@@ -72,13 +72,9 @@ html {
   min-width: 100vw;
   background: $background-gray;
   font-family: 'Roboto', sans-serif;
-  padding: 0;
+  padding: $spacing-lg;
   margin: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
 }
 
 .login-card {
@@ -103,6 +99,41 @@ html {
     margin-bottom: $spacing-xl;
     text-align: center;
     font-weight: $font-regular;
+  }
+  position: relative;
+}
+
+.back-home-btn {
+  position: absolute;
+  top: $spacing-lg;
+  left: $spacing-lg;
+  border: 1px solid rgba($primary-color, 0.4);
+  background: rgba($primary-color, 0.08);
+  color: $primary-color;
+  font-weight: $font-medium;
+  padding: 10px $spacing-lg;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background $transition-base, border-color $transition-base;
+  font-size: $font-sm;
+  z-index: 5;
+
+  &:hover {
+    background: rgba($primary-color, 0.15);
+    border-color: $primary-hover;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-container {
+    padding: $spacing-md;
+  }
+
+  .back-home-btn {
+    top: $spacing-md;
+    left: $spacing-md;
+    padding: 8px $spacing-md;
+    font-size: $font-xs;
   }
 }
 
