@@ -102,4 +102,11 @@ export class EquipmentService {
       { headers: this.getHeaders() }
     ).pipe(map(response => response.data));
   }
+
+  // Get bookings for an equipment within a date range (used to show blocked dates)
+  getEquipmentBookings(id: number, start: string, end: string): Observable<any[]> {
+    return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/${id}/bookings?start=${start}&end=${end}`, {
+      headers: this.getHeaders()
+    }).pipe(map(response => response.data));
+  }
 }

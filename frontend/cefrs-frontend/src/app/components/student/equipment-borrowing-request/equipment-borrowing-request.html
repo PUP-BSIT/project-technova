@@ -13,6 +13,7 @@
           id="equipment"
           name="equipment"
           [(ngModel)]="selectedEquipmentId"
+          (change)="onSelectionChange()"
           class="form-control"
           required>
           <option [value]="null">-- Select equipment --</option>
@@ -22,7 +23,8 @@
         </select>
         <div *ngIf="selectedEquipmentId && getSelectedEquipment()" class="equipment-info">
           <p><strong>Description:</strong> {{ getSelectedEquipment()?.description || 'N/A' }}</p>
-          <p><strong>Available:</strong> {{ getSelectedEquipment()?.quantityAvailable }} items</p>
+          <p><strong>Available (global):</strong> {{ getSelectedEquipment()?.quantityAvailable }} items</p>
+          <p *ngIf="availableForRange !== null"><strong>Available for selected dates:</strong> {{ availableForRange }} items</p>
         </div>
       </div>
 
@@ -50,6 +52,7 @@
             id="borrowDate"
             name="borrowDate"
             [(ngModel)]="borrowDate"
+            (change)="onSelectionChange()"
             [min]="getMinDate()"
             class="form-control"
             required>
@@ -62,6 +65,7 @@
             id="returnDate"
             name="returnDate"
             [(ngModel)]="expectedReturnDate"
+            (change)="onSelectionChange()"
             [min]="borrowDate || getMinDate()"
             class="form-control"
             required>
@@ -92,11 +96,24 @@
       </div>
 
       <!-- Submit Button -->
+      <div *ngIf="bookings?.length" class="bookings-list">
+        <h4>Existing bookings in selected range</h4>
+        <ul>
+          <li *ngFor="let b of bookings">
+            {{ b.userName || b.userId }}: {{ b.quantity }} pcs — {{ b.borrowDate }} to {{ b.expectedReturnDate }} ({{ b.status }})
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="availableForRange !== null && availableForRange <= 0" class="alert alert-error">
+        No items available for the selected dates.
+      </div>
+
       <div class="form-actions">
         <button
           type="submit"
           class="btn btn-primary"
-          [disabled]="loading || !borrowingForm.valid">
+          [disabled]="loading || !borrowingForm.valid || (availableForRange !== null && quantity > availableForRange)">
           <span *ngIf="loading">Submitting...</span>
           <span *ngIf="!loading">Submit Request</span>
         </button>
