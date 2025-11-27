@@ -139,11 +139,10 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
     this.authService.logout();
     this.user = null;
     this.showLogoutModal = false;
-    this.router.navigate(['./role-selection']);
+    this.router.navigate(['/']);
   }
 
   closeLogoutModal(): void {
     this.showLogoutModal = false;
   }
 }
-

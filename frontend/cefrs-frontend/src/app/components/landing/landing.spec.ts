@@ -24,12 +24,6 @@ describe('LandingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to role selection when goToRoleSelection is called', () => {
-    const navigateSpy = spyOn(router, 'navigate');
-    component.goToRoleSelection();
-    expect(navigateSpy).toHaveBeenCalledWith(['/role-selection']);
-  });
-
   it('should navigate to student login when goToStudentLogin is called', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.goToStudentLogin();
@@ -40,6 +34,18 @@ describe('LandingComponent', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.goToOrgLogin();
     expect(navigateSpy).toHaveBeenCalledWith(['/org-login']);
+  });
+
+  it('should navigate to student register when goToStudentRegister is called', () => {
+    const navigateSpy = spyOn(router, 'navigate');
+    component.goToStudentRegister();
+    expect(navigateSpy).toHaveBeenCalledWith(['/register']);
+  });
+
+  it('should navigate to organization register when goToOrgRegister is called', () => {
+    const navigateSpy = spyOn(router, 'navigate');
+    component.goToOrgRegister();
+    expect(navigateSpy).toHaveBeenCalledWith(['/org-register']);
   });
 
   it('should render the hero title', () => {
@@ -76,11 +82,11 @@ describe('LandingComponent', () => {
   it('should render Signup and Login controls in navbar', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    const signupBtn = compiled.querySelector('.navbar .btn-nav-secondary');
+    const signupBtn = compiled.querySelector('.navbar .nav-signup-menu .btn-nav-secondary');
     const loginBtn = compiled.querySelector('.navbar .btn-nav-login');
 
     expect(signupBtn).toBeTruthy();
-    expect(signupBtn?.textContent?.trim()).toBe('Sign Up');
+    expect(signupBtn?.textContent?.includes('Sign Up')).toBeTrue();
     expect(loginBtn).toBeTruthy();
     expect(loginBtn?.textContent?.includes('Log In')).toBeTrue();
   });
@@ -101,4 +107,3 @@ describe('LandingComponent', () => {
     expect(heroActions.length).toBe(2);
   });
 });
-
