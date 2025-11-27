@@ -104,4 +104,8 @@ export class OrgLoginComponent {
   goToRegister(): void {
     this.router.navigate(['/org-register']);
   }
+
+  goToLanding(): void {
+    this.router.navigate(['/']);
+  }
 }
