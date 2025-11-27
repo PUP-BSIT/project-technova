@@ -152,10 +152,29 @@ export class OrgEquipmentComponent implements OnInit {
       },
       error: (err: any) => {
         this.borrowingLoading = false;
-        this.borrowingError = err.error?.message || 'Failed to submit borrowing request';
+        this.borrowingError = this.parseServerError(err) || 'Failed to submit borrowing request';
         console.error('Error creating borrowing:', err);
       }
     });
+  }
+
+  // Parse common server error shapes and extract a useful message
+  private parseServerError(err: any): string | null {
+    try {
+      if (!err) return null;
+      // If backend returns { error: '...'}
+      if (err.error && typeof err.error === 'object') {
+        if (typeof err.error.error === 'string' && err.error.error.trim().length) return err.error.error;
+        if (typeof err.error.message === 'string' && err.error.message.trim()) return err.error.message;
+      }
+      // If err.error is a plain string
+      if (err.error && typeof err.error === 'string') return err.error;
+      // Top-level message
+      if (err.message && typeof err.message === 'string') return err.message;
+    } catch (ex) {
+      // ignore
+    }
+    return null;
   }
 
   // Validate borrowing form

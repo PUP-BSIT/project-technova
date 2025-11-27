@@ -116,7 +116,8 @@
             <path d="M12 8v4"></path>
             <path d="M12 16h.01"></path>
           </svg>
-          <span>Note: Your equipment request will be reviewed by an administrator.</span>
+          <span *ngIf="!borrowingError">Note: Your equipment request will be reviewed by an administrator.</span>
+          <span *ngIf="borrowingError" class="modal-error-text">{{ borrowingError }}</span>
         </div>
 
         <!-- Error Message -->
