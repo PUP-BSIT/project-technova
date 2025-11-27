@@ -63,6 +63,27 @@ html {
   flex-direction: column;
 }
 
+.back-home-btn {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  border: 1px solid rgba($color-primary, 0.4);
+  background: rgba($color-primary, 0.08);
+  color: $color-primary;
+  font-weight: 600;
+  padding: 0.5rem 1.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  font-size: 0.9rem;
+  z-index: 5;
+
+  &:hover {
+    background: rgba($color-primary, 0.15);
+    border-color: $color-primary;
+  }
+}
+
 .register-header {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -389,6 +410,15 @@ html {
   color: $color-success;
   font-weight: 600;
   font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .back-home-btn {
+    top: 0.75rem;
+    left: 0.75rem;
+    font-size: 0.85rem;
+    padding: 0.45rem 1.2rem;
+  }
 }
 
 // Validation and States for phone number

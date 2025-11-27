@@ -28,7 +28,8 @@ $radius: 20px;
   align-items: center;
   font-family: 'Roboto', sans-serif;
   margin: 0;
-  padding: 0;
+  padding: 1.5rem;
+  position: relative;
 }
 
 .org-login-card {
@@ -198,5 +199,39 @@ $radius: 20px;
         text-decoration: underline;
       }
     }
+  }
+}
+
+.back-home-btn {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  border: 1px solid rgba($primary, 0.4);
+  background: rgba($primary, 0.08);
+  color: $primary;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  font-size: 14px;
+  z-index: 5;
+
+  &:hover {
+    background: rgba($primary, 0.15);
+    border-color: $primary;
+  }
+}
+
+@media (max-width: 600px) {
+  .org-login-container {
+    padding: 1rem;
+  }
+
+  .back-home-btn {
+    top: 0.75rem;
+    left: 0.75rem;
+    font-size: 13px;
+    padding: 8px 16px;
   }
 }
