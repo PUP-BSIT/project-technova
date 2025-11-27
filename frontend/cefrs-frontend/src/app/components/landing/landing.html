@@ -13,7 +13,16 @@
         <a (click)="scrollToSection('contact', $event)" class="nav-link" href="#contact">Contact</a>
       </div>
       <div class="nav-actions">
-        <button class="btn-nav-secondary" (click)="goToRoleSelection()">Sign Up</button>
+        <div class="nav-signup-menu" [class.open]="showSignupMenu">
+          <button class="btn-nav-secondary" (click)="toggleSignupMenu($event)">
+            Sign Up
+            <span class="icon-chevron">&#9662;</span>
+          </button>
+          <div class="signup-dropdown" (click)="$event.stopPropagation()">
+            <button (click)="goToStudentRegister()">Student Sign Up</button>
+            <button (click)="goToOrgRegister()">Organization Sign Up</button>
+          </div>
+        </div>
         <div class="nav-login-menu" [class.open]="showLoginMenu">
           <button class="btn-nav-login" (click)="toggleLoginMenu($event)">
             Log In
@@ -39,7 +48,7 @@
         A web-based platform that replaces manual forms with a centralized hub for borrowing equipment and reserving facilities across schools and organizations.
       </p>
       <div class="hero-actions">
-        <button class="btn-primary" (click)="goToRoleSelection()">Get Started</button>
+        <button class="btn-primary" (click)="goToStudentRegister()">Get Started</button>
         <button class="btn-secondary" (click)="scrollToFeatures()">Learn More</button>
       </div>
     </div>
@@ -265,4 +274,3 @@
     </div>
   </footer>
 </div>
-

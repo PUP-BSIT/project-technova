@@ -11,6 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class LandingComponent implements OnInit, AfterViewInit {
   showLoginMenu = false;
+  showSignupMenu = false;
 
   constructor(private router: Router) {}
 
@@ -70,27 +71,47 @@ export class LandingComponent implements OnInit, AfterViewInit {
   toggleLoginMenu(event: Event): void {
     event.stopPropagation();
     this.showLoginMenu = !this.showLoginMenu;
+    if (this.showLoginMenu) {
+      this.showSignupMenu = false;
+    }
+  }
+
+  toggleSignupMenu(event: Event): void {
+    event.stopPropagation();
+    this.showSignupMenu = !this.showSignupMenu;
+    if (this.showSignupMenu) {
+      this.showLoginMenu = false;
+    }
   }
 
   @HostListener('document:click')
-  closeLoginMenu(): void {
+  closeMenus(): void {
     this.showLoginMenu = false;
-  }
-
-  goToRoleSelection() {
-    this.router.navigate(['/role-selection']);
+    this.showSignupMenu = false;
   }
 
   goToStudentLogin() {
     this.router.navigate(['/login'], { queryParams: { role: 'STUDENT' } });
+    this.closeMenus();
   }
 
   goToOrgLogin() {
     this.router.navigate(['/org-login']);
+    this.closeMenus();
   }
 
   goToAdminLogin() {
     this.router.navigate(['/admin-login']);
+  }
+
+  goToStudentRegister() {
+    this.router.navigate(['/register']);
+    this.closeMenus();
+  }
+
+  goToOrgRegister() {
+    this.router.navigate(['/org-register']);
+    this.closeMenus();
   }
 
   scrollToFeatures() {
@@ -107,4 +128,3 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
   }
 }
-
