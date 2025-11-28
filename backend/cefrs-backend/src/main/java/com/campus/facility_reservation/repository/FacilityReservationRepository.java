@@ -30,7 +30,7 @@ public interface FacilityReservationRepository extends JpaRepository<FacilityRes
 
     @Query("SELECT fr FROM FacilityReservation fr WHERE fr.facility.id = :facilityId " +
             "AND fr.reservationDate = :date " +
-            "AND fr.status NOT IN ('REJECTED', 'CANCELLED') " +
+            "AND fr.status = 'APPROVED' " +
             "AND ((fr.startTime < :endTime AND fr.endTime > :startTime))")
     List<FacilityReservation> findConflictingReservations(
             @Param("facilityId") Long facilityId,

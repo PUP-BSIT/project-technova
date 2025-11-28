@@ -3,6 +3,7 @@ package com.campus.facility_reservation.controller;
 import com.campus.facility_reservation.dto.FacilityDTO;
 import com.campus.facility_reservation.dto.ApiResponse;
 import com.campus.facility_reservation.service.FacilityService;
+import com.campus.facility_reservation.service.FacilityReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 public class FacilityController {
 
     private final FacilityService facilityService;
+    private final FacilityReservationService reservationService;
 
     // Maximum Base64 image size (1.5MB in characters)
     private static final int MAX_IMAGE_SIZE = 1_500_000;
@@ -39,6 +41,18 @@ public class FacilityController {
     public ResponseEntity<ApiResponse<FacilityDTO>> getFacilityById(@PathVariable Long id) {
         FacilityDTO facility = facilityService.getFacilityById(id);
         return ResponseEntity.ok(ApiResponse.success("Facility retrieved", facility));
+    }
+
+    // GET /api/facilities/{id}/conflicts?date=YYYY-MM-DD&startTime=HH:MM&endTime=HH:MM
+    @GetMapping("/{id}/conflicts")
+    public ResponseEntity<ApiResponse<List<com.campus.facility_reservation.dto.FacilityReservationDTO>>> getFacilityConflicts(
+            @PathVariable Long id,
+            @RequestParam String date,
+            @RequestParam String startTime,
+            @RequestParam String endTime) {
+        List<com.campus.facility_reservation.dto.FacilityReservationDTO> conflicts =
+                reservationService.getConflictsForFacility(id, date, startTime, endTime);
+        return ResponseEntity.ok(ApiResponse.success("Conflicts retrieved", conflicts));
     }
 
     // GET /api/facilities/search?name=value

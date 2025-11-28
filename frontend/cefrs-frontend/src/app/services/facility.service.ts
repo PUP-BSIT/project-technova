@@ -92,4 +92,12 @@ export class FacilityService {
             headers: this.getHeaders()
         }).pipe(map(() => undefined));
     }
+
+    // Get conflicting reservations for a facility
+    getFacilityConflicts(facilityId: number, date: string, startTime: string, endTime: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/${facilityId}/conflicts`, {
+            params: { date, startTime, endTime },
+            headers: this.getHeaders()
+        });
+    }
 }

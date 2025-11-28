@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EquipmentBorrowingService, EquipmentBorrowing } from '../../../services/equipment-borrowing.service';
+import { EquipmentService } from '../../../services/equipment.service';
 
 @Component({
   selector: 'app-equipment-approval',
@@ -20,7 +21,15 @@ export class EquipmentApprovalComponent implements OnInit {
   actualReturnDate: string = '';
   showModal = false;
 
-  constructor(private borrowingService: EquipmentBorrowingService) {}
+  // Booking and availability info
+  bookings: any[] = [];
+  availableForRange: number | null = null;
+  equipmentTotal: number = 0;
+
+  constructor(
+    private borrowingService: EquipmentBorrowingService,
+    private equipmentService: EquipmentService
+  ) {}
 
   ngOnInit(): void {
     this.loadPendingBorrowings();
@@ -48,7 +57,13 @@ export class EquipmentApprovalComponent implements OnInit {
     this.approvalStatus = 'APPROVED';
     this.adminNotes = '';
     this.actualReturnDate = '';
+    this.error = null;
+    this.bookings = [];
+    this.availableForRange = null;
     this.showModal = true;
+
+    // Fetch equipment details and bookings for the date range
+    this.loadBookingsAndAvailability(borrowing);
   }
 
   closeModal(): void {
@@ -56,12 +71,55 @@ export class EquipmentApprovalComponent implements OnInit {
     this.selectedBorrowing = null;
     this.adminNotes = '';
     this.actualReturnDate = '';
+    this.error = null;
+    this.bookings = [];
+    this.availableForRange = null;
+  }
+
+  loadBookingsAndAvailability(borrowing: EquipmentBorrowing): void {
+    // Fetch equipment details first
+    this.equipmentService.getEquipmentById(borrowing.equipmentId).subscribe({
+      next: (equipment) => {
+        this.equipmentTotal = equipment.quantityTotal;
+
+        // Fetch bookings for the requested date range
+        this.equipmentService.getEquipmentBookings(
+          borrowing.equipmentId,
+          borrowing.borrowDate,
+          borrowing.expectedReturnDate
+        ).subscribe({
+          next: (bookingList) => {
+            this.bookings = bookingList || [];
+            // Sum quantities already reserved (excluding this pending request)
+            const reserved = this.bookings
+              .filter((b: any) => b.id !== borrowing.id)
+              .reduce((sum: number, b: any) => sum + (b.quantity || 0), 0);
+            this.availableForRange = this.equipmentTotal - reserved;
+          },
+          error: (err) => {
+            console.error('Error fetching bookings:', err);
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching equipment:', err);
+      }
+    });
   }
 
   submitApproval(): void {
     if (!this.selectedBorrowing) return;
 
+    // Check availability before approving
+    if (this.approvalStatus === 'APPROVED') {
+      if (this.availableForRange !== null && this.selectedBorrowing.quantity > this.availableForRange) {
+        this.error = `Cannot approve: Only ${this.availableForRange} items available for the selected dates`;
+        return;
+      }
+    }
+
     this.loading = true;
+    this.error = null;
     this.borrowingService.updateBorrowingStatus(
       this.selectedBorrowing.id,
       this.approvalStatus,
@@ -77,10 +135,25 @@ export class EquipmentApprovalComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Failed to update borrowing status';
+        this.error = this.parseServerError(err) || 'Failed to update borrowing status';
         console.error('Error updating borrowing:', err);
       }
     });
+  }
+
+  private parseServerError(err: any): string | null {
+    try {
+      if (!err) return null;
+      if (err.error && typeof err.error === 'object') {
+        if (typeof err.error.error === 'string' && err.error.error.trim().length) return err.error.error;
+        if (typeof err.error.message === 'string' && err.error.message.trim()) return err.error.message;
+      }
+      if (err.error && typeof err.error === 'string') return err.error;
+      if (err.message && typeof err.message === 'string') return err.message;
+    } catch (ex) {
+      // ignore
+    }
+    return null;
   }
 
   formatDate(dateStr: string): string {

@@ -44,6 +44,18 @@ public class FacilityReservationService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    // Get conflicting reservations for facility and time slot
+    public List<FacilityReservationDTO> getConflictsForFacility(Long facilityId, String dateStr, String startTimeStr, String endTimeStr) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found"));
+        LocalDate date = LocalDate.parse(dateStr);
+        LocalTime startTime = LocalTime.parse(startTimeStr);
+        LocalTime endTime = LocalTime.parse(endTimeStr);
+        
+        List<FacilityReservation> conflicts = reservationRepository.findConflictingReservations(facilityId, date, startTime, endTime);
+        return conflicts.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
     
     public FacilityReservationDTO getReservationById(Long id) {
         FacilityReservation reservation = reservationRepository.findById(id)
@@ -97,6 +109,25 @@ public class FacilityReservationService {
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
         
         ReservationStatus status = ReservationStatus.valueOf(approval.getStatus().toUpperCase());
+        ReservationStatus oldStatus = reservation.getStatus();
+
+        // If approving now, check for conflicts
+        if (status == ReservationStatus.APPROVED && oldStatus != ReservationStatus.APPROVED) {
+            List<FacilityReservation> conflicts = reservationRepository.findConflictingReservations(
+                reservation.getFacility().getId(),
+                reservation.getReservationDate(),
+                reservation.getStartTime(),
+                reservation.getEndTime()
+            );
+            // Remove this reservation from conflicts (if it's already in there somehow)
+            conflicts = conflicts.stream()
+                .filter(c -> !c.getId().equals(reservation.getId()))
+                .collect(Collectors.toList());
+            if (!conflicts.isEmpty()) {
+                throw new RuntimeException("Cannot approve: Time slot conflicts with existing approved reservation");
+            }
+        }
+
         reservation.setStatus(status);
         reservation.setAdminNotes(approval.getAdminNotes());
         reservation.setApprovedBy(admin);
