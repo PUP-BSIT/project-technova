@@ -78,6 +78,35 @@
           <p><strong>Purpose:</strong> {{ selectedBorrowing.purpose }}</p>
         </div>
 
+        <!-- Availability Info -->
+        <div *ngIf="availableForRange !== null" class="availability-section">
+          <h4>Availability for Selected Dates</h4>
+          <p><strong>Total Equipment:</strong> {{ equipmentTotal }}</p>
+          <p><strong>Available for this period:</strong> 
+            <span [style.color]="availableForRange >= selectedBorrowing.quantity ? 'green' : 'red'">
+              {{ availableForRange }} items
+            </span>
+          </p>
+          <p *ngIf="availableForRange < selectedBorrowing.quantity" style="color: red;">
+            ⚠️ Not enough equipment available to approve this request
+          </p>
+        </div>
+
+        <!-- Existing Bookings -->
+        <div *ngIf="bookings?.length" class="bookings-section">
+          <h4>Existing Bookings in Selected Range</h4>
+          <ul>
+            <li *ngFor="let b of bookings">
+              {{ b.userName || 'User #' + b.userId }}: {{ b.quantity }} pcs — {{ formatDate(b.borrowDate) }} to {{ formatDate(b.expectedReturnDate) }} ({{ b.status }})
+            </li>
+          </ul>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="alert alert-error" style="margin-top: 10px; padding: 10px; background: #fee; border: 1px solid #fcc; color: #c00; border-radius: 4px;">
+          {{ error }}
+        </div>
+
         <div class="form-group">
           <label for="status">Decision *</label>
           <select id="status" [(ngModel)]="approvalStatus" class="form-control">
@@ -110,7 +139,10 @@
 
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-        <button class="btn btn-primary" (click)="submitApproval()" [disabled]="loading">
+        <button 
+          class="btn btn-primary" 
+          (click)="submitApproval()" 
+          [disabled]="loading || (approvalStatus === 'APPROVED' && availableForRange !== null && selectedBorrowing && selectedBorrowing.quantity > availableForRange)">
           {{ loading ? 'Processing...' : 'Submit' }}
         </button>
       </div>
