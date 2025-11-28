@@ -45,6 +45,24 @@ public interface EquipmentBorrowingRepository extends JpaRepository<EquipmentBor
                      "AND eb.status IN ('APPROVED', 'BORROWED')")
        Integer getTotalBorrowedQuantity(@Param("equipment") Equipment equipment);
 
+       // Sum of quantities for borrowings that overlap the provided date range
+       @Query("SELECT COALESCE(SUM(eb.quantity), 0) FROM EquipmentBorrowing eb " +
+                     "WHERE eb.equipment = :equipment " +
+                     "AND eb.status IN ('APPROVED', 'BORROWED') " +
+                     "AND NOT (eb.expectedReturnDate < :borrowDate OR eb.borrowDate > :expectedReturnDate)")
+       Integer getOverlappingBorrowedQuantity(@Param("equipment") Equipment equipment,
+                                              @Param("borrowDate") java.time.LocalDate borrowDate,
+                                              @Param("expectedReturnDate") java.time.LocalDate expectedReturnDate);
+
+       // Return borrowings that overlap the provided date range (used to show booked ranges)
+       @Query("SELECT eb FROM EquipmentBorrowing eb " +
+                     "WHERE eb.equipment = :equipment " +
+                     "AND eb.status IN ('APPROVED', 'BORROWED') " +
+                     "AND NOT (eb.expectedReturnDate < :startDate OR eb.borrowDate > :endDate)")
+       List<EquipmentBorrowing> findOverlappingBorrowings(@Param("equipment") Equipment equipment,
+                                                          @Param("startDate") java.time.LocalDate startDate,
+                                                          @Param("endDate") java.time.LocalDate endDate);
+
        // For Reports Generation
 
        // Total borrowings count

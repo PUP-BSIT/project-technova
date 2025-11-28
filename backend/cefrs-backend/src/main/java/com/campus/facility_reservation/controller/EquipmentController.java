@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.campus.facility_reservation.service.EquipmentBorrowingService;
 
 @RestController
 @RequestMapping("/api/equipment")
@@ -17,6 +18,7 @@ import java.util.List;
 public class EquipmentController {
 
     private final EquipmentService equipmentService;
+    private final EquipmentBorrowingService borrowingService;
 
     // Maximum Base64 image size (1.5MB in characters)
     private static final int MAX_IMAGE_SIZE = 1_500_000;
@@ -40,6 +42,17 @@ public class EquipmentController {
     public ResponseEntity<ApiResponse<EquipmentDTO>> getEquipmentById(@PathVariable Long id) {
         EquipmentDTO equipment = equipmentService.getEquipmentById(id);
         return ResponseEntity.ok(ApiResponse.success("Equipment retrieved", equipment));
+    }
+
+    // GET /api/equipment/{id}/bookings?start=YYYY-MM-DD&end=YYYY-MM-DD
+    @GetMapping("/{id}/bookings")
+    public ResponseEntity<ApiResponse<List<com.campus.facility_reservation.dto.EquipmentBorrowingDTO>>> getEquipmentBookings(
+            @PathVariable Long id,
+            @RequestParam String start,
+            @RequestParam String end) {
+        List<com.campus.facility_reservation.dto.EquipmentBorrowingDTO> bookings =
+                borrowingService.getBookingsForEquipment(id, start, end);
+        return ResponseEntity.ok(ApiResponse.success("Bookings retrieved", bookings));
     }
 
     // GET /api/equipment/search?name=value

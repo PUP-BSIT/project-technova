@@ -33,6 +33,10 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
   loading = false;
   error: string | null = null;
   success: string | null = null;
+  
+  // Bookings for the selected equipment within the selected range
+  bookings: any[] = [];
+  availableForRange: number | null = null;
 
   constructor(
     private borrowingService: EquipmentBorrowingService,
@@ -53,6 +57,31 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
     });
 
     this.loadEquipment();
+  }
+
+  // Called when equipment or dates change to refresh bookings/availability
+  onSelectionChange(): void {
+    this.error = null;
+    this.success = null;
+    this.bookings = [];
+    this.availableForRange = null;
+
+    if (!this.selectedEquipmentId || !this.borrowDate || !this.expectedReturnDate) return;
+
+    this.equipmentService.getEquipmentBookings(this.selectedEquipmentId, this.borrowDate, this.expectedReturnDate)
+      .subscribe({
+        next: (list) => {
+          this.bookings = list || [];
+          const reserved = this.bookings.reduce((sum: number, b: any) => sum + (b.quantity || 0), 0);
+          const selected = this.getSelectedEquipment();
+          if (selected) {
+            this.availableForRange = selected.quantityTotal - reserved;
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching bookings:', err);
+        }
+      });
   }
 
   loadEquipment(): void {
@@ -80,6 +109,11 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
     if (!this.validateForm()) {
       return;
     }
+    // If availability for the selected date range is known and insufficient, block submit
+    if (this.availableForRange !== null && this.quantity > this.availableForRange) {
+      this.error = `Only ${this.availableForRange} items available for the selected dates`;
+      return;
+    }
 
     this.loading = true;
     this.error = null;
@@ -105,10 +139,30 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Failed to submit borrowing request';
+        this.error = this.parseServerError(err) || 'Failed to submit borrowing request';
         console.error('Error creating borrowing:', err);
       }
     });
+  }
+
+  // Parse server error response to extract a useful message
+  private parseServerError(err: any): string | null {
+    try {
+      // Common Spring Boot error shape { timestamp, status, error, message, path }
+      if (err && err.error) {
+        const e = err.error;
+        if (typeof e === 'string') return e;
+        if (e.message && typeof e.message === 'string') return e.message;
+        // Some endpoints return ApiResponse-like object { success:false, message: '...' }
+        if (e.data && e.data.message) return e.data.message;
+        if (e.message && e.message.error) return e.message.error;
+      }
+      // Fallback to top-level message
+      if (err && err.message) return err.message;
+    } catch (ex) {
+      // ignore parsing errors
+    }
+    return null;
   }
 
   validateForm(): boolean {
