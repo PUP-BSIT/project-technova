@@ -1,8 +1,7 @@
 <mat-sidenav-container class="dashboard-container">
   <mat-sidenav 
     #sidenav
-    [opened]="isSidebarOpen"
-    (openedChange)="isSidebarOpen = $event"
+    [(opened)]="isSidebarOpen"
     [mode]="isMobileView ? 'over' : 'side'"
     [fixedInViewport]="!isMobileView"
     [fixedTopGap]="0"
@@ -16,21 +15,20 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="main-content">
-    @if (isMobileView) {
-      <button
-        mat-icon-button
-        class="hamburger-button"
-        type="button"
-        (click)="toggleSidebar()"
-        [attr.aria-expanded]="isSidebarOpen"
-        aria-label="Toggle navigation menu">
-        <span class="hamburger-icon" [class.is-open]="isSidebarOpen">
-          <span></span>
-          <span></span>
-          <span></span>
-        </span>
-      </button>
-    }
+    <!-- Hamburger button - visible on both mobile and desktop -->
+    <button
+      mat-icon-button
+      class="hamburger-button"
+      type="button"
+      (click)="toggleSidebar()"
+      [attr.aria-expanded]="isSidebarOpen"
+      aria-label="Toggle navigation menu">
+      <span class="hamburger-icon" [class.is-open]="isSidebarOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
 
     @if (currentView === 'settings') {
       <router-outlet></router-outlet>
