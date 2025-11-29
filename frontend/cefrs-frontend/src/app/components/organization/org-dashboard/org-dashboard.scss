@@ -142,9 +142,18 @@ $transition-base: 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  transition: all $transition-base ease;
 
   &:hover {
     background: $gray-lighter;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 
   .hamburger-icon {
@@ -181,18 +190,8 @@ $transition-base: 0.3s;
 }
 
 @media (max-width: 1024px) {
-  .hamburger-button {
-    display: block;
-  }
-
   .main-content {
     padding-top: 80px;
-  }
-}
-
-@media (min-width: 1025px) {
-  .hamburger-button {
-    display: none;
   }
 }
 

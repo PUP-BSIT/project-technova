@@ -33,20 +33,61 @@ export class OrgProfileComponent implements OnInit, AfterViewInit {
   errorMessage = '';
   isSidebarOpen = true;
   isMobileView = false;
+  private readonly DESKTOP_BREAKPOINT = 1024;
 
   ngOnInit(): void {
     this.loadProfile();
-    // Ensure proper display on component initialization
+    this.evaluateViewport();
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 100);
   }
 
   ngAfterViewInit(): void {
-    // Initialize isMobileView after view is initialized
     if (this.sidebarComponent) {
       this.isMobileView = this.sidebarComponent.isMobileView;
+      if (this.sidenav) {
+        this.isSidebarOpen = !this.isMobileView;
+        this.sidenav.opened = !this.isMobileView;
+        this.sidenav.openedChange.subscribe(opened => {
+          this.isSidebarOpen = opened;
+        });
+      }
       this.cdr.detectChanges();
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    this.evaluateViewport();
+  }
+
+  private evaluateViewport(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const wasMobileView = this.isMobileView;
+    this.isMobileView = window.innerWidth < this.DESKTOP_BREAKPOINT;
+
+    if (!this.isMobileView && wasMobileView && this.sidenav) {
+      this.isSidebarOpen = true;
+      this.sidenav.open();
+    }
+
+    if (this.isMobileView && !wasMobileView && this.sidenav) {
+      this.isSidebarOpen = false;
+      this.sidenav.close();
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  toggleSidebar(): void {
+    if (this.sidenav) {
+      this.sidenav.toggle();
+    } else if (this.sidebarComponent) {
+      this.sidebarComponent.toggleSidebar();
     }
   }
 
@@ -157,15 +198,11 @@ export class OrgProfileComponent implements OnInit, AfterViewInit {
   }
 
   onViewChanged(view: string): void {
-    // Handle view changes from sidebar
     console.log('View changed to:', view);
-    
-    // Ensure proper display when navigating
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 50);
-    
-    // Navigate based on the view
+
     switch (view) {
       case 'dashboard':
         this.router.navigate(['/org-dashboard']);
@@ -175,16 +212,12 @@ export class OrgProfileComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/org-dashboard']);
         break;
       case 'settings':
-        // Already on settings/profile, no need to navigate
         break;
     }
-  }
 
-  toggleSidebar(): void {
-    if (this.sidebarComponent) {
-      this.sidebarComponent.toggleSidebar();
-      // Update isMobileView after toggle
-      this.isMobileView = this.sidebarComponent.isMobileView;
+    // Close sidebar on mobile after navigation
+    if (this.isMobileView && this.sidenav) {
+      this.sidenav.close();
     }
   }
 }

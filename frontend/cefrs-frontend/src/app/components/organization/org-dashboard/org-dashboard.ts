@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -11,6 +11,7 @@ import { Dashboard } from './dashboard/dashboard';
 import { OrgFacilitiesComponent } from './facilities/facilities';
 import { OrgEquipmentComponent } from './equipment/equipment';
 import { OrgMyRequestComponent } from './my-request/my-request';
+
 @Component({
   selector: 'app-org-dashboard',
   standalone: true,
@@ -30,21 +31,57 @@ import { OrgMyRequestComponent } from './my-request/my-request';
   templateUrl: './org-dashboard.html',
   styleUrls: ['./org-dashboard.scss']
 })
-export class OrgDashboardComponent implements AfterViewInit {
+export class OrgDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(OrgSidebarComponent) sidebarComponent!: OrgSidebarComponent;
   
   currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' = 'dashboard';
   isSidebarOpen = true;
   isMobileView = false;
+  private readonly DESKTOP_BREAKPOINT = 1024;
 
   constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
+  ngOnInit(): void {
+    this.checkScreenSize();
+  }
+
   ngAfterViewInit(): void {
-    // Initialize isMobileView after view is initialized
-    if (this.sidebarComponent) {
-      this.isMobileView = this.sidebarComponent.isMobileView;
+    // Ensure sidenav state is synced after view init
+    if (this.sidenav) {
+      this.isSidebarOpen = !this.isMobileView;
+      this.sidenav.opened = !this.isMobileView;
       this.cdr.detectChanges();
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    this.checkScreenSize();
+  }
+
+  private checkScreenSize(): void {
+    const wasMobileView = this.isMobileView;
+    this.isMobileView = window.innerWidth < this.DESKTOP_BREAKPOINT;
+
+    // If switching from mobile to desktop, open sidebar
+    if (!this.isMobileView && wasMobileView && this.sidenav) {
+      this.isSidebarOpen = true;
+      this.sidenav.open();
+    }
+
+    // If switching to mobile, close sidebar
+    if (this.isMobileView && !wasMobileView && this.sidenav) {
+      this.isSidebarOpen = false;
+      this.sidenav.close();
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  toggleSidebar(): void {
+    if (this.sidenav) {
+      this.sidenav.toggle();
     }
   }
 
@@ -58,13 +95,10 @@ export class OrgDashboardComponent implements AfterViewInit {
 
   onSidebarViewChange(view: string): void {
     this.setView(view as 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings');
-  }
-
-  toggleSidebar(): void {
-    if (this.sidebarComponent) {
-      this.sidebarComponent.toggleSidebar();
-      // Update isMobileView after toggle
-      this.isMobileView = this.sidebarComponent.isMobileView;
+    
+    // Close sidebar on mobile after navigation
+    if (this.isMobileView && this.sidenav) {
+      this.sidenav.close();
     }
   }
 }

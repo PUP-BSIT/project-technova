@@ -32,6 +32,10 @@
     flex-direction: column;
     overflow: hidden;
   }
+
+  ::ng-deep .mat-drawer-content {
+    height: 100vh;
+  }
 }
 
 .sidebar-sidenav {
@@ -44,10 +48,7 @@
 .main-content {
   padding: 0;
   min-height: 100vh;
-}
-
-.profile-container-wrapper {
-  padding: 1rem;
+  position: relative;
 }
 
 .hamburger-button {
@@ -62,9 +63,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
   &:hover {
     background: #f5f5f5;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 
   .hamburger-icon {
@@ -98,6 +108,16 @@
       }
     }
   }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    padding-top: 80px;
+  }
+}
+
+.profile-container-wrapper {
+  padding: 1rem;
 }
 
 @media (max-width: 1024px) {
