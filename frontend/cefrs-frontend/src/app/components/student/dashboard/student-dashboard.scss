@@ -16,6 +16,7 @@ $gray-dark: #666666;
 $gray-medium: #999999;
 $gray-light: #ddd;
 $gray-lighter: #f5f5f5;
+$background-color: #f5f5f5;
 $bg-yellow: #fffacd;
 $bg-yellow-dark: #f6e69a;
 $bg-warning: #fff9e6;
@@ -116,7 +117,6 @@ $transition-base: 0.3s;
   ::ng-deep .mat-drawer-content {
     height: 100vh;
   }
-
 }
 
 .sidebar-sidenav {
@@ -129,6 +129,7 @@ $transition-base: 0.3s;
 .main-content {
   padding: 0;
   min-height: 100vh;
+  position: relative;
 }
 
 .hamburger-button {
@@ -143,9 +144,18 @@ $transition-base: 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  transition: all $transition-base ease;
 
   &:hover {
     background: $gray-lighter;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 
   .hamburger-icon {
@@ -182,18 +192,8 @@ $transition-base: 0.3s;
 }
 
 @media (max-width: 1024px) {
-  .hamburger-button {
-    display: block;
-  }
-
   .main-content {
     padding-top: 80px;
-  }
-}
-
-@media (min-width: 1025px) {
-  .hamburger-button {
-    display: none;
   }
 }
 
