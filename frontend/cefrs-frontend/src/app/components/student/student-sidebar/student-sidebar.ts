@@ -19,6 +19,7 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
 
   @Input() currentView: string = 'dashboard';
   @Input() sidenav!: MatSidenav;
+
   @Output() viewChanged = new EventEmitter<string>();
 
   isSidebarOpen = true;
@@ -32,12 +33,10 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
 
   ngOnInit(): void {
     this.loadUserProfile();
-    // Initialize viewport evaluation early to avoid ExpressionChangedAfterItHasBeenCheckedError
     this.evaluateViewport();
   }
 
   ngAfterViewInit(): void {
-    // Re-evaluate viewport after view init to ensure sidenav is available
     if (this.sidenav) {
       this.evaluateViewport();
       this.sidenav.openedChange.subscribe(opened => {
@@ -60,7 +59,6 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
     this.profileService.getProfile().subscribe({
       next: (data: any) => {
         this.isLoading = false;
-        // For students, always show firstName + lastName
         let displayName: string;
         displayName = data.firstName && data.lastName 
           ? `${data.firstName} ${data.lastName}` 
@@ -75,7 +73,6 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
       error: (err) => {
         console.error('Error loading user profile for sidebar:', err);
         this.isLoading = false;
-        // Set default user info if API fails
         this.user = {
           name: 'User',
           email: 'user@example.com',
@@ -98,7 +95,6 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
     if (view === 'settings') {
       this.router.navigate(['/profile']);
     }
-    // All other views are handled by the parent component (student-dashboard)
   }
 
   toggleSidebar(): void {
@@ -130,12 +126,10 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   logout(): void {
-    // Show confirmation modal instead of immediate logout
     this.showLogoutModal = true;
   }
 
   confirmLogout(): void {
-    // Use central auth service to logout
     this.authService.logout();
     this.user = null;
     this.showLogoutModal = false;
