@@ -7,8 +7,13 @@ $background-gray: #e4e0e0;
 $card-background: #fff7f7;
 
 $radius-lg: 20px;
+$radius-sm: 8px;
 $font-xl: 32px;
 $font-md: 16px;
+$font-sm: 14px;
+$font-medium: 500;
+$spacing-lg: 24px;
+$spacing-md: 16px;
 $transition-base: 0.3s ease;
 
 :host, html, body {
@@ -45,7 +50,8 @@ select {
   width: 100vw;
   background: $background-gray;
   font-family: 'Roboto', sans-serif;
-  position: relative; 
+  position: relative;
+  padding: $spacing-lg;
 }
 
 /* ✅ Card styling */
@@ -136,5 +142,40 @@ select {
         background: darken($organization-color, 5%);
       }
     }
+
+  }
+}
+
+.back-home-btn {
+  position: absolute;
+  top: $spacing-lg;
+  left: $spacing-lg;
+  border: 1px solid rgba($primary-color, 0.4);
+  background: rgba($primary-color, 0.08);
+  color: $primary-color;
+  font-weight: $font-medium;
+  padding: 10px $spacing-lg;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background $transition-base, border-color $transition-base;
+  font-size: $font-sm;
+  z-index: 5;
+
+  &:hover {
+    background: rgba($primary-color, 0.15);
+    border-color: $primary-color;
+  }
+}
+
+@media (max-width: 600px) {
+  .role-container {
+    padding: $spacing-md;
+  }
+
+  .back-home-btn {
+    top: $spacing-md;
+    left: $spacing-md;
+    padding: 8px $spacing-md;
+    font-size: 12px;
   }
 }
