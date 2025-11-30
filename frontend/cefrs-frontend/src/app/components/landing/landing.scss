@@ -114,6 +114,11 @@ $spacing-3xl: 6rem;
     justify-content: space-between;
     align-items: center;
     gap: $spacing-lg;
+    position: relative;
+
+    @media (max-width: 768px) {
+      padding: 0 $spacing-md;
+    }
 
     .logo {
       display: flex;
@@ -136,15 +141,57 @@ $spacing-3xl: 6rem;
       }
     }
 
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: $spacing-lg;
+      flex: 1;
+      justify-content: center;
+
+      @media (max-width: 1024px) {
+        gap: $spacing-md;
+      }
+
+      @media (max-width: 768px) {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        background: $white;
+        flex-direction: column;
+        padding: $spacing-xl $spacing-lg;
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        z-index: 1001;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: $spacing-lg;
+        overflow-y: auto;
+        padding-top: 80px;
+
+        &.mobile-open {
+          transform: translateX(0);
+        }
+      }
+    }
+
     .nav-links {
       display: flex;
       gap: $spacing-lg;
       align-items: center;
-      flex: 1;
-      justify-content: center;
+
+      @media (max-width: 1024px) {
+        gap: $spacing-md;
+      }
 
       @media (max-width: 768px) {
-        display: none;
+        flex-direction: column;
+        gap: 0;
+        width: 100%;
+        align-items: stretch;
       }
 
       .nav-link {
@@ -156,6 +203,19 @@ $spacing-3xl: 6rem;
         position: relative;
         transition: color 0.3s ease;
         cursor: pointer;
+        white-space: nowrap;
+
+        @media (max-width: 768px) {
+          width: 100%;
+          padding: $spacing-md;
+          border-bottom: 1px solid rgba(107, 24, 24, 0.1);
+          font-size: 1rem;
+          white-space: normal;
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
 
         &:hover {
           color: $primary-color;
@@ -170,6 +230,10 @@ $spacing-3xl: 6rem;
           height: 2px;
           background: $primary-color;
           transition: width 0.3s ease;
+
+          @media (max-width: 768px) {
+            display: none;
+          }
         }
 
         &:hover::after {
@@ -183,6 +247,146 @@ $spacing-3xl: 6rem;
       gap: $spacing-sm;
       align-items: center;
       flex-shrink: 0;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: $spacing-md;
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .btn-nav-secondary,
+      .btn-nav-login {
+        @media (max-width: 768px) {
+          width: 100%;
+          padding: $spacing-md;
+          font-size: 1rem;
+        }
+      }
+
+      .nav-signup-menu,
+      .nav-login-menu {
+        @media (max-width: 768px) {
+          width: 100%;
+
+          .signup-dropdown,
+          .login-dropdown {
+            position: static;
+            box-shadow: none;
+            border: none;
+            padding: $spacing-sm 0;
+            margin-top: $spacing-sm;
+            display: none;
+            flex-direction: column;
+            gap: $spacing-xs;
+            background: transparent;
+
+            button {
+              padding: $spacing-sm;
+              text-align: left;
+              border: 1px solid rgba(107, 24, 24, 0.2);
+              border-radius: 0.5rem;
+              background: $card-background;
+            }
+          }
+
+          &.open {
+            .signup-dropdown,
+            .login-dropdown {
+              display: flex;
+            }
+          }
+        }
+      }
+    }
+
+    .mobile-overlay {
+      display: none;
+
+      @media (max-width: 768px) {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 1000;
+
+        &.active {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: $spacing-xs;
+      z-index: 1002;
+      position: relative;
+      width: 30px;
+      height: 30px;
+      justify-content: center;
+      align-items: center;
+
+      @media (max-width: 768px) {
+        display: flex;
+      }
+
+      span {
+        width: 25px;
+        height: 3px;
+        background: $primary-color;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+        display: block;
+        position: absolute;
+
+        &:nth-child(1) {
+          top: 6px;
+          transform-origin: center;
+        }
+
+        &:nth-child(2) {
+          top: 50%;
+          transform: translateY(-50%);
+          transform-origin: center;
+        }
+
+        &:nth-child(3) {
+          bottom: 6px;
+          transform-origin: center;
+        }
+      }
+
+      &.active {
+        span {
+          &:nth-child(1) {
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+          }
+
+          &:nth-child(2) {
+            opacity: 0;
+            transform: translateY(-50%) scale(0);
+          }
+
+          &:nth-child(3) {
+            bottom: auto;
+            top: 50%;
+            transform: translateY(-50%) rotate(-45deg);
+          }
+        }
+      }
     }
   }
 }
@@ -270,6 +474,8 @@ $spacing-3xl: 6rem;
   .icon-chevron {
     margin-left: 0.5rem;
     font-size: 0.75rem;
+    display: inline-block;
+    transition: transform 0.3s ease;
   }
 
   .login-dropdown,
@@ -313,6 +519,10 @@ $spacing-3xl: 6rem;
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+    }
+
+    .icon-chevron {
+      transform: rotate(180deg);
     }
   }
 }
@@ -970,6 +1180,22 @@ html {
 }
 
 // Responsive adjustments
+@media (max-width: 1024px) {
+  .navbar .nav-content {
+    padding: 0 $spacing-md;
+
+    .logo {
+      img {
+        height: 60px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .hero {
     padding: $spacing-2xl $spacing-md;
@@ -996,33 +1222,63 @@ html {
     padding: $spacing-2xl $spacing-md;
   }
 
+  .navbar {
+    padding: $spacing-sm 0;
+
+    .nav-content {
+      padding: 0 $spacing-md;
+      position: relative;
+
+      .logo {
+        img {
+          height: 50px;
+        }
+
+        h2 {
+          font-size: 1.25rem;
+          letter-spacing: 1px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
   .navbar .nav-content {
-    padding: 0 $spacing-md;
-    flex-wrap: wrap;
-    gap: $spacing-md;
+    padding: 0 $spacing-sm;
 
     .logo {
+      gap: $spacing-sm;
+
       img {
-        height: 50px;
+        height: 40px;
       }
 
       h2 {
-        font-size: 1.5rem;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
       }
     }
 
-    .nav-links {
-      order: 3;
-      width: 100%;
-      justify-content: center;
-      padding: $spacing-sm 0;
-      border-top: 1px solid rgba(107, 24, 24, 0.1);
-      margin-top: $spacing-sm;
-    }
-
     .nav-actions {
-      margin-left: auto;
+      .btn-nav-secondary,
+      .btn-nav-login {
+        font-size: 0.875rem;
+        padding: $spacing-sm $spacing-md;
+      }
     }
+  }
+
+  .hero {
+    padding: $spacing-xl $spacing-sm;
+    min-height: 60vh;
+  }
+
+  .overview,
+  .features,
+  .policies,
+  .contact {
+    padding: $spacing-xl $spacing-sm;
   }
 }
 
