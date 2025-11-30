@@ -27,6 +27,9 @@ export class LoginComponent implements OnInit {
   };
 	 errors = { email: '', password: '' };
   infoMessage: string = '';
+  
+  // Validation flags
+  showEmailError = false;
 
   constructor(
     private router: Router,
@@ -50,18 +53,54 @@ export class LoginComponent implements OnInit {
 	clearError(field: 'email' | 'password'): void {
 		this.errors[field] = '';
     this.infoMessage = '';
+    if (field === 'email') {
+      this.showEmailError = false;
+    }
 	}
+  
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
+  isValidStudentId(studentId: string): boolean {
+    // Student ID format: YYYY-XXXXX-XX-X (e.g., 2023-00439-TG-0)
+    // Accepts both uppercase and lowercase letters
+    const studentIdRegex = /^\d{4}-\d{5}-[A-Za-z]{2}-\d$/;
+    return studentIdRegex.test(studentId);
+  }
+  
+  isEmailOrStudentId(input: string): 'email' | 'studentId' | 'invalid' {
+    if (this.isValidEmail(input)) {
+      return 'email';
+    } else if (this.isValidStudentId(input)) {
+      return 'studentId';
+    }
+    return 'invalid';
+  }
 
   onLogin(): void {
     this.infoMessage = '';
 		this.errors = { email: '', password: '' };
+    this.showEmailError = false;
 
-    if (!this.credentials.email) {
-      this.errors.email = 'Email is required.';
+    // Validate email/student ID field
+    if (!this.credentials.email || !this.credentials.email.trim()) {
+      this.errors.email = 'Email Address or Student ID is required.';
+      this.showEmailError = true;
+    } else {
+      const inputType = this.isEmailOrStudentId(this.credentials.email.trim());
+      if (inputType === 'invalid') {
+        this.errors.email = 'Please enter a valid email address (e.g., example@gmail.com) or Student ID (e.g., 2023-00439-TG-0).';
+        this.showEmailError = true;
+      }
     }
-    if (!this.credentials.password) {
+    
+    // Validate password
+    if (!this.credentials.password || !this.credentials.password.trim()) {
       this.errors.password = 'Password is required.';
     }
+    
     if (this.errors.email || this.errors.password) return;
 
     this.isLoading = true;
@@ -72,13 +111,16 @@ export class LoginComponent implements OnInit {
         console.log('Login successful:', response);
         this.isLoading = false;
 
-        const role = response.role; // Get role from backend response
+        // Get role from localStorage (stored by AuthService after successful login)
+        const role = this.authService.getUserRole();
+        console.log('User role:', role);
 
         // Only allow STUDENT role on this login page
         if (role === 'STUDENT') {
           this.router.navigate(['/student-dashboard']);
         } else {
           this.errors.email = `This account is registered as ${role} account. Please use the correct login page.`;
+          this.showEmailError = true;
           this.authService.logout();
         }
       },
@@ -98,12 +140,14 @@ export class LoginComponent implements OnInit {
 					return;
 				}
 
-				if (/email not registered/i.test(backendMsg)) {
-					this.errors.email = 'This email is not registered.';
+				if (/email.*not registered|student id.*not registered/i.test(backendMsg)) {
+					this.errors.email = 'This email address or Student ID is not registered.';
+					this.showEmailError = true;
 				} else if (/incorrect password/i.test(backendMsg)) {
 					this.errors.password = 'Incorrect password. Please try again.';
 				} else if (/deactivated/i.test(backendMsg)) {
 					this.errors.email = 'This account has been deactivated.';
+					this.showEmailError = true;
 				} else {
 					this.errors.password = backendMsg;
 				}
