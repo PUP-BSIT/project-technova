@@ -229,6 +229,10 @@ export class OrgRegisterComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  goToRoleSelection(): void {
+    this.router.navigate(['/select-role']);
+  }
+
   // Helper methods to check field validity
   isFieldInvalid(fieldName: string): boolean {
     const field = this.registerForm.get(fieldName);

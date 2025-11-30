@@ -20,4 +20,8 @@ export class RoleSelectionComponent {
   goToOrganizationAuth() {
     this.router.navigate(['/org-register'], { queryParams: { role: 'CAMPUS_ORGANIZATION' } });
   }
+
+  goToHome() {
+    this.router.navigate(['/']);
+  }
 }

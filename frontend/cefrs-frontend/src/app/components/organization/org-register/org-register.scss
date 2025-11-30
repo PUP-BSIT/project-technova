@@ -38,15 +38,18 @@ html {
 .register-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
+  align-items: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   background: $color-bg;
   font-family: 'Roboto', sans-serif;
   padding: 2rem;
   margin: 0;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .register-card {
@@ -57,25 +60,26 @@ html {
   max-width: 680px;
   border: 1px solid $color-primary;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  margin: auto;
-  overflow: hidden;
+  margin: 0 auto;
+  overflow: visible;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .back-home-btn {
   position: absolute;
-  top: 1.25rem;
-  left: 1.25rem;
+  top: 1.5rem;
+  left: 1.5rem;
   border: 1px solid rgba($color-primary, 0.4);
   background: rgba($color-primary, 0.08);
   color: $color-primary;
-  font-weight: 600;
-  padding: 0.5rem 1.6rem;
-  border-radius: 999px;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease, border-color 0.3s ease;
-  font-size: 0.9rem;
+  font-size: 14px;
   z-index: 5;
 
   &:hover {
@@ -162,6 +166,10 @@ html {
   font-size: 0.7rem;
   color: $color-muted;
   white-space: nowrap;
+  
+  @media (max-width: 480px) {
+    font-size: 0.55rem;
+  }
 }
 
 .stepper-line {
@@ -297,6 +305,8 @@ html {
   display: flex;
   justify-content: flex-end;
   margin-top: 1.75rem;
+  width: 100%;
+  box-sizing: border-box;
 
   &.single-action {
     justify-content: flex-end;
@@ -305,6 +315,7 @@ html {
   &.multiple-actions {
     justify-content: space-between;
     gap: 1rem;
+    flex-wrap: wrap;
   }
 }
 
@@ -413,11 +424,37 @@ html {
 }
 
 @media (max-width: 600px) {
+  .register-container {
+    padding: 1rem;
+    padding-top: 3.5rem;
+    align-items: flex-start;
+  }
+
   .back-home-btn {
-    top: 0.75rem;
-    left: 0.75rem;
-    font-size: 0.85rem;
-    padding: 0.45rem 1.2rem;
+    top: 1rem;
+    left: 1rem;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  .register-card {
+    padding: 1.5rem 1.5rem;
+    max-width: 100%;
+  }
+  
+  .form-hint {
+    font-size: 0.7rem;
+  }
+  
+  .form-actions.multiple-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    
+    .btn-prev,
+    .btn-next,
+    .btn-submit {
+      width: 100%;
+    }
   }
 }
 
@@ -442,26 +479,50 @@ html {
 }
 
 // Responsive Design
+@media (max-width: 1024px) {
+  .register-container {
+    padding: 1.5rem;
+  }
+  
+  .register-card {
+    padding: 1.75rem 2.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .register-container {
     padding: 1.5rem;
+    align-items: flex-start;
+    padding-top: 3.5rem;
+  }
+
+  .back-home-btn {
+    top: 1rem;
+    left: 1rem;
+    padding: 8px 16px;
+    font-size: 12px;
   }
 
   .register-card {
     padding: 1.75rem 2rem;
-    max-width: calc(100% - 3rem);
+    max-width: 100%;
+    margin-top: 0;
+  }
+  
+  .register-header {
+    margin-bottom: 1rem;
   }
 
   .register-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .register-subtitle {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .stepper {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   .stepper-circle {
@@ -473,17 +534,42 @@ html {
   .stepper-label {
     font-size: 0.65rem;
   }
+  
+  .section-title {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .form-group {
+    margin-bottom: 0.875rem;
+  }
+  
+  .form-label {
+    font-size: 0.8rem;
+    margin-bottom: 0.35rem;
+  }
 
   .form-input {
     font-size: 0.85rem;
     padding: 0.625rem 0.875rem;
   }
 
+  .form-actions {
+    margin-top: 1.5rem;
+    
+    &.multiple-actions {
+      gap: 0.75rem;
+    }
+  }
+
   .btn-next,
   .btn-submit,
-  .btn-continue {
-    padding: 0.625rem 2rem;
-    font-size: 0.9rem;
+  .btn-continue,
+  .btn-prev {
+    padding: 0.625rem 1.75rem;
+    font-size: 0.875rem;
+    width: auto;
+    min-width: 100px;
   }
 
   .success-icon {
@@ -500,44 +586,89 @@ html {
 @media (max-width: 480px) {
   .register-container {
     padding: 1rem;
+    padding-top: 3rem;
+    align-items: flex-start;
+  }
+
+  .back-home-btn {
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 6px 12px;
+    font-size: 11px;
   }
 
   .register-card {
-    padding: 1.5rem 1.25rem;
-    max-width: calc(100% - 2rem);
+    padding: 1rem 1rem;
+    max-width: 100%;
+    border-radius: 1rem;
   }
 
   .register-header {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.75rem;
   }
 
   .register-title {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
   }
 
   .register-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
   .stepper {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  .stepper-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
   }
 
   .stepper-line {
-    margin: 0 0.25rem;
-    margin-bottom: 1.25rem;
+    margin: 0 0.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .stepper-label {
+    font-size: 0.5rem;
   }
 
   .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  .form-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .form-input {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
   }
 
   .section-title {
-    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 
   .form-actions {
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
+    
+    &.multiple-actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+  
+  .btn-next,
+  .btn-submit,
+  .btn-continue,
+  .btn-prev {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.85rem;
+    width: 100%;
   }
 
   .success-icon {
@@ -548,5 +679,37 @@ html {
       width: 75px;
       height: 75px;
     }
+  }
+}
+
+@media (max-width: 360px) {
+  .register-container {
+    padding: 0.5rem;
+    padding-top: 2.75rem;
+  }
+
+  .back-home-btn {
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .register-card {
+    padding: 0.875rem 0.875rem;
+  }
+
+  .register-title {
+    font-size: 1rem;
+  }
+
+  .stepper-circle {
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+  }
+
+  .stepper-label {
+    font-size: 0.45rem;
   }
 }

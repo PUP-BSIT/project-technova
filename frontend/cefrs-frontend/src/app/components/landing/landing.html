@@ -6,34 +6,42 @@
         <img src="assets/logo-red.png" alt="CEFRS Logo" />
         <h2>CEFRS</h2>
       </div>
-      <div class="nav-links">
-        <a (click)="scrollToSection('overview', $event)" class="nav-link" href="#overview">Overview</a>
-        <a (click)="scrollToSection('features', $event)" class="nav-link" href="#features">Features</a>
-        <a (click)="scrollToSection('policies', $event)" class="nav-link" href="#policies">Policies</a>
-        <a (click)="scrollToSection('contact', $event)" class="nav-link" href="#contact">Contact</a>
-      </div>
-      <div class="nav-actions">
-        <div class="nav-signup-menu" [class.open]="showSignupMenu">
-          <button class="btn-nav-secondary" (click)="toggleSignupMenu($event)">
-            Sign Up
-            <span class="icon-chevron">&#9662;</span>
-          </button>
-          <div class="signup-dropdown" (click)="$event.stopPropagation()">
-            <button (click)="goToStudentRegister()">Student Sign Up</button>
-            <button (click)="goToOrgRegister()">Organization Sign Up</button>
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [class.active]="showMobileMenu" aria-label="Toggle menu" type="button">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-menu" [class.mobile-open]="showMobileMenu">
+        <div class="nav-links">
+          <a (click)="scrollToSection('overview', $event); closeMobileMenu()" class="nav-link" href="#overview">Overview</a>
+          <a (click)="scrollToSection('features', $event); closeMobileMenu()" class="nav-link" href="#features">Features</a>
+          <a (click)="scrollToSection('policies', $event); closeMobileMenu()" class="nav-link" href="#policies">Policies</a>
+          <a (click)="scrollToSection('contact', $event); closeMobileMenu()" class="nav-link" href="#contact">Contact</a>
+        </div>
+        <div class="nav-actions">
+          <div class="nav-signup-menu" [class.open]="showSignupMenu">
+            <button class="btn-nav-secondary" (click)="toggleSignupMenu($event)" type="button">
+              Sign Up
+              <span class="icon-chevron">&#9662;</span>
+            </button>
+            <div class="signup-dropdown" (click)="$event.stopPropagation()">
+              <button (click)="goToStudentRegister(); closeMobileMenu()" type="button">Student Sign Up</button>
+              <button (click)="goToOrgRegister(); closeMobileMenu()" type="button">Organization Sign Up</button>
+            </div>
+          </div>
+          <div class="nav-login-menu" [class.open]="showLoginMenu">
+            <button class="btn-nav-login" (click)="toggleLoginMenu($event)" type="button">
+              Log In
+              <span class="icon-chevron">&#9662;</span>
+            </button>
+            <div class="login-dropdown" (click)="$event.stopPropagation()">
+              <button (click)="goToStudentLogin(); closeMobileMenu()" type="button">Student Login</button>
+              <button (click)="goToOrgLogin(); closeMobileMenu()" type="button">Organization Login</button>
+            </div>
           </div>
         </div>
-        <div class="nav-login-menu" [class.open]="showLoginMenu">
-          <button class="btn-nav-login" (click)="toggleLoginMenu($event)">
-            Log In
-            <span class="icon-chevron">&#9662;</span>
-          </button>
-          <div class="login-dropdown" (click)="$event.stopPropagation()">
-            <button (click)="goToStudentLogin()">Student Login</button>
-            <button (click)="goToOrgLogin()">Organization Login</button>
-          </div>
-        </div>
       </div>
+      <div class="mobile-overlay" [class.active]="showMobileMenu" (click)="closeMobileMenu()"></div>
     </div>
   </nav>
 
@@ -48,7 +56,7 @@
         A web-based platform that replaces manual forms with a centralized hub for borrowing equipment and reserving facilities across schools and organizations.
       </p>
       <div class="hero-actions">
-        <button class="btn-primary" (click)="goToRoleSelection()">Get Started</button>
+        <button class="btn-primary" (click)="goToStudentRegister()">Get Started</button>
         <button class="btn-secondary" (click)="scrollToFeatures()">Learn More</button>
       </div>
     </div>

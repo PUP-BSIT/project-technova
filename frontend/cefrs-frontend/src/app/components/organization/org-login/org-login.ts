@@ -108,4 +108,8 @@ export class OrgLoginComponent {
   goToLanding(): void {
     this.router.navigate(['/']);
   }
+
+  goToPreviousPage(): void {
+    window.history.back();
+  }
 }
