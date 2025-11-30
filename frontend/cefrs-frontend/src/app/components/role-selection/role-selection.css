@@ -1,0 +1,85 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+:host, html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #e4e0e0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  outline: none;
+  display: none;
+}
+
+.role-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: #e4e0e0;
+  font-family: "Roboto", sans-serif;
+  position: relative;
+}
+
+/* ✅ Card styling */
+.role-card {
+  background: #fff7f7;
+  padding: 60px 80px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
+.role-card h1 {
+  font-size: 32px;
+  color: #7f1d1d;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.role-card .subtitle {
+  font-size: 16px;
+  margin-bottom: 40px;
+  color: #111827;
+}
+.role-card .btn {
+  display: block;
+  width: 100%;
+  padding: 14px 0;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 18px;
+  transition: background 0.3s ease;
+}
+.role-card .btn.student {
+  background: #ea580c;
+}
+.role-card .btn.student:hover {
+  background: rgb(185.487804878, 69.756097561, 9.512195122);
+}
+.role-card .btn.organization {
+  background: #581c1c;
+}
+.role-card .btn.organization:hover {
+  background: rgb(57.0482758621, 18.1517241379, 18.1517241379);
+}/*# sourceMappingURL=role-selection.css.map */
