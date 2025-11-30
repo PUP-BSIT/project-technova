@@ -70,8 +70,25 @@ export class OrgRegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Ensure role is set to ORGANIZATION
-    console.log('Organization registration initialized');
+    // Get the role from the URL query parameters (e.g., ?role=CAMPUS_ORGANIZATION)
+    this.route.queryParams.subscribe(params => {
+      const roleFromUrl = params['role'];
+
+      if (roleFromUrl) {
+        // Verify the role is correct for organization registration
+        if (roleFromUrl === 'CAMPUS_ORGANIZATION' || roleFromUrl === 'ORGANIZATION') {
+          console.log('Successfully set role from URL:', roleFromUrl);
+        } else {
+          // If wrong role, redirect to role selection
+          console.error('Error: Invalid role for organization registration. Redirecting.');
+          this.router.navigate(['/select-role']);
+        }
+      } else {
+        // If no role is in the URL, redirect back to the selection page
+        console.error('Error: Role parameter is missing from the URL. Redirecting.');
+        this.router.navigate(['/select-role']);
+      }
+    });
   }
 
   // Custom validator for password strength

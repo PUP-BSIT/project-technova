@@ -109,6 +109,11 @@ export class LandingComponent implements OnInit, AfterViewInit {
     this.closeMenus();
   }
 
+  goToRoleSelection() {
+    this.router.navigate(['/select-role']);
+    this.closeMenus();
+  }
+
   goToOrgRegister() {
     this.router.navigate(['/org-register']);
     this.closeMenus();
