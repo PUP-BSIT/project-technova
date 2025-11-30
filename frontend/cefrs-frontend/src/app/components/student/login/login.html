@@ -16,10 +16,14 @@
           name="email"
           [(ngModel)]="credentials.email"
           (ngModelChange)="clearError('email')"
-          placeholder="yourexample@gmail.com or 2024-12345"
+          placeholder="yourexample@gmail.com or 2023-00439-TG-0"
+          [class.error]="showEmailError || errors.email"
           required
         />
         <div class="field-error" *ngIf="errors.email">{{ errors.email }}</div>
+        <div class="field-error" *ngIf="showEmailError && !errors.email">
+          Please enter a valid email address or Student ID format (YYYY-XXXXX-XX-X).
+        </div>
       </div>
       
       <div class="form-group">
