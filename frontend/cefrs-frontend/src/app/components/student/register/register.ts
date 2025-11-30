@@ -259,5 +259,9 @@ export class RegisterComponent implements OnInit {
   goToLanding(): void {
     this.router.navigate(['/']);
   }
+
+  goToRoleSelection(): void {
+    this.router.navigate(['/select-role']);
+  }
 }
 
