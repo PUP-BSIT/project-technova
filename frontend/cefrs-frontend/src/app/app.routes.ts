@@ -29,9 +29,11 @@ import { OrgMyBorrowingsComponent } from './components/organization/org-my-borro
 import { OrgReservationRequestComponent } from './components/organization/org-reservation-request/org-reservation-request';
 import { OrgEquipmentBorrowingRequestComponent } from './components/organization/org-equipment-borrowing-request/org-equipment-borrowing-request';
 import { ResetPassword } from './components/admin/reset-password/reset-password';
+import { RoleSelectionComponent } from './components/role-selection/role-selection';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
+  { path: 'select-role', component: RoleSelectionComponent },
   { path: 'login', component: LoginComponent },
   { path: 'org-login', component: OrgLoginComponent },
   { path: 'admin-login', component: AdminLogin },
