@@ -113,12 +113,17 @@ public class AuthService {
 
         // Login user (assuming AuthRequest or separate DTO is used here)
         public AuthResponse login(String email, String password) {
-                // Find user by email
+                // Try to find user by email first, then by student ID
                 Optional<User> userOptional = userRepository.findByEmail(email);
-
-                // Check if email is registered
+                
+                // If not found by email, try to find by student ID
                 if (userOptional.isEmpty()) {
-                        throw new RuntimeException("Email not registered. Please sign up first.");
+                        userOptional = userRepository.findByStudentId(email);
+                }
+
+                // Check if user is registered
+                if (userOptional.isEmpty()) {
+                        throw new RuntimeException("Email or Student ID not registered. Please sign up first.");
                 }
 
                 User user = userOptional.get();
