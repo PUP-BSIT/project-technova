@@ -54,23 +54,19 @@ export class RegisterComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Get the role from the URL query parameters (e.g., ?role=STUDENT)
     this.route.queryParams.subscribe(params => {
       const roleFromUrl = params['role'];
 
       if (roleFromUrl) {
-        // Redirect to org-register if user selected ORGANIZATION
-        if (roleFromUrl === 'ORGANIZATION') {
+        if (roleFromUrl === 'ORGANIZATION' || roleFromUrl === 'CAMPUS_ORGANIZATION') {
           console.log('Redirecting to org-register');
-          this.router.navigate(['/org-register']);
+          this.router.navigate(['/org-register'], { queryParams: { role: roleFromUrl } });
           return;
         }
         
-        // Assign the role to the formData object which is used in submitForm()
         this.formData.role = roleFromUrl;
         console.log('Successfully set role from URL:', this.formData.role);
       } else {
-        // If no role is in the URL, redirect back to the selection page
         console.error('Error: Role parameter is missing from the URL. Redirecting.');
         this.router.navigate(['/select-role']); // selection path
       }
