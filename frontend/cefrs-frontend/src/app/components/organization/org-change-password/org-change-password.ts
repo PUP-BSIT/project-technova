@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
-import { ProfileService } from '../../../services/profile.service';
+import { AuthService } from '../../../services/auth';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OrgSidebarComponent } from '../org-sidebar/org-sidebar';
@@ -15,7 +15,7 @@ import { OrgSidebarComponent } from '../org-sidebar/org-sidebar';
 })
 export class OrgChangePasswordComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private profileService = inject(ProfileService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   passwordForm!: FormGroup;
@@ -70,19 +70,10 @@ export class OrgChangePasswordComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Get user ID from stored auth info
-    const userIdStr = localStorage.getItem('userId');
-    const userId = userIdStr ? parseInt(userIdStr, 10) : NaN;
-    if (!userId || Number.isNaN(userId)) {
-      this.isSubmitting = false;
-      this.errorMessage = 'Unable to determine user. Please try again.';
-      return;
-    }
-
-    this.profileService.changePassword(userId, currentPassword, newPassword).subscribe({
+    this.authService.changePassword(this.passwordForm.value).subscribe({
       next: (res) => {
         this.isSubmitting = false;
-        this.successMessage = res.message || 'Password changed successfully.';
+        this.successMessage = 'Password changed successfully.';
         this.passwordForm.reset();
         this.isFormDirty = false;
         
@@ -184,15 +175,26 @@ export class OrgChangePasswordComponent implements OnInit {
     }
   }
 
-  handlePasswordChangeError(err: HttpErrorResponse): void {
+handlePasswordChangeError(err: HttpErrorResponse): void {
     if (err.status === 401) {
-      this.errorMessage = 'Current password is incorrect.';
+      this.errorMessage = 'Session expired or current password is incorrect. Please log in again.';
     } else if (err.status === 403) {
       this.errorMessage = 'You are not authorized to change this password.';
+    } else if (err.status === 400 && err.error instanceof Blob) {
+        // Handle Spring Boot text response in an Angular PATCH/PUT call
+        const reader = new FileReader();
+        reader.onload = () => {
+             const errorText = reader.result as string;
+             // Error text usually contains the exact error from the backend (e.g., "Current password is incorrect")
+             this.errorMessage = errorText;
+             console.error('Backend Error Response:', errorText);
+        };
+        reader.readAsText(err.error);
+        
     } else if (err.error?.message) {
       this.errorMessage = err.error.message;
     } else {
-      this.errorMessage = 'Failed to change password. Please try again later.';
+      this.errorMessage = 'Failed to change password. Please try again later. (Status: ' + err.status + ')';
     }
   }
 }

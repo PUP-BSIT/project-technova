@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
-import { ProfileService } from '../../../services/profile.service';
+import { AuthService } from '../../../services/auth';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { StudentSidebarComponent } from '../student-sidebar/student-sidebar';
@@ -15,7 +15,7 @@ import { StudentSidebarComponent } from '../student-sidebar/student-sidebar';
 })
 export class StudentChangePasswordComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private profileService = inject(ProfileService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   passwordForm!: FormGroup;
@@ -70,19 +70,10 @@ export class StudentChangePasswordComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Get user ID from stored auth info
-    const userIdStr = localStorage.getItem('userId');
-    const userId = userIdStr ? parseInt(userIdStr, 10) : NaN;
-    if (!userId || Number.isNaN(userId)) {
-      this.isSubmitting = false;
-      this.errorMessage = 'Unable to determine user. Please try again.';
-      return;
-    }
-
-    this.profileService.changePassword(userId, currentPassword, newPassword).subscribe({
+    this.authService.changePassword(this.passwordForm.value).subscribe({
       next: (res) => {
         this.isSubmitting = false;
-        this.successMessage = res.message || 'Password changed successfully.';
+        this.successMessage = 'Password changed successfully.';
         this.passwordForm.reset();
         this.isFormDirty = false;
         
@@ -201,10 +192,20 @@ export class StudentChangePasswordComponent implements OnInit {
     
     switch (err.status) {
       case 400:
+        if (err.error instanceof Blob) {
+             const reader = new FileReader();
+             reader.onload = () => {
+                 const errorText = reader.result as string;
+                 this.errorMessage = errorText;
+                 console.error('Backend Error Response:', errorText);
+             };
+             reader.readAsText(err.error);
+             return;
+          }
         this.errorMessage = err.error?.message || 'Invalid password data.';
         break;
       case 401:
-        this.errorMessage = 'Current password is incorrect.';
+        this.errorMessage = 'Current password is incorrect or session expired.';
         break;
       case 403:
         this.errorMessage = 'You do not have permission to change this password.';
@@ -220,4 +221,3 @@ export class StudentChangePasswordComponent implements OnInit {
     }
   }
 }
-
