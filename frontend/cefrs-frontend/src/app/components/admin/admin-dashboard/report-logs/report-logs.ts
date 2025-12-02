@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
+import { Chart, registerables } from 'chart.js';
 import {
   ReportService,
   DashboardStats,
@@ -9,6 +10,9 @@ import {
   EquipmentReport,
   UserActivityReport
 } from '../../../../services/report.service';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 interface StatCard {
   label: string;
@@ -55,7 +59,19 @@ interface UserActivity {
   imports: [CommonModule, HttpClientModule],
   providers: [ReportService]
 })
-export class ReportLogs implements OnInit, OnDestroy {
+export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('bookingTrendsCanvas') bookingTrendsCanvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('borrowingTrendsCanvas') borrowingTrendsCanvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('monthlyUsersCanvas') monthlyUsersCanvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('equipmentPieCanvas') equipmentPieCanvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('userPieCanvas') userPieCanvas?: ElementRef<HTMLCanvasElement>;
+
+  private bookingTrendsChart?: Chart;
+  private borrowingTrendsChart?: Chart;
+  private monthlyUsersChart?: Chart;
+  private equipmentPieChart?: Chart;
+  private userPieChart?: Chart;
+
   activeTab: 'facility' | 'equipment' | 'user' = 'facility';
   private destroy$ = new Subject<void>();
 
@@ -94,13 +110,22 @@ export class ReportLogs implements OnInit, OnDestroy {
   constructor(private reportService: ReportService) { }
 
   ngOnInit(): void {
-    // Load dashboard stats first
     this.loadDashboardStats();
-    // Load initial data for the active tab
     this.loadTabData(this.activeTab);
   }
 
+  ngAfterViewInit(): void {
+    // Charts will be created after data is loaded
+  }
+
   ngOnDestroy(): void {
+    // Destroy all charts
+    this.bookingTrendsChart?.destroy();
+    this.borrowingTrendsChart?.destroy();
+    this.monthlyUsersChart?.destroy();
+    this.equipmentPieChart?.destroy();
+    this.userPieChart?.destroy();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -113,7 +138,6 @@ export class ReportLogs implements OnInit, OnDestroy {
         next: (stats) => {
           this.dashboardStats = stats;
 
-          // Transform daily reservations into chart data
           if (stats.dailyReservations && stats.dailyReservations.length > 0) {
             this.bookingTrendsData = {
               labels: stats.dailyReservations.map(d => d.date),
@@ -134,7 +158,7 @@ export class ReportLogs implements OnInit, OnDestroy {
       });
   }
 
-  /* Switch between tabs and load data if not already loaded */
+  /* Switch between tabs */
   setActiveTab(tab: 'facility' | 'equipment' | 'user'): void {
     this.activeTab = tab;
     this.loadTabData(tab);
@@ -161,7 +185,7 @@ export class ReportLogs implements OnInit, OnDestroy {
     }
   }
 
-  /* Load facility usage data from the backend */
+  /* Load facility usage data */
   private loadFacilityData(): void {
     this.isLoadingFacility = true;
 
@@ -169,7 +193,6 @@ export class ReportLogs implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (reports) => {
-          // Transform backend data to match template format
           this.topFacilities = reports
             .sort((a, b) => b.totalReservations - a.totalReservations)
             .slice(0, 3)
@@ -181,35 +204,20 @@ export class ReportLogs implements OnInit, OnDestroy {
               status: report.utilizationRate > 75 ? 'high-demand' : 'available'
             }));
 
-          // Create stat cards from dashboard stats
           if (this.dashboardStats) {
             const facilityUsage = this.dashboardStats.facilityUsage;
             this.facilityStats = [
-              {
-                label: 'Total Reservations',
-                value: facilityUsage.totalReservations,
-                icon: '📊'
-              },
-              {
-                label: 'Active Reservations',
-                value: facilityUsage.activeReservations,
-                icon: '✅'
-              },
-              {
-                label: 'Average Occupancy',
-                value: `${facilityUsage.averageOccupancy}%`,
-                icon: '📈'
-              },
-              {
-                label: 'Completed',
-                value: facilityUsage.completedReservations,
-                icon: '✔️'
-              }
+              { label: 'Total Reservations', value: facilityUsage.totalReservations },
+              { label: 'Active Reservations', value: facilityUsage.activeReservations },
+              { label: 'Average Occupancy', value: `${facilityUsage.averageOccupancy}%` },
+              { label: 'Completed', value: facilityUsage.completedReservations }
             ];
           }
 
           this.isLoadingFacility = false;
-          console.log('Facility reports loaded:', this.topFacilities);
+
+          // Create chart after data is loaded
+          setTimeout(() => this.createBookingTrendsChart(), 100);
         },
         error: (error) => {
           console.error('Error loading facility data:', error);
@@ -218,7 +226,7 @@ export class ReportLogs implements OnInit, OnDestroy {
       });
   }
 
-  /* Load equipment usage data from the backend */
+  /* Load equipment usage data */
   private loadEquipmentData(): void {
     this.isLoadingEquipment = true;
 
@@ -226,7 +234,6 @@ export class ReportLogs implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (reports) => {
-          // Transform backend data to match template format
           this.topEquipment = reports
             .sort((a, b) => b.totalBorrowings - a.totalBorrowings)
             .slice(0, 5)
@@ -241,44 +248,31 @@ export class ReportLogs implements OnInit, OnDestroy {
                   'available'
             }));
 
-          // Calculate equipment availability distribution
           const totalAvailable = reports.reduce((sum, r) => sum + r.quantityAvailable, 0);
           const totalBorrowed = reports.reduce((sum, r) => sum + (r.quantityTotal - r.quantityAvailable), 0);
           this.equipmentAvailability = {
             borrowed: totalBorrowed,
             available: totalAvailable,
-            maintenance: 0 // Not provided by backend
+            maintenance: 0
           };
 
-          // Create stat cards from dashboard stats
           if (this.dashboardStats) {
             const equipmentUsage = this.dashboardStats.equipmentUsage;
             this.equipmentStats = [
-              {
-                label: 'Total Borrowings',
-                value: equipmentUsage.totalBorrowings,
-                icon: '📦'
-              },
-              {
-                label: 'Active Borrowings',
-                value: equipmentUsage.activeBorrowings,
-                icon: '🔄'
-              },
-              {
-                label: 'Overdue Items',
-                value: equipmentUsage.overdueItems,
-                icon: '⚠️'
-              },
-              {
-                label: 'Avg Duration',
-                value: `${equipmentUsage.averageDuration}h`,
-                icon: '⏱️'
-              }
+              { label: 'Total Borrowings', value: equipmentUsage.totalBorrowings },
+              { label: 'Active Borrowings', value: equipmentUsage.activeBorrowings },
+              { label: 'Overdue Items', value: equipmentUsage.overdueItems },
+              { label: 'Avg Duration', value: `${equipmentUsage.averageDuration}h` }
             ];
           }
 
           this.isLoadingEquipment = false;
-          console.log('Equipment reports loaded:', this.topEquipment);
+
+          // Create charts after data is loaded
+          setTimeout(() => {
+            this.createBorrowingTrendsChart();
+            this.createEquipmentPieChart();
+          }, 100);
         },
         error: (error) => {
           console.error('Error loading equipment data:', error);
@@ -287,7 +281,7 @@ export class ReportLogs implements OnInit, OnDestroy {
       });
   }
 
-  /* Load user activity data from the backend */
+  /* Load user activity data */
   private loadUserData(): void {
     this.isLoadingUser = true;
 
@@ -295,7 +289,6 @@ export class ReportLogs implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (reports) => {
-          // Transform backend data to match template format
           this.topUsers = reports
             .map(report => ({
               ...report,
@@ -311,7 +304,6 @@ export class ReportLogs implements OnInit, OnDestroy {
               lastActive: report.lastActivity
             }));
 
-          // Calculate user distribution
           const studentCount = reports.filter(r => r.role.toUpperCase() === 'STUDENT').length;
           const orgCount = reports.filter(r => r.role.toUpperCase() === 'ORGANIZATION').length;
           this.userDistribution = {
@@ -319,35 +311,20 @@ export class ReportLogs implements OnInit, OnDestroy {
             organizations: orgCount
           };
 
-          // Create stat cards from dashboard stats
           if (this.dashboardStats) {
             const userActivity = this.dashboardStats.userActivity;
             this.userStats = [
-              {
-                label: 'Active Users',
-                value: userActivity.totalActiveUsers,
-                icon: '👥'
-              },
-              {
-                label: 'Today Reservations',
-                value: userActivity.todayReservations,
-                icon: '📅'
-              },
-              {
-                label: 'Today Borrowings',
-                value: userActivity.todayBorrowings,
-                icon: '📦'
-              },
-              {
-                label: 'Peak Hours',
-                value: userActivity.peakHours,
-                icon: '⏰'
-              }
+              { label: 'Active Users', value: userActivity.totalActiveUsers },
+              { label: 'Today Reservations', value: userActivity.todayReservations },
+              { label: 'Today Borrowings', value: userActivity.todayBorrowings },
+              { label: 'Peak Hours', value: userActivity.peakHours }
             ];
           }
 
           this.isLoadingUser = false;
-          console.log('User reports loaded:', this.topUsers);
+
+          // Create chart after data is loaded
+          setTimeout(() => this.createUserPieChart(), 100);
         },
         error: (error) => {
           console.error('Error loading user data:', error);
@@ -356,9 +333,201 @@ export class ReportLogs implements OnInit, OnDestroy {
       });
   }
 
+  /* Create booking trends line chart */
+  private createBookingTrendsChart(): void {
+    if (!this.bookingTrendsCanvas || this.bookingTrendsData.labels.length === 0) return;
+
+    const ctx = this.bookingTrendsCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    if (this.bookingTrendsChart) {
+      this.bookingTrendsChart.destroy();
+    }
+
+    this.bookingTrendsChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: this.bookingTrendsData.labels,
+        datasets: [{
+          label: 'Reservations',
+          data: this.bookingTrendsData.values,
+          borderColor: '#69040C',
+          backgroundColor: 'rgba(105, 4, 12, 0.1)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12,
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#69040C',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /* Create borrowing trends bar chart */
+  private createBorrowingTrendsChart(): void {
+    if (!this.borrowingTrendsCanvas || this.borrowingTrendsData.labels.length === 0) return;
+
+    const ctx = this.borrowingTrendsCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    if (this.borrowingTrendsChart) {
+      this.borrowingTrendsChart.destroy();
+    }
+
+    this.borrowingTrendsChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: this.borrowingTrendsData.labels,
+        datasets: [{
+          label: 'Items Borrowed',
+          data: this.borrowingTrendsData.values,
+          backgroundColor: '#69040C',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /* Create equipment availability pie chart */
+  private createEquipmentPieChart(): void {
+    if (!this.equipmentPieCanvas) return;
+
+    const ctx = this.equipmentPieCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    if (this.equipmentPieChart) {
+      this.equipmentPieChart.destroy();
+    }
+
+    this.equipmentPieChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Currently Borrowed', 'Available', 'In Maintenance'],
+        datasets: [{
+          data: [
+            this.equipmentAvailability.borrowed,
+            this.equipmentAvailability.available,
+            this.equipmentAvailability.maintenance
+          ],
+          backgroundColor: ['#69040C', '#34D399', '#FCD34D'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12
+          }
+        }
+      }
+    });
+  }
+
+  /* Create user distribution pie chart */
+  private createUserPieChart(): void {
+    if (!this.userPieCanvas) return;
+
+    const ctx = this.userPieCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    if (this.userPieChart) {
+      this.userPieChart.destroy();
+    }
+
+    this.userPieChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Students/Individual', 'Organization'],
+        datasets: [{
+          data: [
+            this.userDistribution.students,
+            this.userDistribution.organizations
+          ],
+          backgroundColor: ['#69040C', '#34D399'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12
+          }
+        }
+      }
+    });
+  }
+
   /* Refresh data for the current tab */
   refreshData(): void {
-    this.loadDashboardStats(); // Refresh dashboard stats too
+    this.loadDashboardStats();
 
     switch (this.activeTab) {
       case 'facility':
@@ -373,25 +542,6 @@ export class ReportLogs implements OnInit, OnDestroy {
         this.topUsers = [];
         this.loadUserData();
         break;
-    }
-  }
-
-  /* Get status SCSS class*/
-  getStatusClass(status: string): string {
-    return `status-${status}`;
-  }
-
-  /* Check if current tab has data */
-  hasData(): boolean {
-    switch (this.activeTab) {
-      case 'facility':
-        return this.topFacilities.length > 0;
-      case 'equipment':
-        return this.topEquipment.length > 0;
-      case 'user':
-        return this.topUsers.length > 0;
-      default:
-        return false;
     }
   }
 
