@@ -1,21 +1,22 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../../services/profile.service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-student-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatSidenavModule, MatButtonModule, MatIconModule],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
 export class StudentProfileComponent implements OnInit {
+  @ViewChild('sidenav') sidenav!: MatSidenav;
 
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
@@ -27,11 +28,23 @@ export class StudentProfileComponent implements OnInit {
   loading = true;
   successMessage = '';
   errorMessage = '';
+  isMobileView = false;
+  private readonly DESKTOP_BREAKPOINT = 1024;
   ngOnInit(): void {
+    this.checkScreenSize();
     this.loadProfile();
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 100);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    this.checkScreenSize();
+  }
+
+  private checkScreenSize(): void {
+    this.isMobileView = window.innerWidth < this.DESKTOP_BREAKPOINT;
   }
 
   loadProfile(): void {
