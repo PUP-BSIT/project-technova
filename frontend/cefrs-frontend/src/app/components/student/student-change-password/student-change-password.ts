@@ -4,12 +4,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { AuthService } from '../../../services/auth';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StudentSidebarComponent } from '../student-sidebar/student-sidebar';
 
 @Component({
   selector: 'app-student-change-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, StudentSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './student-change-password.html',
   styleUrls: ['./student-change-password.scss']
 })
@@ -114,27 +113,7 @@ export class StudentChangePasswordComponent implements OnInit {
       this.passwordForm.reset();
       this.isFormDirty = false;
     }
-    this.router.navigate(['/profile']);
-  }
-
-  onViewChanged(view: string): void {
-    // Handle view changes from sidebar
-    console.log('View changed to:', view);
-    
-    // Navigate based on the view
-    switch (view) {
-      case 'dashboard':
-        this.router.navigate(['/student-dashboard']);
-        break;
-      case 'facilities':
-      case 'equipment':
-      case 'requests':
-        this.router.navigate(['/student-dashboard']);
-        break;
-      case 'settings':
-        this.router.navigate(['/profile']);
-        break;
-    }
+    this.router.navigate(['/student-dashboard', 'settings', 'profile']);
   }
 
   // Custom validators
