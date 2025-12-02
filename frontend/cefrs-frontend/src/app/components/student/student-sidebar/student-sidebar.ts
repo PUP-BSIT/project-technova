@@ -90,8 +90,7 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
     if (this.isMobileView && this.sidenav) {
       this.sidenav.close();
     }
-    
-    // Keep settings navigation inside the student dashboard layout
+
     if (view === 'settings') {
       this.router.navigate(['/student-dashboard', 'settings', 'profile']);
     }
