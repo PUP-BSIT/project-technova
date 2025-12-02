@@ -1,37 +1,5 @@
-<mat-sidenav-container class="profile-layout">
-  <mat-sidenav 
-    #sidenav
-    [(opened)]="isSidebarOpen"
-    [mode]="isMobileView ? 'over' : 'side'"
-    [fixedInViewport]="!isMobileView"
-    [fixedTopGap]="0"
-    [fixedBottomGap]="0"
-    class="sidebar-sidenav">
-    <app-student-sidebar 
-      currentView="settings" 
-      [sidenav]="sidenav"
-      (viewChanged)="onViewChanged($event)">
-    </app-student-sidebar>
-  </mat-sidenav>
-
-  <mat-sidenav-content class="main-content">
-    <!-- Hamburger button - visible on both mobile and desktop -->
-    <button
-      mat-icon-button
-      class="hamburger-button"
-      type="button"
-      (click)="toggleSidebar()"
-      [attr.aria-expanded]="isSidebarOpen"
-      aria-label="Toggle navigation menu">
-      <span class="hamburger-icon" [class.is-open]="isSidebarOpen">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-    </button>
-
-    <div class="profile-container-wrapper">
-    <div class="profile-container">
+<div class="profile-container-wrapper">
+  <div class="profile-container">
       <div class="nav-header">
         <h1 class="page-title">Personal Data</h1>
       </div>
@@ -131,8 +99,6 @@
           </form>
         </div>
       }
-    </div>
-    </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>
 

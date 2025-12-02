@@ -192,7 +192,8 @@ export class StudentProfileComponent implements OnInit, AfterViewInit {
   }
 
   goToChangePassword(): void {
-    this.router.navigate(['/student-change-password']);
+    // Navigate to the change-password view within the student dashboard layout
+    this.router.navigate(['/student-dashboard', 'settings', 'change-password']);
   }
 
   onViewChanged(view: string): void {

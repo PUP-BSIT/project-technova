@@ -114,14 +114,14 @@ export class StudentChangePasswordComponent implements OnInit {
       this.passwordForm.reset();
       this.isFormDirty = false;
     }
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/student-dashboard', 'settings', 'profile']);
   }
 
   onViewChanged(view: string): void {
-    // Handle view changes from sidebar
-    console.log('View changed to:', view);
-    
-    // Navigate based on the view
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
+
     switch (view) {
       case 'dashboard':
         this.router.navigate(['/student-dashboard']);
@@ -132,7 +132,8 @@ export class StudentChangePasswordComponent implements OnInit {
         this.router.navigate(['/student-dashboard']);
         break;
       case 'settings':
-        this.router.navigate(['/profile']);
+        // Stay within settings; profile will be the default
+        this.router.navigate(['/student-dashboard', 'settings', 'profile']);
         break;
     }
   }
