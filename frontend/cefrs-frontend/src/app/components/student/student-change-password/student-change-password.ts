@@ -116,6 +116,27 @@ export class StudentChangePasswordComponent implements OnInit {
     this.router.navigate(['/student-dashboard', 'settings', 'profile']);
   }
 
+  onViewChanged(view: string): void {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
+
+    switch (view) {
+      case 'dashboard':
+        this.router.navigate(['/student-dashboard']);
+        break;
+      case 'facilities':
+      case 'equipment':
+      case 'requests':
+        this.router.navigate(['/student-dashboard']);
+        break;
+      case 'settings':
+        // Stay within settings; profile will be the default
+        this.router.navigate(['/student-dashboard', 'settings', 'profile']);
+        break;
+    }
+  }
+
   // Custom validators
   passwordStrengthValidator(control: AbstractControl): {[key: string]: any} | null {
     const value = control.value;

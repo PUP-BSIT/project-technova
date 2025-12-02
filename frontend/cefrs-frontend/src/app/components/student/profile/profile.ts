@@ -135,8 +135,33 @@ export class StudentProfileComponent implements OnInit {
   }
 
   goToChangePassword(): void {
-    // Navigate to nested change-password in dashboard layout
+    // Navigate to the change-password view within the student dashboard layout
     this.router.navigate(['/student-dashboard', 'settings', 'change-password']);
+  }
+
+  onViewChanged(view: string): void {
+    console.log('View changed to:', view);
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
+
+    switch (view) {
+      case 'dashboard':
+        this.router.navigate(['/student-dashboard']);
+        break;
+      case 'facilities':
+      case 'equipment':
+      case 'requests':
+        this.router.navigate(['/student-dashboard']);
+        break;
+      case 'settings':
+        break;
+    }
+
+    // Close sidebar on mobile after navigation
+    if (this.isMobileView && this.sidenav) {
+      this.sidenav.close();
+    }
   }
 }
 

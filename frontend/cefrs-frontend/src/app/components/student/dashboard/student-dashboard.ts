@@ -44,14 +44,37 @@ export class StudentDashboard implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.checkScreenSize();
 
-     // Ensure correct view when navigating directly to a child settings route
-     this.syncViewWithUrl(this.router.url);
+    // Make sure the correct view is active when navigating directly via URL
+    this.syncViewWithUrl(this.router.url);
 
-     this.router.events.subscribe(event => {
-       if (event instanceof NavigationEnd) {
-         this.syncViewWithUrl(event.urlAfterRedirects);
-       }
-     });
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.syncViewWithUrl(event.urlAfterRedirects);
+      }
+    });
+  }
+
+  /**
+   * Sets currentView based on the active URL so that settings routes
+   * (like /student-dashboard/settings/change-password) show the
+   * router-outlet instead of the dashboard.
+   */
+  private syncViewWithUrl(url: string): void {
+    if (!url) {
+      return;
+    }
+
+    if (url.includes('/student-dashboard/settings')) {
+      this.currentView = 'settings';
+    } else if (url.includes('/student-dashboard/facilities')) {
+      this.currentView = 'facilities';
+    } else if (url.includes('/student-dashboard/equipment')) {
+      this.currentView = 'equipment';
+    } else if (url.includes('/student-dashboard/requests')) {
+      this.currentView = 'requests';
+    } else {
+      this.currentView = 'dashboard';
+    }
   }
 
   ngAfterViewInit(): void {
