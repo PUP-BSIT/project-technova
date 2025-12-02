@@ -116,29 +116,6 @@ export class StudentDashboard implements OnInit, AfterViewInit {
     }
   }
 
-  /**
-   * Sets currentView based on the active URL so that settings routes
-   * (like /student-dashboard/settings/change-password) show the
-   * router-outlet instead of the dashboard.
-   */
-  private syncViewWithUrl(url: string): void {
-    if (!url) {
-      return;
-    }
-
-    if (url.includes('/student-dashboard/settings')) {
-      this.currentView = 'settings';
-    } else if (url.includes('/student-dashboard/facilities')) {
-      this.currentView = 'facilities';
-    } else if (url.includes('/student-dashboard/equipment')) {
-      this.currentView = 'equipment';
-    } else if (url.includes('/student-dashboard/requests')) {
-      this.currentView = 'requests';
-    } else {
-      this.currentView = 'dashboard';
-    }
-  }
-
   setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings'): void {
     this.currentView = view;
 
