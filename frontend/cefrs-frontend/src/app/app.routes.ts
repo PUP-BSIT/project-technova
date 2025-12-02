@@ -58,10 +58,14 @@ export const routes: Routes = [
   {
     path: 'org-dashboard',
     component: OrgDashboardComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'settings/profile', component: OrgProfileComponent },
+      { path: 'settings/change-password', component: OrgChangePasswordComponent }
+    ]
   },
 
-  // Organization Profile (Protected)
+  // Legacy direct profile route (optional)
   {
     path: 'org-profile',
     component: OrgProfileComponent,
@@ -82,6 +86,7 @@ export const routes: Routes = [
   { path: 'profile', component: StudentProfileComponent, canActivate: [AuthGuard] },
   { path: 'change-password', component: StudentChangePasswordComponent, canActivate: [AuthGuard] },
   { path: 'student-change-password', component: StudentChangePasswordComponent },
+  // Legacy direct change-password route for org (optional)
   { path: 'org-change-password', component: OrgChangePasswordComponent, canActivate: [AuthGuard] },
 
   // Student Reservation Routes (Protected)
