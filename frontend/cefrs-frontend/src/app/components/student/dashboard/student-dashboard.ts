@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,6 +43,38 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.checkScreenSize();
+
+    // Make sure the correct view is active when navigating directly via URL
+    this.syncViewWithUrl(this.router.url);
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.syncViewWithUrl(event.urlAfterRedirects);
+      }
+    });
+  }
+
+  /**
+   * Sets currentView based on the active URL so that settings routes
+   * (like /student-dashboard/settings/change-password) show the
+   * router-outlet instead of the dashboard.
+   */
+  private syncViewWithUrl(url: string): void {
+    if (!url) {
+      return;
+    }
+
+    if (url.includes('/student-dashboard/settings')) {
+      this.currentView = 'settings';
+    } else if (url.includes('/student-dashboard/facilities')) {
+      this.currentView = 'facilities';
+    } else if (url.includes('/student-dashboard/equipment')) {
+      this.currentView = 'equipment';
+    } else if (url.includes('/student-dashboard/requests')) {
+      this.currentView = 'requests';
+    } else {
+      this.currentView = 'dashboard';
+    }
   }
 
   ngAfterViewInit(): void {
@@ -89,6 +121,8 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
     if (view === 'settings') {
       this.router.navigate(['/student-dashboard/settings/profile']);
+    } else if (view === 'dashboard') {
+      this.router.navigate(['/student-dashboard']);
     }
   }
 
