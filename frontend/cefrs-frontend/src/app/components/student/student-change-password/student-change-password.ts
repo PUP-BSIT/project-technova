@@ -4,12 +4,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { AuthService } from '../../../services/auth';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StudentSidebarComponent } from '../student-sidebar/student-sidebar';
 
 @Component({
   selector: 'app-student-change-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, StudentSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './student-change-password.html',
   styleUrls: ['./student-change-password.scss']
 })

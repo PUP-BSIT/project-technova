@@ -1,29 +1,25 @@
-import { Component, HostListener, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../../services/profile.service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { OrgSidebarComponent } from '../org-sidebar/org-sidebar';
 
 @Component({
   selector: 'app-org-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatSidenavModule, MatButtonModule, MatIconModule, OrgSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './org-profile.html',
   styleUrls: ['./org-profile.scss']
 })
-export class OrgProfileComponent implements OnInit, AfterViewInit {
-  @ViewChild('sidenav') sidenav!: MatSidenav;
-  @ViewChild(OrgSidebarComponent) sidebarComponent!: OrgSidebarComponent;
+export class OrgProfileComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
 
   profileForm!: FormGroup;
   user: any = null;
@@ -31,64 +27,11 @@ export class OrgProfileComponent implements OnInit, AfterViewInit {
   loading = true;
   successMessage = '';
   errorMessage = '';
-  isSidebarOpen = true;
-  isMobileView = false;
-  private readonly DESKTOP_BREAKPOINT = 1024;
-
   ngOnInit(): void {
     this.loadProfile();
-    this.evaluateViewport();
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 100);
-  }
-
-  ngAfterViewInit(): void {
-    if (this.sidebarComponent) {
-      this.isMobileView = this.sidebarComponent.isMobileView;
-      if (this.sidenav) {
-        this.isSidebarOpen = !this.isMobileView;
-        this.sidenav.opened = !this.isMobileView;
-        this.sidenav.openedChange.subscribe(opened => {
-          this.isSidebarOpen = opened;
-        });
-      }
-      this.cdr.detectChanges();
-    }
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any): void {
-    this.evaluateViewport();
-  }
-
-  private evaluateViewport(): void {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const wasMobileView = this.isMobileView;
-    this.isMobileView = window.innerWidth < this.DESKTOP_BREAKPOINT;
-
-    if (!this.isMobileView && wasMobileView && this.sidenav) {
-      this.isSidebarOpen = true;
-      this.sidenav.open();
-    }
-
-    if (this.isMobileView && !wasMobileView && this.sidenav) {
-      this.isSidebarOpen = false;
-      this.sidenav.close();
-    }
-
-    this.cdr.detectChanges();
-  }
-
-  toggleSidebar(): void {
-    if (this.sidenav) {
-      this.sidenav.toggle();
-    } else if (this.sidebarComponent) {
-      this.sidebarComponent.toggleSidebar();
-    }
   }
 
   loadProfile(): void {
@@ -194,30 +137,6 @@ export class OrgProfileComponent implements OnInit, AfterViewInit {
   }
 
   goToChangePassword(): void {
-    this.router.navigate(['/org-change-password']);
-  }
-
-  onViewChanged(view: string): void {
-    console.log('View changed to:', view);
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 50);
-
-    switch (view) {
-      case 'dashboard':
-        this.router.navigate(['/org-dashboard']);
-        break;
-      case 'facilities':
-      case 'requests':
-        this.router.navigate(['/org-dashboard']);
-        break;
-      case 'settings':
-        break;
-    }
-
-    // Close sidebar on mobile after navigation
-    if (this.isMobileView && this.sidenav) {
-      this.sidenav.close();
-    }
+    this.router.navigate(['/org-dashboard', 'settings', 'change-password']);
   }
 }

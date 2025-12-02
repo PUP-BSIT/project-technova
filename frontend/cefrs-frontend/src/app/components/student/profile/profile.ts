@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../../services/profile.service';
@@ -7,23 +7,20 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { StudentSidebarComponent } from '../student-sidebar/student-sidebar';
 
 @Component({
   selector: 'app-student-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatSidenavModule, MatButtonModule, MatIconModule, StudentSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatSidenavModule, MatButtonModule, MatIconModule],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
-export class StudentProfileComponent implements OnInit, AfterViewInit {
+export class StudentProfileComponent implements OnInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
-  @ViewChild(StudentSidebarComponent) sidebarComponent!: StudentSidebarComponent;
 
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
 
   profileForm!: FormGroup;
   user: any = null;
@@ -31,64 +28,23 @@ export class StudentProfileComponent implements OnInit, AfterViewInit {
   loading = true;
   successMessage = '';
   errorMessage = '';
-  isSidebarOpen = true;
   isMobileView = false;
   private readonly DESKTOP_BREAKPOINT = 1024;
-
   ngOnInit(): void {
+    this.checkScreenSize();
     this.loadProfile();
-    this.evaluateViewport();
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 100);
   }
 
-  ngAfterViewInit(): void {
-    if (this.sidebarComponent) {
-      this.isMobileView = this.sidebarComponent.isMobileView;
-      if (this.sidenav) {
-        this.isSidebarOpen = !this.isMobileView;
-        this.sidenav.opened = !this.isMobileView;
-        this.sidenav.openedChange.subscribe(opened => {
-          this.isSidebarOpen = opened;
-        });
-      }
-      this.cdr.detectChanges();
-    }
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
-    this.evaluateViewport();
+    this.checkScreenSize();
   }
 
-  private evaluateViewport(): void {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const wasMobileView = this.isMobileView;
+  private checkScreenSize(): void {
     this.isMobileView = window.innerWidth < this.DESKTOP_BREAKPOINT;
-
-    if (!this.isMobileView && wasMobileView && this.sidenav) {
-      this.isSidebarOpen = true;
-      this.sidenav.open();
-    }
-
-    if (this.isMobileView && !wasMobileView && this.sidenav) {
-      this.isSidebarOpen = false;
-      this.sidenav.close();
-    }
-
-    this.cdr.detectChanges();
-  }
-
-  toggleSidebar(): void {
-    if (this.sidenav) {
-      this.sidenav.toggle();
-    } else if (this.sidebarComponent) {
-      this.sidebarComponent.toggleSidebar();
-    }
   }
 
   loadProfile(): void {

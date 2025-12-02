@@ -1,7 +1,7 @@
 import { Component, ViewChild, AfterViewInit, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,6 +44,15 @@ export class OrgDashboardComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.checkScreenSize();
+
+    // Ensure correct view when navigating directly to a child settings route
+    this.syncViewWithUrl(this.router.url);
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.syncViewWithUrl(event.urlAfterRedirects);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -85,11 +94,36 @@ export class OrgDashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * Sets the currentView based on the active URL so that settings routes
+   * (like /org-dashboard/settings/change-password) show the router-outlet
+   * instead of the dashboard.
+   */
+  private syncViewWithUrl(url: string): void {
+    if (!url) {
+      return;
+    }
+
+    if (url.includes('/org-dashboard/settings')) {
+      this.currentView = 'settings';
+    } else if (url.includes('/org-dashboard/facilities')) {
+      this.currentView = 'facilities';
+    } else if (url.includes('/org-dashboard/equipment')) {
+      this.currentView = 'equipment';
+    } else if (url.includes('/org-dashboard/requests')) {
+      this.currentView = 'requests';
+    } else {
+      this.currentView = 'dashboard';
+    }
+  }
+
   setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings'): void {
     this.currentView = view;
 
     if (view === 'settings') {
-      this.router.navigate(['/org-profile']);
+      this.router.navigate(['/org-dashboard', 'settings', 'profile']);
+    } else if (view === 'dashboard') {
+      this.router.navigate(['/org-dashboard']);
     }
   }
 

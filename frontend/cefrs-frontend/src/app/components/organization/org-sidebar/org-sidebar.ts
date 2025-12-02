@@ -102,9 +102,9 @@ export class OrgSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
       this.sidenav.close();
     }
     
-    // Only handle settings navigation since it goes to a different route
+    // Keep settings navigation inside the org dashboard layout
     if (view === 'settings') {
-      this.router.navigate(['/org-profile']);
+      this.router.navigate(['/org-dashboard', 'settings', 'profile']);
     }
     // All other views are handled by the parent component (org-dashboard)
   }
