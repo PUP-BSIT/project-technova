@@ -4,12 +4,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { AuthService } from '../../../services/auth';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { OrgSidebarComponent } from '../org-sidebar/org-sidebar';
 
 @Component({
   selector: 'app-org-change-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, OrgSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './org-change-password.html',
   styleUrls: ['./org-change-password.scss']
 })
@@ -114,31 +113,7 @@ export class OrgChangePasswordComponent implements OnInit {
       this.passwordForm.reset();
       this.isFormDirty = false;
     }
-    this.router.navigate(['/org-profile']);
-  }
-
-  // Handle view changes from sidebar
-  onViewChanged(view: string): void {
-    console.log('View changed to:', view);
-    
-    // Ensure proper display when navigating
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 50);
-    
-    // Navigate based on the view
-    switch (view) {
-      case 'dashboard':
-        this.router.navigate(['/org-dashboard']);
-        break;
-      case 'facilities':
-      case 'requests':
-        this.router.navigate(['/org-dashboard']);
-        break;
-      case 'settings':
-        this.router.navigate(['/org-profile']);
-        break;
-    }
+    this.router.navigate(['/org-dashboard', 'settings', 'profile']);
   }
 
   // Password validation
