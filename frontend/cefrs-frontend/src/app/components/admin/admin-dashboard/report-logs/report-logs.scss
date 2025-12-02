@@ -20,32 +20,37 @@ $font-family: 'Roboto', sans-serif;
 
 // Responsive Mixins
 @mixin respond-to($breakpoint) {
-  @if $breakpoint == 'xs' {
+  @if $breakpoint =='xs' {
     @media (max-width: #{$breakpoint-xs}) {
       @content;
     }
   }
-  @else if $breakpoint == 's' {
+
+  @else if $breakpoint =='s' {
     @media (min-width: #{$breakpoint-xs + 1}) and (max-width: #{$breakpoint-s}) {
       @content;
     }
   }
-  @else if $breakpoint == 'm' {
+
+  @else if $breakpoint =='m' {
     @media (min-width: #{$breakpoint-s + 1}) and (max-width: #{$breakpoint-m}) {
       @content;
     }
   }
-  @else if $breakpoint == 'tablet' {
+
+  @else if $breakpoint =='tablet' {
     @media (min-width: #{$breakpoint-m + 1}) and (max-width: #{$breakpoint-l}) {
       @content;
     }
   }
-  @else if $breakpoint == 'l' {
+
+  @else if $breakpoint =='l' {
     @media (min-width: #{$breakpoint-l + 1}) {
       @content;
     }
   }
-  @else if $breakpoint == 'mobile-all' {
+
+  @else if $breakpoint =='mobile-all' {
     @media (max-width: #{$breakpoint-m}) {
       @content;
     }
@@ -148,8 +153,13 @@ $font-family: 'Roboto', sans-serif;
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-container {
@@ -207,8 +217,13 @@ $font-family: 'Roboto', sans-serif;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .tab-navigation {
@@ -276,6 +291,7 @@ $font-family: 'Roboto', sans-serif;
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -799,5 +815,24 @@ $font-family: 'Roboto', sans-serif;
 @include respond-to('mobile-all') {
   button {
     min-height: 44px;
+  }
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+
+  @include respond-to('mobile-all') {
+    height: 200px;
+  }
+
+  @include respond-to('s') {
+    height: 150px;
+  }
+
+  canvas {
+    max-width: 100%;
+    max-height: 100%;
   }
 }

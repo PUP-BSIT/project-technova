@@ -54,17 +54,8 @@
       @if (bookingTrendsData.labels.length > 0) {
         <div class="chart-container">
           <h3 class="chart-title">Booking Trends Over Time</h3>
-          <div class="chart-placeholder">
-            <div class="chart-legend">
-              <span class="legend-item">
-                <span class="legend-color"></span>
-                Reservations
-              </span>
-            </div>
-            <!-- Chart will be rendered based on bookingTrendsData -->
-            <svg class="line-chart" viewBox="0 0 800 300">
-              <!-- Dynamic chart rendering here -->
-            </svg>
+          <div class="chart-wrapper">
+            <canvas #bookingTrendsCanvas></canvas>
           </div>
         </div>
       }
@@ -141,26 +132,17 @@
           <!-- Equipment Availability Pie Chart -->
           <div class="chart-container half-width">
             <h3 class="chart-title">Equipment Availability</h3>
-            <div class="chart-placeholder">
-              <svg viewBox="0 0 400 300">
-                <!-- Dynamic pie chart based on equipmentAvailability -->
-              </svg>
+            <div class="chart-wrapper">
+              <canvas #equipmentPieCanvas></canvas>
             </div>
           </div>
+
 
           <!-- Borrowing Trends Bar Chart -->
           <div class="chart-container half-width">
             <h3 class="chart-title">Borrowing Trends</h3>
-            <div class="chart-placeholder">
-              <div class="chart-legend">
-                <span class="legend-item">
-                  <span class="legend-color"></span>
-                  Items Borrowed
-                </span>
-              </div>
-              <svg viewBox="0 0 400 250">
-                <!-- Dynamic bar chart based on borrowingTrendsData -->
-              </svg>
+            <div class="chart-wrapper">
+              <canvas #borrowingTrendsCanvas></canvas>
             </div>
           </div>
         </div>
@@ -232,10 +214,8 @@
           <!-- User Distribution Pie Chart -->
           <div class="chart-container half-width">
             <h3 class="chart-title">User Distribution by Role</h3>
-            <div class="chart-placeholder">
-              <svg viewBox="0 0 400 300">
-                <!-- Dynamic pie chart based on userDistribution -->
-              </svg>
+            <div class="chart-wrapper">
+              <canvas #userPieCanvas></canvas>
             </div>
           </div>
 
