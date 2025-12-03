@@ -27,121 +27,128 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading && allRequests.length === 0" class="loading-message">
-    Loading requests...
-  </div>
+  @if (loading && allRequests.length === 0) {
+    <div class="loading-message">
+      Loading requests...
+    </div>
+  }
 
-  <!-- Error State -->
-  <div *ngIf="error" class="error-message">
-    {{ error }}
-    <button *ngIf="allRequests.length === 0" (click)="loadAllRequests()" class="retry-button">Retry</button>
-  </div>
+  @if (error) {
+    <div class="error-message">
+      {{ error }}
+      @if (allRequests.length === 0) {
+        <button (click)="loadAllRequests()" class="retry-button">Retry</button>
+      }
+    </div>
+  }
 
-  <!-- Success State -->
-  <div *ngIf="successMessage" class="success-message">
-    {{ successMessage }}
-  </div>
+  @if (successMessage) {
+    <div class="success-message">
+      {{ successMessage }}
+    </div>
+  }
 
-  <!-- Requests List -->
-  <div class="requests-list" *ngIf="!loading || allRequests.length > 0">
-    @if (filteredRequests.length === 0 && !loading) {
-      <div class="no-requests">
-        <p>No requests found matching your criteria.</p>
-      </div>
-    }
-    
-    @for (request of filteredRequests; track request.id) {
-      <div class="request-card">
-        <div class="request-card-header">
-          <div>
-            <span class="request-id">R{{ request.id }}</span>
-            <span [class]="'status-badge ' + getStatusClass(request.status)">
-              {{ request.status | titlecase }}
-            </span>
-          </div>
-          <div class="request-actions">
-            @if (request.status === 'pending') {
-              <button 
-                class="approve-button" 
-                (click)="approveRequest(request)"
-                [disabled]="actionLoading">
-                Approve
-              </button>
-              <button 
-                class="decline-button" 
-                (click)="declineRequest(request)"
-                [disabled]="actionLoading">
-                Decline
-              </button>
-            } @else {
-              @if (request.type === 'equipment' && (request.status === 'approved' || request.status === 'borrowed' || request.status === 'overdue')) {
-                <button class="return-button" (click)="markRequestReturned(request)" [disabled]="actionLoading">Mark Returned</button>
-              }
-              @if (request.type === 'facility' && (request.status === 'approved' || request.status === 'pending')) {
-                <button class="return-button" (click)="markRequestReturned(request)" [disabled]="actionLoading">Mark Returned</button>
-              }
-              <span class="action-status-label" [ngClass]="getStatusClass(request.status)">
+  @if (!loading || allRequests.length > 0) {
+    <div class="requests-list">
+      @if (filteredRequests.length === 0 && !loading) {
+        <div class="no-requests">
+          <p>No requests found matching your criteria.</p>
+        </div>
+      }
+      
+      @for (request of filteredRequests; track request.id) {
+        <div class="request-card">
+          <div class="request-card-header">
+            <div>
+              <span class="request-id">R{{ request.id }}</span>
+              <span [class]="'status-badge ' + getStatusClass(request.status)">
                 {{ request.status | titlecase }}
               </span>
+            </div>
+            <div class="request-actions">
+              @if (request.status === 'pending') {
+                <button 
+                  class="approve-button" 
+                  (click)="approveRequest(request)"
+                  [disabled]="actionLoading">
+                  Approve
+                </button>
+                <button 
+                  class="decline-button" 
+                  (click)="declineRequest(request)"
+                  [disabled]="actionLoading">
+                  Decline
+                </button>
+              } @else {
+                @if (request.type === 'equipment' && (request.status === 'approved' || request.status === 'borrowed' || request.status === 'overdue')) {
+                  <button class="return-button" (click)="markRequestReturned(request)" [disabled]="actionLoading">Mark Returned</button>
+                }
+                @else if (request.type === 'facility' && (request.status === 'approved' || request.status === 'pending')) {
+                  <button class="return-button" (click)="markRequestReturned(request)" [disabled]="actionLoading">Mark Returned</button>
+                }
+                <span class="action-status-label" [ngClass]="getStatusClass(request.status)">
+                  {{ request.status | titlecase }}
+                </span>
+              }
+            </div>
+          </div>
+          <h3 class="request-title">{{ request.name }}</h3>
+          <div class="request-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Requester:</span>
+              <span class="detail-value">{{ request.requester }}</span>
+            </div>
+            @if (request.dateTime) {
+              <div class="detail-item">
+                <span class="detail-label">Date & Time:</span>
+                <span class="detail-value">{{ request.dateTime }}</span>
+              </div>
+            }
+            @if (request.borrowDate) {
+              <div class="detail-item">
+                <span class="detail-label">Borrow Date:</span>
+                <span class="detail-value">{{ formatDate(request.borrowDate) }}</span>
+              </div>
+            }
+            @if (request.returnDate || request.expectedReturnDate) {
+              <div class="detail-item">
+                <span class="detail-label">{{ request.type === 'equipment' ? 'Expected Return:' : 'Return:' }}</span>
+                <span class="detail-value">{{ formatDate(request.returnDate || request.expectedReturnDate || '') }}</span>
+              </div>
             }
           </div>
-        </div>
-        <h3 class="request-title">{{ request.name }}</h3>
-        <div class="request-details-grid">
-          <div class="detail-item">
-            <span class="detail-label">Requester:</span>
-            <span class="detail-value">{{ request.requester }}</span>
+          <div class="request-details-grid">
+            @if (request.quantity) {
+              <div class="detail-item">
+                <span class="detail-label">Quantity:</span>
+                <span class="detail-value">{{ request.quantity }}</span>
+              </div>
+            }
+            <div class="detail-item">
+              <span class="detail-label">Requested:</span>
+              <span class="detail-value">{{ formatDate(request.createdAt) }}</span>
+            </div>
           </div>
-          @if (request.dateTime) {
+          @if (request.purpose) {
             <div class="detail-item">
-              <span class="detail-label">Date & Time:</span>
-              <span class="detail-value">{{ request.dateTime }}</span>
+              <span class="detail-label">Purpose:</span>
+              <span class="detail-value">{{ request.purpose }}</span>
             </div>
           }
-          @if (request.borrowDate) {
+          @if (request.adminNotes) {
             <div class="detail-item">
-              <span class="detail-label">Borrow Date:</span>
-              <span class="detail-value">{{ formatDate(request.borrowDate) }}</span>
-            </div>
-          }
-          @if (request.returnDate || request.expectedReturnDate) {
-            <div class="detail-item">
-              <span class="detail-label">{{ request.type === 'equipment' ? 'Expected Return:' : 'Return:' }}</span>
-              <span class="detail-value">{{ formatDate(request.returnDate || request.expectedReturnDate || '') }}</span>
+              <span class="detail-label">Admin Notes:</span>
+              <span class="detail-value">{{ request.adminNotes }}</span>
             </div>
           }
         </div>
-        <div class="request-details-grid">
-          @if (request.quantity) {
-            <div class="detail-item">
-              <span class="detail-label">Quantity:</span>
-              <span class="detail-value">{{ request.quantity }}</span>
-            </div>
-          }
-          <div class="detail-item">
-            <span class="detail-label">Requested:</span>
-            <span class="detail-value">{{ formatDate(request.createdAt) }}</span>
-          </div>
-        </div>
-        @if (request.purpose) {
-          <div class="detail-item">
-            <span class="detail-label">Purpose:</span>
-            <span class="detail-value">{{ request.purpose }}</span>
-          </div>
+      } @empty {
         }
-        @if (request.adminNotes) {
-          <div class="detail-item">
-            <span class="detail-label">Admin Notes:</span>
-            <span class="detail-value">{{ request.adminNotes }}</span>
-          </div>
-        }
-      </div>
-    }
-  </div>
+    </div>
+  }
+
 </div>
 
-<!-- Approve Request Modal -->
 @if (showApproveModal) {
   <div class="modal-overlay" (click)="closeApproveModal()">
     <div class="modal-container" (click)="$event.stopPropagation()">
@@ -197,7 +204,6 @@
   </div>
 }
 
-<!-- Decline Request Modal -->
 @if (showDeclineModal) {
   <div class="modal-overlay" (click)="closeDeclineModal()">
     <div class="modal-container" (click)="$event.stopPropagation()">
