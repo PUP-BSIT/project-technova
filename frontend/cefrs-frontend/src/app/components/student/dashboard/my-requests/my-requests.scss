@@ -1,15 +1,25 @@
 @import '../student-dashboard.scss';
 
+.page-header {
+  padding: $spacing-md $spacing-3xl $spacing-xs;
+  margin-bottom: 0;
+}
+
+.search-controls {
+  padding: $spacing-xs $spacing-3xl $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
 .requests-panel {
   padding: $spacing-lg;
   border-radius: $radius-lg;
 }
 
 .requests-detail-list {
-  padding: 0 $spacing-4xl $spacing-4xl;
+  padding: 0 $spacing-3xl $spacing-3xl;
   display: flex;
   flex-direction: column;
-  gap: $spacing-xl;
+  gap: $spacing-lg;
 }
 
 .request-detail-card {
@@ -131,7 +141,31 @@
   .page-header,
   .search-controls,
   .requests-detail-list {
-    padding-left: $spacing-2xl;
-    padding-right: $spacing-2xl;
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
+  }
+
+  .requests-detail-list {
+    padding-bottom: $spacing-2xl;
+    gap: $spacing-md;
+  }
+
+  .search-controls {
+    margin-bottom: $spacing-sm;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: $spacing-md $spacing-lg $spacing-xs;
+  }
+
+  .search-controls {
+    padding: $spacing-xs $spacing-lg;
+  }
+
+  .requests-detail-list {
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
   }
 }
