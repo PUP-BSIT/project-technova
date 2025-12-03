@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../services/auth';
 import { ReservationService } from '../../../../services/reservation.service';
 import { EquipmentBorrowingService } from '../../../../services/equipment-borrowing.service';
+import { DashboardService } from '../../../../services/dashboard.service';
 
 interface User {
   id: number;
@@ -39,6 +40,7 @@ export class Dashboard implements OnInit {
   private authService = inject(AuthService);
   private reservationService = inject(ReservationService);
   private borrowingService = inject(EquipmentBorrowingService);
+  private dashboardService = inject(DashboardService);
 
   user: User | null = null;
   
@@ -53,8 +55,14 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.fetchUserProfile();
-    this.fetchStats();
     this.fetchRecentRequests();
+    
+    // Refresh stats periodically (every 30 seconds) to catch updates
+    setInterval(() => {
+      if (this.user?.id) {
+        this.fetchStats();
+      }
+    }, 30000);
   }
 
   fetchUserProfile(): void {
@@ -62,6 +70,8 @@ export class Dashboard implements OnInit {
       next: (profile) => {
         this.user = profile;
         this.user.name = `${profile.firstName} ${profile.lastName}`;
+        // Fetch stats after user profile is loaded
+        this.fetchStats();
       },
       error: (err) => {
         console.error('Error fetching user profile:', err);
@@ -76,11 +86,59 @@ export class Dashboard implements OnInit {
           isActive: false,
           name: 'Guest'
         };
+        // Try to fetch stats manually if profile fails
+        this.fetchStats();
       }
     });
   }
 
   fetchStats(): void {
+    // Try to get userId from user object or localStorage
+    const userId = this.user?.id || this.getUserIdFromStorage();
+    
+    console.log('Fetching stats for userId:', userId);
+    
+    if (userId && userId > 0) {
+      // First try to get stats from the dashboard API
+      this.dashboardService.getUserStats(userId).subscribe({
+        next: (response) => {
+          console.log('Dashboard API response:', response);
+          if (response.success && response.data) {
+            this.stats = {
+              activeReservations: Number(response.data.activeReservations) || 0,
+              borrowedEquipment: Number(response.data.borrowedEquipment) || 0,
+              pendingRequests: Number(response.data.pendingRequests) || 0,
+              totalRequests: Number(response.data.totalRequests) || 0
+            };
+            console.log('Stats updated from API:', this.stats);
+          } else {
+            console.warn('Dashboard API response structure unexpected, falling back to manual calculation', response);
+            // Fallback if response structure is different
+            this.fetchStatsManually();
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching stats from dashboard API, falling back to manual calculation', err);
+          this.fetchStatsManually();
+        }
+      });
+    } else {
+      console.warn('No userId available, fetching stats manually');
+      // If userId is not available, fetch manually as fallback
+      this.fetchStatsManually();
+    }
+  }
+
+  private getUserIdFromStorage(): number | null {
+    const userIdStr = localStorage.getItem('userId');
+    if (userIdStr) {
+      const userId = parseInt(userIdStr, 10);
+      return isNaN(userId) ? null : userId;
+    }
+    return null;
+  }
+
+  private fetchStatsManually(): void {
     Promise.all([
       this.reservationService.getMyReservations().toPromise(),
       this.borrowingService.getMyBorrowings().toPromise()
@@ -88,13 +146,41 @@ export class Dashboard implements OnInit {
       const reservations: any[] = resResp?.data || [];
       const borrowings: any[] = borResp?.data || [];
 
+      console.log('Manual stats calculation - Reservations:', reservations);
+      console.log('Manual stats calculation - Borrowings:', borrowings);
+
+      // Log all reservation statuses for debugging
+      reservations.forEach(r => {
+        console.log(`Reservation ${r.id}: status = "${r.status}" (type: ${typeof r.status})`);
+      });
+
       this.stats.totalRequests = reservations.length + borrowings.length;
-      this.stats.activeReservations = reservations.filter(r => r.status === 'APPROVED').length;
-      this.stats.borrowedEquipment = borrowings.filter(b => b.status === 'APPROVED' || b.status === 'BORROWED').length;
-      this.stats.pendingRequests = reservations.filter(r => r.status === 'PENDING').length + 
-                                    borrowings.filter(b => b.status === 'PENDING').length;
+      
+      // Use case-insensitive comparison for status
+      const approvedReservations = reservations.filter(r => {
+        const status = r.status ? r.status.toUpperCase() : '';
+        const isApproved = status === 'APPROVED';
+        if (isApproved) {
+          console.log(`Found approved reservation: ${r.id} - ${r.facilityName || 'Unknown'}`);
+        }
+        return isApproved;
+      });
+      
+      this.stats.activeReservations = approvedReservations.length;
+      
+      this.stats.borrowedEquipment = borrowings.filter(b => 
+        b.status && (b.status.toUpperCase() === 'APPROVED' || b.status.toUpperCase() === 'BORROWED')
+      ).length;
+      
+      this.stats.pendingRequests = reservations.filter(r => 
+        r.status && r.status.toUpperCase() === 'PENDING'
+      ).length + borrowings.filter(b => 
+        b.status && b.status.toUpperCase() === 'PENDING'
+      ).length;
+
+      console.log('Manual stats calculated:', this.stats);
     }).catch(err => {
-      console.error('Error fetching stats', err);
+      console.error('Error fetching stats manually', err);
     });
   }
 
