@@ -156,7 +156,7 @@ export class Dashboard implements OnInit {
 
       this.stats.totalRequests = reservations.length + borrowings.length;
       
-      // Use case-insensitive comparison for status
+      // Active Reservations: Approved facility reservations + Approved/Borrowed equipment
       const approvedReservations = reservations.filter(r => {
         const status = r.status ? r.status.toUpperCase() : '';
         const isApproved = status === 'APPROVED';
@@ -166,10 +166,21 @@ export class Dashboard implements OnInit {
         return isApproved;
       });
       
-      this.stats.activeReservations = approvedReservations.length;
+      const activeEquipment = borrowings.filter(b => {
+        const status = b.status ? b.status.toUpperCase() : '';
+        const isActive = status === 'APPROVED' || status === 'BORROWED';
+        if (isActive) {
+          console.log(`Found active equipment: ${b.id} - ${b.equipmentName || 'Unknown'} (status: ${b.status})`);
+        }
+        return isActive;
+      });
       
+      // Active Reservations includes both facility and equipment
+      this.stats.activeReservations = approvedReservations.length + activeEquipment.length;
+      
+      // Borrowed Equipment: Only currently borrowed equipment (BORROWED status)
       this.stats.borrowedEquipment = borrowings.filter(b => 
-        b.status && (b.status.toUpperCase() === 'APPROVED' || b.status.toUpperCase() === 'BORROWED')
+        b.status && b.status.toUpperCase() === 'BORROWED'
       ).length;
       
       this.stats.pendingRequests = reservations.filter(r => 
