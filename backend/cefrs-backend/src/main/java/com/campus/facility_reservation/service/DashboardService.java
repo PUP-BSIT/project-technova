@@ -40,11 +40,14 @@ public class DashboardService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
-        // Active Reservations (Approved reservations)
-        Long activeReservations = (long) reservationRepository.findByUserAndStatus(user, ReservationStatus.APPROVED).size();
-        
-        // Borrowed Equipment (Currently borrowed)
+        // Active Reservations (Approved facility reservations + Approved/Borrowed equipment)
+        Long approvedFacilityReservations = (long) reservationRepository.findByUserAndStatus(user, ReservationStatus.APPROVED).size();
+        Long approvedEquipment = (long) borrowingRepository.findByUserAndStatus(user, BorrowingStatus.APPROVED).size();
         Long borrowedEquipment = (long) borrowingRepository.findByUserAndStatus(user, BorrowingStatus.BORROWED).size();
+        Long activeReservations = approvedFacilityReservations + approvedEquipment + borrowedEquipment;
+        
+        // Borrowed Equipment (Currently borrowed equipment only)
+        Long borrowedEquipmentCount = borrowedEquipment;
         
         // Pending Requests (Pending reservations + Pending borrowings)
         Long pendingReservations = (long) reservationRepository.findByUserAndStatus(user, ReservationStatus.PENDING).size();
@@ -56,7 +59,7 @@ public class DashboardService {
         Long totalBorrowings = (long) borrowingRepository.findByUserOrderByBorrowDateDesc(user).size();
         Long totalRequests = totalReservations + totalBorrowings;
         
-        return new DashboardStatsDTO(activeReservations, borrowedEquipment, pendingRequests, totalRequests);
+        return new DashboardStatsDTO(activeReservations, borrowedEquipmentCount, pendingRequests, totalRequests);
     }
     
     private List<RecentRequestDTO> getRecentRequests(User user) {
