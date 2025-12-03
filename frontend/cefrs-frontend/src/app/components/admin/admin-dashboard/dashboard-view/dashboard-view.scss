@@ -120,6 +120,7 @@ $tablet: 1024px;
   }
 
   .stat-label {
+    text-align: center;
     font-size: 16px;
     color: $text-secondary;
     margin-bottom: 12px;
@@ -135,6 +136,7 @@ $tablet: 1024px;
   }
 
   .stat-value {
+    text-align: center;
     font-size: 48px;
     font-weight: 500;
     color: $text-primary;
@@ -146,6 +148,14 @@ $tablet: 1024px;
     @media (max-width: $mobile-m) {
       font-size: 32px;
     }
+  }
+
+  .icon{
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
   }
 }
 

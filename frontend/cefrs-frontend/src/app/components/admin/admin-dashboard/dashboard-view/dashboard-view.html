@@ -9,18 +9,22 @@
   <div class="stats-grid">
     <div class="stat-card clickable" (click)="navigateToRequests()">
       <div class="stat-label">All Active Request</div>
+      <img src="assets/all-active.png" alt="Facilities Icon" class="icon" />
       <div class="stat-value">{{ stats.activeRequests }}</div>
     </div>
     <div class="stat-card clickable" (click)="navigateToRequests('approved')">
       <div class="stat-label">Active Facilities Reserved</div>
+      <img src="assets/act-facility.png" alt="Facilities Icon" class="icon" />
       <div class="stat-value">{{ stats.totalReservations }}</div>
     </div>
     <div class="stat-card clickable" (click)="navigateToRequests('approved')">
       <div class="stat-label">Active Equipment Borrowed</div>
+      <img src="assets/act-equipment.png" alt="Facilities Icon" class="icon" />
       <div class="stat-value">{{ stats.equipmentBorrowedToday }}</div>
     </div>
     <div class="stat-card clickable" (click)="navigateToRequests('pending')">
       <div class="stat-label">All Pending Requests</div>
+      <img src="assets/pending.png" alt="Facilities Icon" class="icon" />
       <div class="stat-value">{{ stats.facilitiesInUse }}</div>
     </div>
   </div>
