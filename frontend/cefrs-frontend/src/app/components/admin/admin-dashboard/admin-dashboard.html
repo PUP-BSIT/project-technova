@@ -1,5 +1,4 @@
 <div class="app-container" [class.mobile-view]="isMobileView">
-  <!-- Mobile Header -->
   @if (isMobileView) {
     <header class="mobile-header">
       <button class="menu-toggle" (click)="toggleSidenav()" aria-label="Toggle menu">
@@ -12,14 +11,11 @@
     </header>
   }
 
-  <!-- Sidenav Overlay (Mobile Only) -->
   @if (isMobileView && sidenavOpen) {
     <div class="sidenav-overlay" (click)="closeSidenav()"></div>
   }
 
-  <!-- Sidebar -->
   <aside class="sidebar" [class.open]="sidenavOpen" [class.mobile]="isMobileView">
-    <!-- Logo -->
     <div class="logo-section">
       <div class="logo-image">
         <img src="assets/logo-white.png" alt="CEFRS Logo" />
@@ -27,7 +23,6 @@
       <div class="logo-text">CEFRS</div>
     </div>
 
-    <!-- Navigation -->
     <nav class="nav-menu">
       @for (item of navItems; track item.id) {
         <button 
@@ -44,7 +39,6 @@
       }
     </nav>
 
-    <!-- User Profile -->
     <div class="user-profile">
       <div class="user-details">
         @if (user) {
@@ -67,19 +61,26 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content">
-    <app-dashboard-view *ngIf="currentView === 'dashboard'"></app-dashboard-view>
-    <app-manage-request *ngIf="currentView === 'manage-request'"></app-manage-request>
-    <app-calendar-view *ngIf="currentView === 'calendar'"></app-calendar-view>
-    <app-facilities *ngIf="currentView === 'facilities'"></app-facilities>
-    <app-equipment *ngIf="currentView === 'equipment'"></app-equipment>
-    <app-equipment-inventory *ngIf="currentView === 'equipment-inventory'"></app-equipment-inventory>
-    <app-report-logs *ngIf="currentView === 'report-logs'"></app-report-logs>
-    <router-outlet *ngIf="currentView === 'settings'"></router-outlet>
+    @if (currentView === 'dashboard') {
+      <app-dashboard-view></app-dashboard-view>
+    } @else if (currentView === 'manage-request') {
+      <app-manage-request></app-manage-request>
+    } @else if (currentView === 'calendar') {
+      <app-calendar-view></app-calendar-view>
+    } @else if (currentView === 'facilities') {
+      <app-facilities></app-facilities>
+    } @else if (currentView === 'equipment') {
+      <app-equipment></app-equipment>
+    } @else if (currentView === 'equipment-inventory') {
+      <app-equipment-inventory></app-equipment-inventory>
+    } @else if (currentView === 'report-logs') {
+      <app-report-logs></app-report-logs>
+    } @else if (currentView === 'settings') {
+      <router-outlet></router-outlet>
+    }
   </main>
 
-  <!-- Logout Confirmation Modal -->
   @if (showLogoutModal) {
     <div class="modal-overlay" (click)="closeLogoutModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
@@ -104,7 +105,6 @@
     </div>
   }
 
-  <!-- Notification Modal -->
   @if (showNotificationModal) {
     <div class="notification-modal" [ngClass]="'notification-' + notificationType">
       <div class="notification-content">
