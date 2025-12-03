@@ -1,7 +1,7 @@
 @import '../org-dashboard.scss';
 
 .equipment-grid {
-  padding: 0 $spacing-4xl $spacing-4xl;
+  padding: 0 $spacing-4xl $spacing-3xl;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: $spacing-2xl;
@@ -124,7 +124,11 @@
   .page-header,
   .search-controls,
   .equipment-grid {
-    padding-left: $spacing-2xl;
-    padding-right: $spacing-2xl;
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
+  }
+
+  .equipment-grid {
+    padding-bottom: $spacing-2xl;
   }
 }
