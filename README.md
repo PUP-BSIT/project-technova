@@ -25,13 +25,35 @@ This system replaces manual forms and verbal requests with a **centralized digit
 [![(CEFRS) Campus Equipment & Facility Reservation System](https://img.shields.io/badge/CEFRS-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://cefrs.site/)
 ---
 
-## 👤 Sample Account
+## 👤 Sample User Accounts for Testing
 
-To explore **Student User** without registering:
+These accounts are available to explore the system without registration.
 
-- **Email:** `johndoe@gmail.com`
-- **Password:** `Johndoe@123`
+---
 
+### 🎓 1. Student Account
+
+* **Email:** `johndoe@gmail.com`
+* **Password:** `Johndoe@123`
+* **Permissions:** Can **view** resources, submit basic **facility reservations**, and **borrow** equipment.
+
+### 🏛️ 2. Admin Account
+
+* **Email:** `facultyadmin@gmail.com`
+* **Password:** `Faculty@123`
+* **Permissions:** Can **approve/reject** requests, **manage** facilities and equipment inventory, and view system logs.
+
+### 👥 3. Campus Organization Account
+
+* **Email:** `computersocietydit@gmail.com`
+* **Password:** `Comp@123`
+* **Permissions:** Can reserve facilities for **group events** and submit **equipment** requests for organization activities.
+
+---
+
+### 💡 To Explore Without Registering:
+
+> Use the credentials above to log into the system and test the different permission levels.
 ---
 
 ## 🗓️ Project Timeline
