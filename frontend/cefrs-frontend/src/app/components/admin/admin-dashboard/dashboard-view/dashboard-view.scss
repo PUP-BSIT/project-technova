@@ -94,6 +94,7 @@ $tablet: 1024px;
   padding: 32px;
   border-radius: 8px;
   @include card-shadow;
+  transition: all 0.3s ease;
 
   @media (max-width: $mobile-l) {
     padding: 20px;
@@ -102,6 +103,20 @@ $tablet: 1024px;
 
   @media (max-width: $mobile-m) {
     padding: 16px;
+  }
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background: #f9f9f9;
+    }
+
+    &:active {
+      transform: translateY(-2px);
+    }
   }
 
   .stat-label {

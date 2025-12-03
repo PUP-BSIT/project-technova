@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ReservationService, Reservation } from '../../../../services/reservation.service';
 import { EquipmentBorrowingService, EquipmentBorrowing } from '../../../../services/equipment-borrowing.service';
@@ -55,11 +56,25 @@ export class ManageRequest implements OnInit {
 
   constructor(
     private reservationService: ReservationService,
-    private borrowingService: EquipmentBorrowingService
+    private borrowingService: EquipmentBorrowingService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.loadAllRequests();
+    
+    // Check for query params to set initial filter
+    this.route.queryParams.subscribe(params => {
+      if (params['status']) {
+        const status = params['status'].toLowerCase();
+        // Map status to dropdown options
+        if (status === 'pending') {
+          this.selectedStatus = 'Pending';
+        } else if (status === 'approved') {
+          this.selectedStatus = 'Approved';
+        }
+      }
+    });
   }
 
   loadAllRequests(): void {
@@ -333,7 +348,7 @@ export class ManageRequest implements OnInit {
       'rejected': 'status-declined',
       'declined': 'status-declined',
       'cancelled': 'status-declined',
-      'returned': 'status-approved',
+      'returned': 'status-returned',
       'borrowed': 'status-approved',
       'completed': 'status-completed'
     };

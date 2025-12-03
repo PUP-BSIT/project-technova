@@ -7,20 +7,20 @@
 
   <!-- Stats Cards -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-label">Active Request</div>
+    <div class="stat-card clickable" (click)="navigateToRequests()">
+      <div class="stat-label">All Active Request</div>
       <div class="stat-value">{{ stats.activeRequests }}</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Total Reservations</div>
+    <div class="stat-card clickable" (click)="navigateToRequests('approved')">
+      <div class="stat-label">Active Facilities Reserved</div>
       <div class="stat-value">{{ stats.totalReservations }}</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Equipment Borrowed Today</div>
+    <div class="stat-card clickable" (click)="navigateToRequests('approved')">
+      <div class="stat-label">Active Equipment Borrowed</div>
       <div class="stat-value">{{ stats.equipmentBorrowedToday }}</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Facilities in Use</div>
+    <div class="stat-card clickable" (click)="navigateToRequests('pending')">
+      <div class="stat-label">All Pending Requests</div>
       <div class="stat-value">{{ stats.facilitiesInUse }}</div>
     </div>
   </div>

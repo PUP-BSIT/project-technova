@@ -285,6 +285,11 @@ $font-family: 'Roboto', sans-serif;
       background: #fca5a5;
       color: #7f1d1d;
     }
+
+    &.status-returned {
+      background: #cfe2ff;
+      color: #084298;
+    }
   }
 
   .request-title {
@@ -488,6 +493,10 @@ $font-family: 'Roboto', sans-serif;
     color: #78350f; 
   }
   &.status-completed { 
+    background: #cfe2ff; 
+    color: #084298; 
+  }
+  &.status-returned { 
     background: #cfe2ff; 
     color: #084298; 
   }
