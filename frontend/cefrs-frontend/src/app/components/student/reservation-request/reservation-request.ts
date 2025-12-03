@@ -96,8 +96,11 @@ export class ReservationRequestComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Failed to submit reservation request';
-        console.error('Error creating reservation:', err);
+        const msg = typeof err === 'string'
+          ? err
+          : err?.message || err?.error?.message || err?.error?.error || 'Failed to submit reservation request';
+        this.error = msg;
+        console.error('Error creating reservation:', err.message);
       }
     });
   }
