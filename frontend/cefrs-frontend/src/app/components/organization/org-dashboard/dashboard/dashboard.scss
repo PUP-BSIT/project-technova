@@ -1,9 +1,14 @@
 @import '../org-dashboard.scss';
 
+.page-header {
+  padding: $spacing-md $spacing-3xl $spacing-xs;
+  margin-bottom: 0;
+}
+
 .welcome-banner {
   background: $primary-gradient;
   color: $white;
-  padding: $spacing-md $spacing-4xl;
+  padding: $spacing-xs $spacing-3xl;
 
   h2 {
     font-size: $font-size-4xl;
@@ -22,8 +27,8 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-2xl;
-  padding: $spacing-3xl $spacing-4xl;
+  gap: $spacing-lg;
+  padding: $spacing-md $spacing-3xl $spacing-lg;
 }
 
 .stat-card {
@@ -50,7 +55,7 @@
 }
 
 .recent-section {
-  padding: 0 $spacing-4xl $spacing-4xl;
+  padding: 0 $spacing-3xl $spacing-2xl;
 }
 
 .section-header {
@@ -205,11 +210,33 @@
   .stats-grid,
   .recent-section,
   .search-bar {
-    padding-left: $spacing-2xl;
-    padding-right: $spacing-2xl;
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: $spacing-lg;
+    padding-top: $spacing-md;
+  }
+
+  .welcome-banner {
+    margin-bottom: $spacing-sm;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: $font-size-3xl;
+  }
+
+  .welcome-banner {
+    padding: $spacing-xs $spacing-xl;
+  }
+
+  .stats-grid,
+  .recent-section {
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
   }
 }
