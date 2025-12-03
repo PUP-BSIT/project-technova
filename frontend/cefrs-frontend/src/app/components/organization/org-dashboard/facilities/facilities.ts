@@ -145,8 +145,8 @@ export class OrgFacilitiesComponent implements OnInit {
       },
       error: (err) => {
         this.reservationLoading = false;
-        this.reservationError = err.error?.message || 'Failed to submit reservation request';
-        console.error('Error creating reservation:', err);
+        this.reservationError = err.message || 'Failed to submit reservation request';
+        console.error('Error creating reservation:', err.message);
       }
     });
   }
