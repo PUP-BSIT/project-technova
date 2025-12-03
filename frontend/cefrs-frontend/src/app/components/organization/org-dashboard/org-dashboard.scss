@@ -234,11 +234,13 @@ $transition-base: 0.3s;
 }
 
 .status-badge {
-  padding: 6px $spacing-lg;
-  border-radius: $radius-sm;
-  font-size: $font-size-sm;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: $font-size-xs;
   font-weight: $font-weight-medium;
   font-family: $font-family;
+  display: inline-block;
+  white-space: nowrap;
 
   &.status-approved {
     background: $success-color;
