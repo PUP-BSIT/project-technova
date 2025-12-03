@@ -85,11 +85,16 @@ export class DashboardView implements OnInit, OnDestroy {
         next: (data) => {
           // Process dashboard stats
           const stats = data.dashboardStats;
+          
+          // Count all pending requests from calendar events
+          const allPendingRequests = data.calendarEvents
+            .filter(event => event.extendedProps.status === 'PENDING').length;
+          
           this.stats = {
             activeRequests: stats.facilityUsage.activeReservations + stats.equipmentUsage.activeBorrowings,
-            totalReservations: stats.facilityUsage.totalReservations,
+            totalReservations: stats.facilityUsage.activeReservations, // Only active facilities in use
             equipmentBorrowedToday: stats.userActivity.todayBorrowings,
-            facilitiesInUse: stats.facilityUsage.activeReservations
+            facilitiesInUse: allPendingRequests // All pending requests count
           };
 
           // Process pending requests from calendar events
@@ -197,6 +202,13 @@ export class DashboardView implements OnInit, OnDestroy {
   viewAllRequests(): void {
     // Navigate to manage requests page
     this.router.navigate(['/admin-dashboard/manage-request']);
+  }
+
+  // Navigate to manage requests with specific filter
+  navigateToRequests(filter?: string): void {
+    this.router.navigate(['/admin-dashboard/manage-request'], {
+      queryParams: filter ? { status: filter } : {}
+    });
   }
 
   // Extract numeric ID from event ID string (e.g., "facility-123" to 123)
