@@ -26,7 +26,7 @@
 
 .equipment-image {
   position: relative;
-  height: 200px;
+  height: 260px;
   overflow: hidden;
   background: $gray-lighter;
 
@@ -145,6 +145,10 @@
 
   .search-controls {
     margin-bottom: $spacing-sm;
+  }
+
+  .equipment-image {
+    height: 220px;
   }
 }
 
