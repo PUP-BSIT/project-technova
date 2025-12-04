@@ -84,15 +84,6 @@ public class FacilityReservationService {
         LocalTime startTime = startDateTime.toLocalTime();
         LocalTime endTime = endDateTime.toLocalTime();
 
-        // Check for conflicts
-        List<FacilityReservation> conflicts = reservationRepository.findConflictingReservations(
-            facility.getId(), date, startTime, endTime
-        );
-        
-        if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Time slot is already reserved");
-        }
-        
         FacilityReservation reservation = new FacilityReservation();
         reservation.setUser(user);
         reservation.setFacility(facility);
@@ -100,7 +91,16 @@ public class FacilityReservationService {
         reservation.setStartTime(startTime);
         reservation.setEndTime(endTime);
         reservation.setPurpose(request.getPurpose());
-        reservation.setStatus(ReservationStatus.PENDING);
+
+        // If there is already an APPROVED reservation for this slot, place new reservation on the waiting list
+        List<FacilityReservation> approvedConflicts = reservationRepository.findConflictingReservations(
+                facility.getId(), date, startTime, endTime
+        );
+        if (!approvedConflicts.isEmpty()) {
+            reservation.setStatus(ReservationStatus.WAITLISTED);
+        } else {
+            reservation.setStatus(ReservationStatus.PENDING);
+        }
         
         FacilityReservation saved = reservationRepository.save(reservation);
         return convertToDTO(saved);
@@ -116,7 +116,7 @@ public class FacilityReservationService {
         ReservationStatus status = ReservationStatus.valueOf(approval.getStatus().toUpperCase());
         ReservationStatus oldStatus = reservation.getStatus();
 
-        // If approving now, check for conflicts
+        // If approving now, check for conflicts against other APPROVED reservations
         if (status == ReservationStatus.APPROVED && oldStatus != ReservationStatus.APPROVED) {
             List<FacilityReservation> conflicts = reservationRepository.findConflictingReservations(
                 reservation.getFacility().getId(),
@@ -131,6 +131,21 @@ public class FacilityReservationService {
             if (!conflicts.isEmpty()) {
                 throw new RuntimeException("Cannot approve: Time slot conflicts with existing approved reservation");
             }
+
+            // Move any overlapping PENDING reservations into the waiting list for this slot
+            List<FacilityReservation> pendingOverlaps = reservationRepository.findOverlappingByStatusOrderByCreatedAtAsc(
+                    reservation.getFacility().getId(),
+                    reservation.getReservationDate(),
+                    reservation.getStartTime(),
+                    reservation.getEndTime(),
+                    ReservationStatus.PENDING
+            );
+            for (FacilityReservation other : pendingOverlaps) {
+                if (!other.getId().equals(reservation.getId())) {
+                    other.setStatus(ReservationStatus.WAITLISTED);
+                    reservationRepository.save(other);
+                }
+            }
         }
 
         reservation.setStatus(status);
@@ -139,6 +154,16 @@ public class FacilityReservationService {
         reservation.setApprovedAt(LocalDateTime.now());
         
         FacilityReservation updated = reservationRepository.save(reservation);
+
+        // If this reservation was APPROVED before and is now being changed to a non-APPROVED
+        // terminal state, promote the next WAITLISTED reservation (if any) for this slot.
+        if (oldStatus == ReservationStatus.APPROVED
+                && (status == ReservationStatus.CANCELLED
+                || status == ReservationStatus.REJECTED
+                || status == ReservationStatus.COMPLETED)) {
+            promoteNextFromWaitlist(reservation);
+        }
+
         return convertToDTO(updated);
     }
 
@@ -158,6 +183,10 @@ public class FacilityReservationService {
 
         reservation.setStatus(ReservationStatus.COMPLETED);
         FacilityReservation updated = reservationRepository.save(reservation);
+
+        // When a reservation is completed, free the slot for the next in the waiting list
+        promoteNextFromWaitlist(reservation);
+
         return convertToDTO(updated);
     }
     
@@ -169,9 +198,15 @@ public class FacilityReservationService {
         if (!reservation.getUser().getId().equals(userId)) {
             throw new RuntimeException("Unauthorized to cancel this reservation");
         }
-        
+
+        ReservationStatus oldStatus = reservation.getStatus();
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.save(reservation);
+
+        // Only promote from waitlist if an APPROVED reservation has been cancelled
+        if (oldStatus == ReservationStatus.APPROVED) {
+            promoteNextFromWaitlist(reservation);
+        }
     }
 
     public List<FacilityReservationDTO> getFacilityReservationsByDate(Long facilityId, String dateStr) {
@@ -182,6 +217,30 @@ public class FacilityReservationService {
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Promote the next WAITLISTED reservation (if any) that overlaps the given reservation's
+     * facility, date, and time range. The promoted reservation is moved back to PENDING so
+     * that an admin can review and approve it explicitly.
+     */
+    private void promoteNextFromWaitlist(FacilityReservation releasedReservation) {
+        List<FacilityReservation> waitlisted = reservationRepository.findOverlappingByStatusOrderByCreatedAtAsc(
+                releasedReservation.getFacility().getId(),
+                releasedReservation.getReservationDate(),
+                releasedReservation.getStartTime(),
+                releasedReservation.getEndTime(),
+                ReservationStatus.WAITLISTED
+        );
+
+        if (!waitlisted.isEmpty()) {
+            FacilityReservation next = waitlisted.get(0);
+            next.setStatus(ReservationStatus.PENDING);
+            // Clear any previous admin decision metadata just in case
+            next.setApprovedBy(null);
+            next.setApprovedAt(null);
+            reservationRepository.save(next);
+        }
     }
 
     public SuggestedFacilitiesDTO getSuggestedFacilities(Long unavailableFacilityId, String dateStr, String startTimeStr, String endTimeStr) {

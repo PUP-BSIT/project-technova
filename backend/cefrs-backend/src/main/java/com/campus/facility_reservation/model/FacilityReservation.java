@@ -71,6 +71,11 @@ public class FacilityReservation {
     }
     
     public enum ReservationStatus {
-        PENDING, APPROVED, REJECTED, CANCELLED, COMPLETED
+        PENDING,
+        APPROVED,
+        REJECTED,
+        CANCELLED,
+        COMPLETED,
+        WAITLISTED
     }
 }

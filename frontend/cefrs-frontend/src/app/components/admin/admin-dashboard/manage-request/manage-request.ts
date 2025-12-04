@@ -350,7 +350,8 @@ export class ManageRequest implements OnInit {
       'cancelled': 'status-declined',
       'returned': 'status-returned',
       'borrowed': 'status-approved',
-      'completed': 'status-completed'
+      'completed': 'status-completed',
+      'waitlisted': 'status-waitlisted'
     };
     return statusMap[status.toLowerCase()] || 'status-pending';
   }

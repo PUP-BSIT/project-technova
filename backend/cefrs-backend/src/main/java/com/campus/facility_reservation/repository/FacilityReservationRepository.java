@@ -38,6 +38,18 @@ public interface FacilityReservationRepository extends JpaRepository<FacilityRes
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime);
 
+    @Query("SELECT fr FROM FacilityReservation fr WHERE fr.facility.id = :facilityId " +
+            "AND fr.reservationDate = :date " +
+            "AND fr.status = :status " +
+            "AND ((fr.startTime < :endTime AND fr.endTime > :startTime)) " +
+            "ORDER BY fr.createdAt ASC")
+    List<FacilityReservation> findOverlappingByStatusOrderByCreatedAtAsc(
+            @Param("facilityId") Long facilityId,
+            @Param("date") LocalDate date,
+            @Param("startTime") LocalTime startTime,
+            @Param("endTime") LocalTime endTime,
+            @Param("status") ReservationStatus status);
+
     List<FacilityReservation> findTop5ByUserOrderByCreatedAtDesc(User user);
 
     Long countByStatus(ReservationStatus status);
