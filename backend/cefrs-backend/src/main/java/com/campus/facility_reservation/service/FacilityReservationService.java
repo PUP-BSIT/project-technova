@@ -5,6 +5,9 @@ import com.campus.facility_reservation.model.FacilityReservation.ReservationStat
 import com.campus.facility_reservation.dto.FacilityReservationDTO;
 import com.campus.facility_reservation.dto.FacilityReservationRequestDTO;
 import com.campus.facility_reservation.dto.ReservationApprovalDTO;
+import com.campus.facility_reservation.dto.SuggestedFacilitiesDTO;
+import com.campus.facility_reservation.dto.FacilityDTO;
+import com.campus.facility_reservation.service.FacilityService;
 import com.campus.facility_reservation.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -177,6 +182,71 @@ public class FacilityReservationService {
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public SuggestedFacilitiesDTO getSuggestedFacilities(Long unavailableFacilityId, String dateStr, String startTimeStr, String endTimeStr) {
+        Facility unavailableFacility = facilityRepository.findById(unavailableFacilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found"));
+        
+        LocalDate date = LocalDate.parse(dateStr);
+        LocalTime startTime = LocalTime.parse(startTimeStr);
+        LocalTime endTime = LocalTime.parse(endTimeStr);
+
+        // Get all facilities
+        List<Facility> allFacilities = facilityRepository.findAll();
+        
+        // Filter for available facilities with same or greater capacity and similar type
+        List<FacilityDTO> suggestedFacilities = new ArrayList<>();
+        
+        for (Facility facility : allFacilities) {
+            // Skip the unavailable facility
+            if (facility.getId().equals(unavailableFacilityId)) {
+                continue;
+            }
+            
+            // Check if facility has same or greater capacity
+            if (facility.getCapacity() < unavailableFacility.getCapacity()) {
+                continue;
+            }
+            
+            // Check for conflicts with the requested time slot
+            List<FacilityReservation> conflicts = reservationRepository.findConflictingReservations(
+                facility.getId(), date, startTime, endTime
+            );
+            
+            // If no conflicts, add to suggested list
+            if (conflicts.isEmpty()) {
+                FacilityDTO dto = convertFacilityToDTO(facility);
+                suggestedFacilities.add(dto);
+            }
+        }
+        
+        // Sort by capacity (facilities closer to the required capacity first)
+        suggestedFacilities.sort(Comparator.comparingInt(f -> Math.abs(f.getCapacity() - unavailableFacility.getCapacity())));
+
+        SuggestedFacilitiesDTO result = new SuggestedFacilitiesDTO();
+        result.setUnavailableFacility(convertFacilityToDTO(unavailableFacility));
+        result.setRequestedDate(dateStr);
+        result.setRequestedStartTime(startTimeStr);
+        result.setRequestedEndTime(endTimeStr);
+        result.setReason("The requested facility is not available for the selected date and time slot");
+        result.setSuggestedFacilities(suggestedFacilities);
+        
+        return result;
+    }
+
+    private FacilityDTO convertFacilityToDTO(Facility facility) {
+        return new FacilityDTO(
+            facility.getId(),
+            facility.getName(),
+            facility.getType().toString(),
+            facility.getBuilding(),
+            facility.getFloor(),
+            facility.getCapacity(),
+            facility.getDescription(),
+            facility.getImageUrl(),
+            "AVAILABLE"
+        );
     }
     
     private FacilityReservationDTO convertToDTO(FacilityReservation reservation) {
