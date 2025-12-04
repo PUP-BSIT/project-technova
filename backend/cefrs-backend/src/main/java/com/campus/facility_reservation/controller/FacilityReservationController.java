@@ -4,6 +4,7 @@ import com.campus.facility_reservation.dto.ApiResponse;
 import com.campus.facility_reservation.dto.ReservationApprovalDTO;
 import com.campus.facility_reservation.dto.FacilityReservationDTO;
 import com.campus.facility_reservation.dto.FacilityReservationRequestDTO;
+import com.campus.facility_reservation.dto.SuggestedFacilitiesDTO;
 import com.campus.facility_reservation.service.FacilityReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -116,5 +117,16 @@ public class FacilityReservationController {
             @RequestParam String date) {
         List<FacilityReservationDTO> reservations = reservationService.getFacilityReservationsByDate(facilityId, date);
         return ResponseEntity.ok(ApiResponse.success("Facility availability retrieved", reservations));
+    }
+
+    @GetMapping("/suggestions")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<SuggestedFacilitiesDTO>> getSuggestedFacilities(
+            @RequestParam Long facilityId,
+            @RequestParam String date,
+            @RequestParam String startTime,
+            @RequestParam String endTime) {
+        SuggestedFacilitiesDTO suggestions = reservationService.getSuggestedFacilities(facilityId, date, startTime, endTime);
+        return ResponseEntity.ok(ApiResponse.success("Alternative facilities retrieved", suggestions));
     }
 }
