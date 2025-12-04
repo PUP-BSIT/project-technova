@@ -49,7 +49,8 @@ export class CalendarView implements OnInit, OnDestroy {
   selectedEvent: CalendarEvent | null = null;
   showEventModal = false;
   filterType: 'all' | 'facility' | 'equipment' = 'all';
-  filterStatus: 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE' = 'all';
+  // Changed: Default filter is now 'APPROVED' instead of 'all'
+  filterStatus: 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE' = 'APPROVED';
   isLoading = false;
   adminId: number = 0;
 
@@ -114,6 +115,8 @@ export class CalendarView implements OnInit, OnDestroy {
     }
 
     this.calendarOptions.events = filteredEvents as EventInput[];
+
+    console.log(`Displaying ${filteredEvents.length} events (Filter: Type=${this.filterType}, Status=${this.filterStatus})`);
   }
 
   handleEventClick(clickInfo: EventClickArg): void {
