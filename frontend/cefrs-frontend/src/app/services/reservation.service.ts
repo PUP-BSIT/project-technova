@@ -30,6 +30,27 @@ export interface Reservation {
   createdAt: string;
 }
 
+export interface FacilityForSuggestion {
+  id: number;
+  name: string;
+  type: string;
+  building: string;
+  floor: string;
+  capacity: number;
+  description: string;
+  imageUrl: string;
+  status: string;
+}
+
+export interface SuggestedFacilities {
+  unavailableFacility: FacilityForSuggestion;
+  requestedDate: string;
+  requestedStartTime: string;
+  requestedEndTime: string;
+  reason: string;
+  suggestedFacilities: FacilityForSuggestion[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -81,6 +102,12 @@ export class ReservationService {
       ? `${this.apiUrl}/${id}/status?adminId=${adminId}`
       : `${this.apiUrl}/${id}/status`;
     return this.http.put<ApiResponse<Reservation>>(url, body);
+  }
+
+  getSuggestedFacilities(facilityId: number, date: string, startTime: string, endTime: string): Observable<ApiResponse<SuggestedFacilities>> {
+    return this.http.get<ApiResponse<SuggestedFacilities>>(
+      `${this.apiUrl}/suggestions?facilityId=${facilityId}&date=${date}&startTime=${startTime}&endTime=${endTime}`
+    );
   }
 }
 

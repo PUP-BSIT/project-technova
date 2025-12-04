@@ -103,7 +103,7 @@
         <!-- Error Message -->
         @if (reservationError) {
           <div class="modal-error">
-            {{ reservationError }}
+            <div class="error-message">{{ reservationError }}</div>
           </div>
         }
 
@@ -116,6 +116,15 @@
             [disabled]="reservationLoading">
             Cancel
           </button>
+          @if (reservationError && (reservationError.toLowerCase().includes('already reserved') || reservationError.toLowerCase().includes('conflict'))) {
+            <button
+              type="button"
+              class="modal-btn modal-btn-suggest"
+              (click)="loadSuggestions()"
+              [disabled]="suggestionsLoading">
+              {{ suggestionsLoading ? 'Loading alternatives...' : 'See Alternatives' }}
+            </button>
+          }
           <button
             type="submit"
             class="modal-btn modal-btn-submit"
@@ -145,6 +154,75 @@
         (click)="closeSuccessModal()">
         Done
       </button>
+    </div>
+  </div>
+}
+
+<!-- Alternative Facilities Suggestions Modal -->
+@if (showSuggestionsModal && suggestedFacilities) {
+  <div class="modal-overlay" (click)="closeSuggestionsModal()">
+    <div class="modal-container suggestions-modal" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Alternative Facilities Available</h2>
+      
+      <div class="suggestions-info">
+        <p class="unavailable-facility">
+          <strong>Requested facility:</strong> {{ suggestedFacilities.unavailableFacility.name }}
+        </p>
+        <p class="unavailable-reason">
+          <strong>Reason:</strong> {{ suggestedFacilities.reason }}
+        </p>
+        <p class="requested-details">
+          <strong>Requested date & time:</strong> {{ suggestedFacilities.requestedDate }} 
+          {{ suggestedFacilities.requestedStartTime }} - {{ suggestedFacilities.requestedEndTime }}
+        </p>
+      </div>
+
+      @if (suggestionsLoading) {
+        <div class="loading-message">Loading alternative facilities...</div>
+      } @else if (suggestedFacilities.suggestedFacilities.length === 0) {
+        <div class="no-suggestions-message">
+          <p>Unfortunately, no alternative facilities are available for the requested date and time.</p>
+          <p>Please try a different date or time slot.</p>
+        </div>
+      } @else {
+        <div class="suggestions-list">
+          <h3 class="suggestions-title">Available alternatives:</h3>
+          <div class="suggested-facilities">
+            @for (facility of suggestedFacilities.suggestedFacilities; track facility.id) {
+              <div class="suggested-facility-card">
+                <div class="facility-image-small">
+                  <img [src]="facility.imageUrl" [alt]="facility.name" class="facility-image-thumb">
+                </div>
+                <div class="facility-info">
+                  <h4 class="facility-name-small">{{ facility.name }}</h4>
+                  <p class="facility-type">{{ facility.type }}</p>
+                  <div class="facility-location">
+                    <span>{{ facility.building }} - Floor {{ facility.floor }}</span>
+                  </div>
+                  <div class="facility-capacity-small">
+                    Capacity: {{ facility.capacity }} people
+                  </div>
+                </div>
+                <!-- <button
+                  type="button"
+                  class="modal-btn modal-btn-select"
+                  (click)="selectSuggestedFacility(facility.id)">
+                  Use This Facility
+                </button> -->
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="modal-btn modal-btn-cancel"
+          (click)="closeSuggestionsModal()">
+          Close
+        </button>
+      </div>
     </div>
   </div>
 }

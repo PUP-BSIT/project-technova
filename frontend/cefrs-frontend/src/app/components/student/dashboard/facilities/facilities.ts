@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FacilityService } from '../../../../services/facility.service';
-import { ReservationService, ReservationRequest } from '../../../../services/reservation.service';
+import { ReservationService, ReservationRequest, SuggestedFacilities } from '../../../../services/reservation.service';
 
 interface Facility {
   id: number;
@@ -44,6 +44,11 @@ export class Facilities implements OnInit {
   };
   reservationLoading = false;
   reservationError: string | null = null;
+
+  // Suggestions state
+  showSuggestionsModal = false;
+  suggestedFacilities: SuggestedFacilities | null = null;
+  suggestionsLoading = false;
 
   ngOnInit(): void {
     this.fetchFacilities();
@@ -145,10 +150,62 @@ export class Facilities implements OnInit {
       },
       error: (err) => {
         this.reservationLoading = false;
-        this.reservationError = err.message;
-        console.error('Error creating reservation:', err.message);
+        // Extract error message from different possible locations
+        const errorMessage = err.error?.error || err.error?.message || err.message || 'Failed to create reservation';
+        this.reservationError = errorMessage;
+        
+        // Check if it's a time slot conflict
+        if (errorMessage.toLowerCase().includes('already reserved') || errorMessage.toLowerCase().includes('conflict')) {
+          this.loadSuggestions();
+        }
+        
+        console.error('Error creating reservation:', errorMessage);
       }
     });
+  }
+
+  loadSuggestions(): void {
+    if (!this.reservationForm.facilityId || !this.reservationForm.reservationDate || 
+        !this.reservationForm.startTime || !this.reservationForm.endTime) {
+      return;
+    }
+
+    this.suggestionsLoading = true;
+    
+    this.reservationService.getSuggestedFacilities(
+      this.reservationForm.facilityId,
+      this.reservationForm.reservationDate,
+      this.reservationForm.startTime,
+      this.reservationForm.endTime
+    ).subscribe({
+      next: (response) => {
+        this.suggestionsLoading = false;
+        if (response.success) {
+          this.suggestedFacilities = response.data;
+          this.showSuggestionsModal = true;
+        }
+      },
+      error: (err) => {
+        this.suggestionsLoading = false;
+        console.error('Error loading suggestions:', err);
+      }
+    });
+  }
+
+  selectSuggestedFacility(facilityId: number): void {
+    const facility = this.facilities.find(f => f.id === facilityId);
+    if (facility) {
+      this.closeSuggestionsModal();
+      this.selectedFacility = facility;
+      this.reservationForm.facilityId = facilityId;
+      this.reservationError = null;
+      this.showReservationModal = true;
+    }
+  }
+
+  closeSuggestionsModal(): void {
+    this.showSuggestionsModal = false;
+    this.suggestedFacilities = null;
   }
 
   validateReservationForm(): boolean {
