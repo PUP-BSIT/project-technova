@@ -28,6 +28,7 @@ export class OrgFacilitiesComponent implements OnInit {
   // Modal state
   showReservationModal = false;
   showSuccessModal = false;
+  successMessage: string = 'Facility reservation submitted successfully!';
   selectedFacility: FacilityDTO | null = null;
   reservationForm = {
     facilityId: null as number | null,
@@ -142,6 +143,8 @@ export class OrgFacilitiesComponent implements OnInit {
       next: (response) => {
         this.reservationLoading = false;
         if (response.success) {
+          // Use the message from the API response (which includes waitlist notification if applicable)
+          this.successMessage = response.message || 'Facility reservation submitted successfully!';
           this.closeReservationModal();
           this.showSuccessModal = true;
           // Refresh facilities list
