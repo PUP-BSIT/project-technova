@@ -88,10 +88,11 @@ export class ReservationRequestComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         if (response.success) {
-          this.success = 'Reservation request submitted successfully!';
+          // Use the message from the API response (which includes waitlist notification if applicable)
+          this.success = response.message || 'Reservation request submitted successfully!';
           setTimeout(() => {
             this.router.navigate(['/student/my-reservations']);
-          }, 2000);
+          }, response.data?.status?.toLowerCase() === 'waitlisted' ? 4000 : 2000);
         }
       },
       error: (err) => {
