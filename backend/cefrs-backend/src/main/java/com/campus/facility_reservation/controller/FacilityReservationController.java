@@ -59,17 +59,39 @@ public class FacilityReservationController {
     public ResponseEntity<ApiResponse<FacilityReservationDTO>> createReservationForMe(
             Authentication authentication,
             @RequestBody FacilityReservationRequestDTO request) {
-        Long userId = (Long) authentication.getPrincipal();
-        FacilityReservationDTO reservation = reservationService.createReservation(userId, request);
-        return ResponseEntity.ok(ApiResponse.success("Reservation created successfully", reservation));
+        try {
+            Long userId = (Long) authentication.getPrincipal();
+            FacilityReservationDTO reservation = reservationService.createReservation(userId, request);
+            
+            // Return appropriate message based on reservation status
+            String message = "WAITLISTED".equalsIgnoreCase(reservation.getStatus())
+                ? "Your reservation has been added to the waiting list because there is already a pending reservation for this time slot. You will be notified if a slot becomes available."
+                : "Reservation request submitted successfully!";
+            
+            return ResponseEntity.ok(ApiResponse.success(message, reservation));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     @PostMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<FacilityReservationDTO>> createReservation(
             @PathVariable Long userId,
             @RequestBody FacilityReservationRequestDTO request) {
-        FacilityReservationDTO reservation = reservationService.createReservation(userId, request);
-        return ResponseEntity.ok(ApiResponse.success("Reservation created successfully", reservation));
+        try {
+            FacilityReservationDTO reservation = reservationService.createReservation(userId, request);
+            
+            // Return appropriate message based on reservation status
+            String message = "WAITLISTED".equalsIgnoreCase(reservation.getStatus())
+                ? "Your reservation has been added to the waiting list because there is already a pending reservation for this time slot. You will be notified if a slot becomes available."
+                : "Reservation created successfully";
+            
+            return ResponseEntity.ok(ApiResponse.success(message, reservation));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/status")

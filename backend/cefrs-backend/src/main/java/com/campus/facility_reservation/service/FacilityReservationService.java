@@ -84,6 +84,20 @@ public class FacilityReservationService {
         LocalTime startTime = startDateTime.toLocalTime();
         LocalTime endTime = endDateTime.toLocalTime();
 
+        // Check for APPROVED conflicts (already confirmed reservations) - these block new reservations entirely
+        List<FacilityReservation> approvedConflicts = reservationRepository.findConflictingReservations(
+                facility.getId(), date, startTime, endTime
+        );
+        
+        if (!approvedConflicts.isEmpty()) {
+            throw new RuntimeException("This time slot is already reserved and confirmed. Please select a different date or time.");
+        }
+        
+        // Check for PENDING conflicts (reservations awaiting admin approval) - these put new reservations on waitlist
+        List<FacilityReservation> pendingConflicts = reservationRepository.findOverlappingByStatusOrderByCreatedAtAsc(
+                facility.getId(), date, startTime, endTime, ReservationStatus.PENDING
+        );
+        
         FacilityReservation reservation = new FacilityReservation();
         reservation.setUser(user);
         reservation.setFacility(facility);
@@ -91,12 +105,10 @@ public class FacilityReservationService {
         reservation.setStartTime(startTime);
         reservation.setEndTime(endTime);
         reservation.setPurpose(request.getPurpose());
-
-        // If there is already an APPROVED reservation for this slot, place new reservation on the waiting list
-        List<FacilityReservation> approvedConflicts = reservationRepository.findConflictingReservations(
-                facility.getId(), date, startTime, endTime
-        );
-        if (!approvedConflicts.isEmpty()) {
+        
+        // If there are PENDING conflicts, place new reservation on the waiting list
+        // Otherwise, set as PENDING for admin review
+        if (!pendingConflicts.isEmpty()) {
             reservation.setStatus(ReservationStatus.WAITLISTED);
         } else {
             reservation.setStatus(ReservationStatus.PENDING);
@@ -161,6 +173,12 @@ public class FacilityReservationService {
                 && (status == ReservationStatus.CANCELLED
                 || status == ReservationStatus.REJECTED
                 || status == ReservationStatus.COMPLETED)) {
+            promoteNextFromWaitlist(reservation);
+        }
+        
+        // If a PENDING reservation is REJECTED, promote the next WAITLISTED reservation
+        // because rejecting a pending reservation frees up the slot for waitlisted ones
+        if (oldStatus == ReservationStatus.PENDING && status == ReservationStatus.REJECTED) {
             promoteNextFromWaitlist(reservation);
         }
 
