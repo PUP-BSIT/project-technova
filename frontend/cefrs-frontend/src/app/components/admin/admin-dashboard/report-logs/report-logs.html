@@ -1,10 +1,47 @@
 <div class="view-container">
   <div class="header-section">
     <h1 class="page-title">Reports and Logs</h1>
-    <button class="refresh-button" (click)="refreshData()" [disabled]="isLoading()">
-      <span class="refresh-icon">↻</span>
-      Refresh
-    </button>
+    <div class="header-actions">
+      <button class="refresh-button" (click)="refreshData()" [disabled]="isLoading()">
+        <span class="refresh-icon">↻</span>
+        Refresh
+      </button>
+
+      <!-- Export Button with Dropdown -->
+      <div class="export-dropdown-container">
+        <button class="export-button" (click)="toggleExportDropdown()" [disabled]="isLoading()">
+          <span class="export-icon">📊</span>
+          Export Report
+          <span class="dropdown-arrow">▼</span>
+        </button>
+
+        @if (showExportDropdown) {
+          <div class="export-dropdown">
+            <button class="export-option" (click)="exportReport('excel')">
+              <span class="option-icon">📗</span>
+              <div class="option-details">
+                <span class="option-title">Export to Excel</span>
+                <span class="option-desc">Download as .xlsx file</span>
+              </div>
+            </button>
+            <button class="export-option" (click)="exportReport('csv')">
+              <span class="option-icon">📄</span>
+              <div class="option-details">
+                <span class="option-title">Export to CSV</span>
+                <span class="option-desc">Download as .csv file</span>
+              </div>
+            </button>
+            <button class="export-option" (click)="exportReport('pdf')">
+              <span class="option-icon">📕</span>
+              <div class="option-details">
+                <span class="option-title">Export to PDF</span>
+                <span class="option-desc">Download as .pdf file</span>
+              </div>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
   </div>
 
   <!-- Tab Navigation -->
@@ -136,7 +173,6 @@
               <canvas #equipmentPieCanvas></canvas>
             </div>
           </div>
-
 
           <!-- Borrowing Trends Bar Chart -->
           <div class="chart-container half-width">

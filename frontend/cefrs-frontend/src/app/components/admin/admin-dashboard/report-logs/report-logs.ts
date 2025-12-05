@@ -10,6 +10,7 @@ import {
   EquipmentReport,
   UserActivityReport
 } from '../../../../services/report.service';
+import { ExportService, ExportData } from '../../../../services/export.service';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -57,7 +58,7 @@ interface UserActivity {
   styleUrls: ['./report-logs.scss'],
   standalone: true,
   imports: [CommonModule, HttpClientModule],
-  providers: [ReportService]
+  providers: [ReportService, ExportService]
 })
 export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('bookingTrendsCanvas') bookingTrendsCanvas?: ElementRef<HTMLCanvasElement>;
@@ -74,6 +75,9 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
 
   activeTab: 'facility' | 'equipment' | 'user' = 'facility';
   private destroy$ = new Subject<void>();
+
+  // Export dropdown state
+  showExportDropdown = false;
 
   // Loading states
   isLoadingFacility = true;
@@ -107,7 +111,10 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     organizations: 0
   };
 
-  constructor(private reportService: ReportService) { }
+  constructor(
+    private reportService: ReportService,
+    private exportService: ExportService
+  ) { }
 
   ngOnInit(): void {
     this.loadDashboardStats();
@@ -523,6 +530,87 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     });
+  }
+
+  /* Toggle export dropdown */
+  toggleExportDropdown(): void {
+    this.showExportDropdown = !this.showExportDropdown;
+  }
+
+  /* Export current tab data */
+  exportReport(format: 'excel' | 'csv' | 'pdf'): void {
+    const exportData = this.prepareExportData();
+    const filename = `${exportData.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}`;
+
+    switch (format) {
+      case 'excel':
+        this.exportService.exportToExcel(exportData, filename);
+        break;
+      case 'csv':
+        this.exportService.exportToCSV(exportData, filename);
+        break;
+      case 'pdf':
+        this.exportService.exportToPDF(exportData, filename);
+        break;
+    }
+
+    this.showExportDropdown = false;
+  }
+
+  /* Prepare data for export based on active tab */
+  private prepareExportData(): ExportData {
+    switch (this.activeTab) {
+      case 'facility':
+        return {
+          title: 'Facility Usage Report',
+          headers: ['Rank', 'Facility Name', 'Total Bookings', 'Occupancy Rate', 'Status'],
+          data: this.topFacilities.map(f => [
+            f.rank,
+            f.name,
+            f.totalBookings,
+            `${f.occupancyRate}%`,
+            f.status === 'high-demand' ? 'High Demand' : 'Available'
+          ]),
+          stats: this.facilityStats
+        };
+
+      case 'equipment':
+        return {
+          title: 'Equipment Usage Report',
+          headers: ['Rank', 'Equipment Name', 'Times Borrowed', 'Available', 'Total', 'Status'],
+          data: this.topEquipment.map(e => [
+            e.rank,
+            e.name,
+            e.timesBorrowed,
+            e.available,
+            e.total,
+            e.status === 'low-stock' ? 'Low Stock' :
+              e.status === 'available' ? 'Available' : 'Unavailable'
+          ]),
+          stats: this.equipmentStats
+        };
+
+      case 'user':
+        return {
+          title: 'User Activity Report',
+          headers: ['Rank', 'User/Organization', 'Type', 'Total Activities', 'Last Active'],
+          data: this.topUsers.map(u => [
+            u.rank,
+            u.name,
+            u.type,
+            u.totalActivities,
+            u.lastActive
+          ]),
+          stats: this.userStats
+        };
+
+      default:
+        return {
+          title: 'Report',
+          headers: [],
+          data: []
+        };
+    }
   }
 
   /* Refresh data for the current tab */
