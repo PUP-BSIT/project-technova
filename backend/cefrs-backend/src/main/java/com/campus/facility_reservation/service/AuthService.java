@@ -113,12 +113,15 @@ public class AuthService {
 
         // Login user (assuming AuthRequest or separate DTO is used here)
         public AuthResponse login(String email, String password) {
-                // Try to find user by email first, then by student ID
-                Optional<User> userOptional = userRepository.findByEmail(email);
+                // Trim the input to handle whitespace issues
+                String trimmedInput = email != null ? email.trim() : "";
                 
-                // If not found by email, try to find by student ID
+                // Try to find user by email first, then by student ID (case-insensitive)
+                Optional<User> userOptional = userRepository.findByEmail(trimmedInput);
+                
+                // If not found by email, try to find by student ID (case-insensitive and trimmed)
                 if (userOptional.isEmpty()) {
-                        userOptional = userRepository.findByStudentId(email);
+                        userOptional = userRepository.findByStudentIdIgnoreCase(trimmedInput);
                 }
 
                 // Check if user is registered
