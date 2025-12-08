@@ -84,6 +84,11 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
   isLoadingEquipment = true;
   isLoadingUser = true;
 
+  // Data loaded flags
+  private facilityDataLoaded = false;
+  private equipmentDataLoaded = false;
+  private userDataLoaded = false;
+
   // Dashboard Stats
   dashboardStats: DashboardStats | null = null;
 
@@ -118,11 +123,13 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.loadDashboardStats();
-    this.loadTabData(this.activeTab);
   }
 
   ngAfterViewInit(): void {
-    // Charts will be created after data is loaded
+    // Load data after view is initialized to ensure canvas elements are available
+    setTimeout(() => {
+      this.loadTabData(this.activeTab);
+    }, 0);
   }
 
   ngOnDestroy(): void {
@@ -168,25 +175,40 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
   /* Switch between tabs */
   setActiveTab(tab: 'facility' | 'equipment' | 'user'): void {
     this.activeTab = tab;
-    this.loadTabData(tab);
+    // Use setTimeout to ensure view updates before recreating charts
+    setTimeout(() => {
+      this.loadTabData(tab);
+    }, 0);
   }
 
   /* Load data for the specified tab */
   private loadTabData(tab: 'facility' | 'equipment' | 'user'): void {
     switch (tab) {
       case 'facility':
-        if (this.topFacilities.length === 0) {
+        if (!this.facilityDataLoaded) {
           this.loadFacilityData();
+        } else {
+          // Recreate chart if data is already loaded
+          setTimeout(() => this.createBookingTrendsChart(), 150);
         }
         break;
       case 'equipment':
-        if (this.topEquipment.length === 0) {
+        if (!this.equipmentDataLoaded) {
           this.loadEquipmentData();
+        } else {
+          // Recreate charts if data is already loaded
+          setTimeout(() => {
+            this.createBorrowingTrendsChart();
+            this.createEquipmentPieChart();
+          }, 150);
         }
         break;
       case 'user':
-        if (this.topUsers.length === 0) {
+        if (!this.userDataLoaded) {
           this.loadUserData();
+        } else {
+          // Recreate chart if data is already loaded
+          setTimeout(() => this.createUserPieChart(), 150);
         }
         break;
     }
@@ -221,10 +243,11 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             ];
           }
 
+          this.facilityDataLoaded = true;
           this.isLoadingFacility = false;
 
-          // Create chart after data is loaded
-          setTimeout(() => this.createBookingTrendsChart(), 100);
+          // Create chart after data is loaded with longer delay
+          setTimeout(() => this.createBookingTrendsChart(), 150);
         },
         error: (error) => {
           console.error('Error loading facility data:', error);
@@ -273,13 +296,14 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             ];
           }
 
+          this.equipmentDataLoaded = true;
           this.isLoadingEquipment = false;
 
-          // Create charts after data is loaded
+          // Create charts after data is loaded with longer delay
           setTimeout(() => {
             this.createBorrowingTrendsChart();
             this.createEquipmentPieChart();
-          }, 100);
+          }, 150);
         },
         error: (error) => {
           console.error('Error loading equipment data:', error);
@@ -328,10 +352,11 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             ];
           }
 
+          this.userDataLoaded = true;
           this.isLoadingUser = false;
 
-          // Create chart after data is loaded
-          setTimeout(() => this.createUserPieChart(), 100);
+          // Create chart after data is loaded with longer delay
+          setTimeout(() => this.createUserPieChart(), 150);
         },
         error: (error) => {
           console.error('Error loading user data:', error);
@@ -347,6 +372,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.bookingTrendsCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    // Destroy existing chart before creating new one
     if (this.bookingTrendsChart) {
       this.bookingTrendsChart.destroy();
     }
@@ -400,6 +426,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.borrowingTrendsCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    // Destroy existing chart before creating new one
     if (this.borrowingTrendsChart) {
       this.borrowingTrendsChart.destroy();
     }
@@ -446,6 +473,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.equipmentPieCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    // Destroy existing chart before creating new one
     if (this.equipmentPieChart) {
       this.equipmentPieChart.destroy();
     }
@@ -493,6 +521,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.userPieCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    // Destroy existing chart before creating new one
     if (this.userPieChart) {
       this.userPieChart.destroy();
     }
@@ -615,18 +644,26 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
 
   /* Refresh data for the current tab */
   refreshData(): void {
+    // Show a subtle notification or console log
+    console.log(`Refreshing ${this.activeTab} data...`);
+
+    // Only reload dashboard stats (shared across all tabs)
     this.loadDashboardStats();
 
+    // Only refresh the CURRENT tab's data, not all tabs
     switch (this.activeTab) {
       case 'facility':
+        this.facilityDataLoaded = false;
         this.topFacilities = [];
         this.loadFacilityData();
         break;
       case 'equipment':
+        this.equipmentDataLoaded = false;
         this.topEquipment = [];
         this.loadEquipmentData();
         break;
       case 'user':
+        this.userDataLoaded = false;
         this.topUsers = [];
         this.loadUserData();
         break;
