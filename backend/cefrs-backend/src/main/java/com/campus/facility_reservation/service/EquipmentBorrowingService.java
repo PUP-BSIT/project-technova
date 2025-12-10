@@ -80,6 +80,11 @@ public class EquipmentBorrowingService {
             throw new RuntimeException("Not enough equipment available for the requested date range");
         }
         
+        // Check for PENDING conflicts (borrowings awaiting admin approval) - these put new borrowings on waitlist
+        List<EquipmentBorrowing> pendingConflicts = borrowingRepository.findOverlappingByStatusOrderByCreatedAtAsc(
+                equipment, borrowDate, returnDate, BorrowingStatus.PENDING
+        );
+        
         EquipmentBorrowing borrowing = new EquipmentBorrowing();
         borrowing.setUser(user);
         borrowing.setEquipment(equipment);
@@ -87,7 +92,14 @@ public class EquipmentBorrowingService {
         borrowing.setBorrowDate(borrowDate);
         borrowing.setExpectedReturnDate(returnDate);
         borrowing.setPurpose(request.getPurpose());
-        borrowing.setStatus(BorrowingStatus.PENDING);
+        
+        // If there are PENDING conflicts, place new borrowing on the waiting list
+        // Otherwise, set as PENDING for admin review
+        if (!pendingConflicts.isEmpty()) {
+            borrowing.setStatus(BorrowingStatus.WAITLISTED);
+        } else {
+            borrowing.setStatus(BorrowingStatus.PENDING);
+        }
         
         EquipmentBorrowing saved = borrowingRepository.save(borrowing);
         
@@ -115,6 +127,17 @@ public class EquipmentBorrowingService {
             // overlapping does NOT include this borrowing (it hasn't been approved yet), so check capacity
             if (alreadyReserved + borrowing.getQuantity() > equipment.getQuantityTotal()) {
                 throw new RuntimeException("Not enough equipment available to approve this request for the selected dates");
+            }
+
+            // Move any overlapping PENDING borrowings into the waiting list for this slot
+            List<EquipmentBorrowing> pendingOverlaps = borrowingRepository.findOverlappingByStatusOrderByCreatedAtAsc(
+                    equipment, borrowing.getBorrowDate(), borrowing.getExpectedReturnDate(), BorrowingStatus.PENDING
+            );
+            for (EquipmentBorrowing other : pendingOverlaps) {
+                if (!other.getId().equals(borrowing.getId())) {
+                    other.setStatus(BorrowingStatus.WAITLISTED);
+                    borrowingRepository.save(other);
+                }
             }
         }
 
@@ -157,6 +180,20 @@ public class EquipmentBorrowingService {
         }
         
         EquipmentBorrowing updated = borrowingRepository.save(borrowing);
+
+        // If this borrowing was APPROVED before and is now being changed to a non-APPROVED
+        // terminal state, promote the next WAITLISTED borrowing (if any) for this slot.
+        if (oldStatus == BorrowingStatus.APPROVED
+                && (status == BorrowingStatus.REJECTED
+                || status == BorrowingStatus.RETURNED)) {
+            promoteNextFromWaitlist(borrowing);
+        }
+        
+        // If a PENDING borrowing is REJECTED, promote the next WAITLISTED borrowing
+        // because rejecting a pending borrowing frees up the slot for waitlisted ones
+        if (oldStatus == BorrowingStatus.PENDING && status == BorrowingStatus.REJECTED) {
+            promoteNextFromWaitlist(borrowing);
+        }
         
         // Send notification
         notificationService.createBorrowingStatusNotification(borrowing.getUser(), updated);
@@ -174,8 +211,8 @@ public class EquipmentBorrowingService {
         }
 
         // Only allow marking returned if it was approved/borrowed
-        BorrowingStatus status = borrowing.getStatus();
-        if (status != BorrowingStatus.APPROVED && status != BorrowingStatus.BORROWED && status != BorrowingStatus.OVERDUE) {
+        BorrowingStatus oldStatus = borrowing.getStatus();
+        if (oldStatus != BorrowingStatus.APPROVED && oldStatus != BorrowingStatus.BORROWED && oldStatus != BorrowingStatus.OVERDUE) {
             throw new RuntimeException("Borrowing cannot be marked as returned in its current status");
         }
 
@@ -189,10 +226,38 @@ public class EquipmentBorrowingService {
 
         EquipmentBorrowing updated = borrowingRepository.save(borrowing);
 
+        // When a borrowing is returned (was BORROWED or OVERDUE), free the slot for the next in the waiting list
+        if (oldStatus == BorrowingStatus.BORROWED || oldStatus == BorrowingStatus.OVERDUE) {
+            promoteNextFromWaitlist(borrowing);
+        }
+
         // Send notification
         notificationService.createBorrowingStatusNotification(borrowing.getUser(), updated);
 
         return convertToDTO(updated);
+    }
+
+    /**
+     * Promote the next WAITLISTED borrowing (if any) that overlaps the given borrowing's
+     * equipment and date range. The promoted borrowing is moved back to PENDING so
+     * that an admin can review and approve it explicitly.
+     */
+    private void promoteNextFromWaitlist(EquipmentBorrowing releasedBorrowing) {
+        List<EquipmentBorrowing> waitlisted = borrowingRepository.findOverlappingByStatusOrderByCreatedAtAsc(
+                releasedBorrowing.getEquipment(),
+                releasedBorrowing.getBorrowDate(),
+                releasedBorrowing.getExpectedReturnDate(),
+                BorrowingStatus.WAITLISTED
+        );
+
+        if (!waitlisted.isEmpty()) {
+            EquipmentBorrowing next = waitlisted.get(0);
+            next.setStatus(BorrowingStatus.PENDING);
+            // Clear any previous admin decision metadata just in case
+            next.setApprovedBy(null);
+            next.setApprovedAt(null);
+            borrowingRepository.save(next);
+        }
     }
     
     private EquipmentBorrowingDTO convertToDTO(EquipmentBorrowing borrowing) {

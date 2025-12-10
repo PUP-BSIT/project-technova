@@ -42,7 +42,7 @@ public class EquipmentBorrowing {
     private String purpose;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private BorrowingStatus status = BorrowingStatus.PENDING;
     
     @Column(name = "admin_notes", columnDefinition = "TEXT")
@@ -73,6 +73,6 @@ public class EquipmentBorrowing {
     }
     
     public enum BorrowingStatus {
-        PENDING, APPROVED, BORROWED, RETURNED, REJECTED, OVERDUE
+        PENDING, APPROVED, BORROWED, RETURNED, REJECTED, OVERDUE, WAITLISTED
     }
 }

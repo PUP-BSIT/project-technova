@@ -63,6 +63,18 @@ public interface EquipmentBorrowingRepository extends JpaRepository<EquipmentBor
                                                           @Param("startDate") java.time.LocalDate startDate,
                                                           @Param("endDate") java.time.LocalDate endDate);
 
+       // Find overlapping borrowings by status, ordered by creation date (for waitlist management)
+       @Query("SELECT eb FROM EquipmentBorrowing eb " +
+                     "WHERE eb.equipment = :equipment " +
+                     "AND eb.status = :status " +
+                     "AND NOT (eb.expectedReturnDate < :borrowDate OR eb.borrowDate > :expectedReturnDate) " +
+                     "ORDER BY eb.createdAt ASC")
+       List<EquipmentBorrowing> findOverlappingByStatusOrderByCreatedAtAsc(
+                     @Param("equipment") Equipment equipment,
+                     @Param("borrowDate") java.time.LocalDate borrowDate,
+                     @Param("expectedReturnDate") java.time.LocalDate expectedReturnDate,
+                     @Param("status") BorrowingStatus status);
+
        // For Reports Generation
 
        // Total borrowings count
