@@ -68,6 +68,28 @@ export interface UserActivityReport {
   lastActivity: string;
 }
 
+// Audit Log Interfaces
+export interface AuditLog {
+  id: number;
+  timestamp: string;
+  user: string;
+  action: string;
+  module: string;
+  details: string;
+  status: 'success' | 'failed' | 'warning';
+}
+
+export interface StatCard {
+  label: string;
+  value: string | number;
+}
+
+export interface AuditReport {
+  stats: StatCard[];
+  logs: AuditLog[];
+  totalLogs: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -138,5 +160,13 @@ export class ReportService {
     return this.http.get<UserActivityReport[]>(`${this.apiUrl}/users`, {
       headers: this.getHeaders()
     });
+  }
+
+  //  Get audit logs report
+  getAuditReport(page: number = 1, pageSize: number = 10): Observable<AuditReport> {
+    return this.http.get<AuditReport>(
+      `${this.apiUrl}/audit-logs?page=${page}&pageSize=${pageSize}`,
+      { headers: this.getHeaders() }
+    );
   }
 }
