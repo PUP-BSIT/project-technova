@@ -15,6 +15,7 @@ import com.campus.facility_reservation.dto.ChangePasswordRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.campus.facility_reservation.annotation.Audited;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -34,6 +35,7 @@ public class AuthService {
         private JwtTokenProvider jwtTokenProvider;
 
         // Register new user
+        @Audited(action = "REGISTER", table = "users", description = "New user registration")
         public AuthResponse register(RegisterRequest request) {
                 if (userRepository.existsByEmail(request.getEmail())) {
                         throw new RuntimeException("Email already registered");
@@ -112,14 +114,16 @@ public class AuthService {
         }
 
         // Login user (assuming AuthRequest or separate DTO is used here)
+        @Audited(action = "LOGIN", table = "users", description = "User login")
         public AuthResponse login(String email, String password) {
                 // Trim the input to handle whitespace issues
                 String trimmedInput = email != null ? email.trim() : "";
-                
+
                 // Try to find user by email first, then by student ID (case-insensitive)
                 Optional<User> userOptional = userRepository.findByEmail(trimmedInput);
-                
-                // If not found by email, try to find by student ID (case-insensitive and trimmed)
+
+                // If not found by email, try to find by student ID (case-insensitive and
+                // trimmed)
                 if (userOptional.isEmpty()) {
                         userOptional = userRepository.findByStudentIdIgnoreCase(trimmedInput);
                 }
@@ -182,6 +186,7 @@ public class AuthService {
         }
 
         // Update user profile
+        @Audited(action = "UPDATE", table = "users", description = "Profile update")
         public UserResponse updateUserProfile(Long userId, UpdateProfileRequest request) {
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -197,6 +202,7 @@ public class AuthService {
         }
 
         // Change user password
+        @Audited(action = "UPDATE", table = "users", description = "Password change")
         public void changePassword(Long userId, ChangePasswordRequestDTO request) {
                 // Find the user
                 User user = userRepository.findById(userId)

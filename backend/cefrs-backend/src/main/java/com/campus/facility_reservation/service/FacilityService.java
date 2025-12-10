@@ -8,6 +8,7 @@ import com.campus.facility_reservation.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.campus.facility_reservation.annotation.Audited;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,8 @@ public class FacilityService {
                 .collect(Collectors.toList());
     }
 
-   @Transactional
+    @Audited(action = "CREATE", table = "facility")
+    @Transactional
     public FacilityDTO createFacility(FacilityDTO facilityDTO) {
         Facility facility = new Facility();
         facility.setName(facilityDTO.getName());
@@ -71,6 +73,7 @@ public class FacilityService {
         return convertToDTO(saved);
     }
 
+    @Audited(action = "UPDATE", table = "facility")
     @Transactional
     public FacilityDTO updateFacility(Long id, FacilityDTO facilityDTO) {
         Facility facility = facilityRepository.findById(id)
@@ -93,6 +96,7 @@ public class FacilityService {
         return convertToDTO(updated);
     }
 
+    @Audited(action = "DELETE", table = "facility")
     @Transactional
     public void deleteFacility(Long id) {
         facilityRepository.deleteById(id);
@@ -100,15 +104,14 @@ public class FacilityService {
 
     private FacilityDTO convertToDTO(Facility facility) {
         return new FacilityDTO(
-            facility.getId(),
-            facility.getName(),
-            facility.getType().name(),
-            facility.getBuilding(),
-            facility.getFloor(),
-            facility.getCapacity(),
-            facility.getDescription(),
-            facility.getImageUrl(),
-            facility.getStatus().name()
-        );
+                facility.getId(),
+                facility.getName(),
+                facility.getType().name(),
+                facility.getBuilding(),
+                facility.getFloor(),
+                facility.getCapacity(),
+                facility.getDescription(),
+                facility.getImageUrl(),
+                facility.getStatus().name());
     }
 }
