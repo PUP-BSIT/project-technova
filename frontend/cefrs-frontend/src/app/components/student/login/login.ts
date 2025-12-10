@@ -157,7 +157,7 @@ export class LoginComponent implements OnInit {
 
   onForgotPassword(event: Event): void {
     event.preventDefault();
-    this.infoMessage = 'Forgot password functionality coming soon!';
+    this.router.navigate(['/forgot-password']);
   }
 
   goToDashboard() {

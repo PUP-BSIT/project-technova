@@ -223,6 +223,7 @@ html {
       font-size: $font-sm;
       font-weight: $font-medium;
       transition: all $transition-base;
+      cursor: pointer;
       
       &:hover {
         text-decoration: underline;
