@@ -13,6 +13,208 @@
 .requests-panel {
   padding: $spacing-lg;
   border-radius: $radius-lg;
+}@import '../student-dashboard.scss';
+
+// Container for the entire requests page
+.requests-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// Fixed header section (header + search controls)
+.fixed-header-section {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: $white;
+  flex-shrink: 0;
+  border-bottom: 1px solid $border-color;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.page-header {
+  padding: $spacing-md $spacing-3xl $spacing-xs;
+  margin-bottom: 0;
+}
+
+.search-controls {
+  padding: $spacing-xs $spacing-3xl $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+// Scrollable content area (requests panel and list)
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.requests-panel {
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+}
+
+.requests-detail-list {
+  padding: 0 $spacing-3xl $spacing-3xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.request-detail-card {
+  background: $bg-yellow;
+  border-radius: $radius-lg;
+  padding: $spacing-2xl;
+  box-shadow: $shadow-md;
+  display: flex;
+  gap: $spacing-xl;
+  align-items: flex-start;
+}
+
+.request-image {
+  width: 300px;
+  height: 300px;
+  flex: 0 0 300px;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $border-light;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.request-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.request-id {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $spacing-xs;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+}
+
+.request-header {
+  margin-bottom: $spacing-xl;
+
+  h3 {
+    font-size: $font-size-2xl;
+    font-weight: 600;
+    color: $text-primary;
+    font-family: $font-family;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    margin: 0;
+  }
+}
+
+.type-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: $white;
+  color: $text-primary;
+  border: 1px solid $border-light;
+  font-family: $font-family;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.request-details {
+  background: $white;
+  padding: $spacing-xl;
+  border-radius: $radius-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.detail-row {
+  font-size: $font-size-base;
+  color: $text-primary;
+  line-height: 1.6;
+  font-family: $font-family;
+
+  strong {
+    font-weight: 600;
+    margin-right: $spacing-sm;
+  }
+}
+
+.request-actions {
+  margin-top: $spacing-md;
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.action-btn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: $font-family;
+}
+
+.return-btn {
+  background: $complete-color;
+  color: $white;
+
+  &:hover {
+    background: darken($complete-color, 10%);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header,
+  .search-controls,
+  .requests-detail-list {
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
+  }
+
+  .requests-detail-list {
+    padding-bottom: $spacing-2xl;
+    gap: $spacing-md;
+  }
+
+  .search-controls {
+    margin-bottom: $spacing-sm;
+  }
+
+  .requests-container {
+    height: calc(100vh - 80px); // Account for hamburger button on mobile
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: $spacing-md $spacing-lg $spacing-xs;
+  }
+
+  .search-controls {
+    padding: $spacing-xs $spacing-lg;
+  }
+
+  .requests-detail-list {
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
+  }
 }
 
 .requests-detail-list {
