@@ -30,6 +30,7 @@ public class FacilityReservationService {
     private final FacilityReservationRepository reservationRepository;
     private final FacilityRepository facilityRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public List<FacilityReservationDTO> getAllReservations() {
         return reservationRepository.findAll().stream()
@@ -172,6 +173,13 @@ public class FacilityReservationService {
         reservation.setApprovedAt(LocalDateTime.now());
 
         FacilityReservation updated = reservationRepository.save(reservation);
+
+        // Send email notification based on status change
+        if (status == ReservationStatus.APPROVED) {
+            emailService.sendFacilityApprovalEmail(updated.getUser(), updated, approval.getAdminNotes());
+        } else if (status == ReservationStatus.REJECTED) {
+            emailService.sendFacilityRejectionEmail(updated.getUser(), updated, approval.getAdminNotes());
+        }
 
         // If this reservation was APPROVED before and is now being changed to a
         // non-APPROVED
