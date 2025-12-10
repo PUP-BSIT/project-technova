@@ -34,6 +34,7 @@ export class Equipment implements OnInit {
   // Modal state
   showEquipmentModal = false;
   showEquipmentSuccessModal = false;
+  successMessage: string = 'Equipment request submitted successfully!';
   selectedEquipment: Equipments | null = null;
   borrowingForm = {
     equipmentId: null as number | null,
@@ -140,6 +141,8 @@ export class Equipment implements OnInit {
       next: (response) => {
         this.borrowingLoading = false;
         if (response.success) {
+          // Use the message from the API response (which includes waitlist notification if applicable)
+          this.successMessage = response.message || 'Equipment request submitted successfully!';
           this.closeEquipmentModal();
           this.showEquipmentSuccessModal = true;
           this.fetchEquipment();
