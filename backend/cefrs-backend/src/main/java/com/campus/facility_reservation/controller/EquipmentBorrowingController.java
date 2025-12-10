@@ -61,8 +61,19 @@ public class EquipmentBorrowingController {
     public ResponseEntity<ApiResponse<EquipmentBorrowingDTO>> createBorrowing(
             @PathVariable Long userId,
             @RequestBody EquipmentBorrowingRequestDTO request) {
-        EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
-        return ResponseEntity.ok(ApiResponse.success("Borrowing request created", borrowing));
+        try {
+            EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
+            
+            // Return appropriate message based on borrowing status
+            String message = "WAITLISTED".equalsIgnoreCase(borrowing.getStatus())
+                ? "Your borrowing request has been added to the waiting list because there is already a pending request for this equipment on the same dates. You will be notified if a slot becomes available."
+                : "Borrowing request created successfully";
+            
+            return ResponseEntity.ok(ApiResponse.success(message, borrowing));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // POST /api/equipment-borrowing (for current user)
@@ -71,9 +82,20 @@ public class EquipmentBorrowingController {
     public ResponseEntity<ApiResponse<EquipmentBorrowingDTO>> createBorrowingForMe(
             Authentication authentication,
             @RequestBody EquipmentBorrowingRequestDTO request) {
-        Long userId = (Long) authentication.getPrincipal();
-        EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
-        return ResponseEntity.ok(ApiResponse.success("Borrowing request created", borrowing));
+        try {
+            Long userId = (Long) authentication.getPrincipal();
+            EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
+            
+            // Return appropriate message based on borrowing status
+            String message = "WAITLISTED".equalsIgnoreCase(borrowing.getStatus())
+                ? "Your borrowing request has been added to the waiting list because there is already a pending request for this equipment on the same dates. You will be notified if a slot becomes available."
+                : "Borrowing request submitted successfully!";
+            
+            return ResponseEntity.ok(ApiResponse.success(message, borrowing));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // PUT /api/equipment-borrowing/{id}/status
