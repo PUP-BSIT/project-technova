@@ -1,5 +1,24 @@
 @import '../student-dashboard.scss';
 
+// Container for the entire equipment page
+.equipment-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// Fixed header section (header + search controls)
+.fixed-header-section {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: $white;
+  flex-shrink: 0;
+  border-bottom: 1px solid $border-color;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .page-header {
   padding: $spacing-md $spacing-3xl $spacing-xs;
   margin-bottom: 0;
@@ -8,6 +27,15 @@
 .search-controls {
   padding: $spacing-xs $spacing-3xl $spacing-sm;
   margin-bottom: $spacing-sm;
+}
+
+// Scrollable content area (equipment grid, loading, no-data messages)
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .equipment-grid {
@@ -149,6 +177,10 @@
 
   .equipment-image {
     height: 220px;
+  }
+
+  .equipment-container {
+    height: calc(100vh - 80px); // Account for hamburger button on mobile
   }
 }
 
