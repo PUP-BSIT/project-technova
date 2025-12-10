@@ -1,38 +1,44 @@
 <div class="facilities-view">
-  <div class="page-header">
-    <h1>Facility Reservations</h1>
-    <p class="page-subtitle">Reserve campus facilities for your events</p>
-  </div>
-  <div class="search-bar">
-    <input type="text" placeholder="Search Facilities" [(ngModel)]="searchQuery" class="search-input">
-  </div>
-
-  @if (isLoadingFacilities) {
-    <div class="loading-message">Loading facilities...</div>
-  }
-
-  <div class="facilities-grid">
-    @for (facility of filteredFacilities; track facility.id) {
-      <div class="facility-card">
-        <div class="facility-image">
-          <img [src]="facility.imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400'" [alt]="facility.name">
-          <span class="facility-badge" [ngClass]="getStatusClass(facility.status)">{{ facility.status }}</span>
-        </div>
-        <div class="facility-content">
-          <h3 class="facility-name">{{ facility.name }}</h3>
-          <p class="facility-description">{{ facility.description }}</p>
-          <div class="facility-capacity">Capacity: {{ facility.capacity }} People</div>
-          <button 
-            class="request-btn" 
-            [disabled]="facility.status !== 'AVAILABLE'"
-            (click)="requestFacility(facility.id)">
-            @if (facility.status !== 'AVAILABLE') { Not Available } @else { Request Facility }
-          </button>
-        </div>
+  <div class="facilities-container">
+    <div class="fixed-header-section">
+      <div class="page-header">
+        <h1>Facility Reservations</h1>
+        <p class="page-subtitle">Reserve campus facilities for your events</p>
       </div>
-    } @empty {
-      <div class="no-data-message">No facilities found matching your search.</div>
-    }
+      <div class="search-bar">
+        <input type="text" placeholder="Search Facilities" [(ngModel)]="searchQuery" class="search-input">
+      </div>
+    </div>
+
+    <div class="scrollable-content">
+      @if (isLoadingFacilities) {
+        <div class="loading-message">Loading facilities...</div>
+      }
+
+      <div class="facilities-grid">
+        @for (facility of filteredFacilities; track facility.id) {
+          <div class="facility-card">
+            <div class="facility-image">
+              <img [src]="facility.imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400'" [alt]="facility.name">
+              <span class="facility-badge" [ngClass]="getStatusClass(facility.status)">{{ facility.status }}</span>
+            </div>
+            <div class="facility-content">
+              <h3 class="facility-name">{{ facility.name }}</h3>
+              <p class="facility-description">{{ facility.description }}</p>
+              <div class="facility-capacity">Capacity: {{ facility.capacity }} People</div>
+              <button 
+                class="request-btn" 
+                [disabled]="facility.status !== 'AVAILABLE'"
+                (click)="requestFacility(facility.id)">
+                @if (facility.status !== 'AVAILABLE') { Not Available } @else { Request Facility }
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <div class="no-data-message">No facilities found matching your search.</div>
+        }
+      </div>
+    </div>
   </div>
 </div>
 
