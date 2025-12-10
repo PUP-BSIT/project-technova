@@ -8,7 +8,9 @@ import {
   DashboardStats,
   FacilityReport,
   EquipmentReport,
-  UserActivityReport
+  UserActivityReport,
+  AuditLog,
+  AuditReport
 } from '../../../../services/report.service';
 import { ExportService, ExportData } from '../../../../services/export.service';
 
@@ -73,7 +75,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
   private equipmentPieChart?: Chart;
   private userPieChart?: Chart;
 
-  activeTab: 'facility' | 'equipment' | 'user' = 'facility';
+  activeTab: 'facility' | 'equipment' | 'user' | 'audit' = 'facility';
   private destroy$ = new Subject<void>();
 
   // Export dropdown state
@@ -83,11 +85,13 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
   isLoadingFacility = true;
   isLoadingEquipment = true;
   isLoadingUser = true;
+  isLoadingAudit = true;
 
   // Data loaded flags
   private facilityDataLoaded = false;
   private equipmentDataLoaded = false;
   private userDataLoaded = false;
+  private auditDataLoaded = false;
 
   // Dashboard Stats
   dashboardStats: DashboardStats | null = null;
@@ -115,6 +119,15 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     students: 0,
     organizations: 0
   };
+
+  // Audit Logs Data
+  auditStats: StatCard[] = [];
+  auditLogs: AuditLog[] = [];
+
+  // Pagination for audit logs
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalAuditLogs = 0;
 
   constructor(
     private reportService: ReportService,
@@ -173,7 +186,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /* Switch between tabs */
-  setActiveTab(tab: 'facility' | 'equipment' | 'user'): void {
+  setActiveTab(tab: 'facility' | 'equipment' | 'user' | 'audit'): void {
     this.activeTab = tab;
     // Use setTimeout to ensure view updates before recreating charts
     setTimeout(() => {
@@ -182,13 +195,12 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /* Load data for the specified tab */
-  private loadTabData(tab: 'facility' | 'equipment' | 'user'): void {
+  private loadTabData(tab: 'facility' | 'equipment' | 'user' | 'audit'): void {
     switch (tab) {
       case 'facility':
         if (!this.facilityDataLoaded) {
           this.loadFacilityData();
         } else {
-          // Recreate chart if data is already loaded
           setTimeout(() => this.createBookingTrendsChart(), 150);
         }
         break;
@@ -196,7 +208,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
         if (!this.equipmentDataLoaded) {
           this.loadEquipmentData();
         } else {
-          // Recreate charts if data is already loaded
           setTimeout(() => {
             this.createBorrowingTrendsChart();
             this.createEquipmentPieChart();
@@ -207,8 +218,12 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
         if (!this.userDataLoaded) {
           this.loadUserData();
         } else {
-          // Recreate chart if data is already loaded
           setTimeout(() => this.createUserPieChart(), 150);
+        }
+        break;
+      case 'audit':
+        if (!this.auditDataLoaded) {
+          this.loadAuditData();
         }
         break;
     }
@@ -246,7 +261,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
           this.facilityDataLoaded = true;
           this.isLoadingFacility = false;
 
-          // Create chart after data is loaded with longer delay
           setTimeout(() => this.createBookingTrendsChart(), 150);
         },
         error: (error) => {
@@ -299,7 +313,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
           this.equipmentDataLoaded = true;
           this.isLoadingEquipment = false;
 
-          // Create charts after data is loaded with longer delay
           setTimeout(() => {
             this.createBorrowingTrendsChart();
             this.createEquipmentPieChart();
@@ -355,14 +368,88 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
           this.userDataLoaded = true;
           this.isLoadingUser = false;
 
-          // Create chart after data is loaded with longer delay
           setTimeout(() => this.createUserPieChart(), 150);
         },
         error: (error) => {
-          console.error('Error loading user data:', error);
+          console.warn('User activity data not available:', error.status, error.statusText);
+          // Set empty data on error
+          this.topUsers = [];
+          this.userDistribution = { students: 0, organizations: 0 };
+          this.userStats = [
+            { label: 'Active Users', value: 0 },
+            { label: 'Today Reservations', value: 0 },
+            { label: 'Today Borrowings', value: 0 },
+            { label: 'Peak Hours', value: 'N/A' }
+          ];
           this.isLoadingUser = false;
         }
       });
+  }
+
+  /* Load audit logs data */
+  private loadAuditData(): void {
+    this.isLoadingAudit = true;
+
+    this.reportService.getAuditReport(this.currentPage, this.itemsPerPage)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (report) => {
+          this.auditLogs = report.logs;
+          this.totalAuditLogs = report.totalLogs;
+          this.auditStats = report.stats;
+
+          this.auditDataLoaded = true;
+          this.isLoadingAudit = false;
+        },
+        error: (error) => {
+          console.warn('Audit logs endpoint not available:', error.status, error.statusText);
+          // Fallback to empty state on error
+          this.auditLogs = [];
+          this.totalAuditLogs = 0;
+          this.auditStats = [
+            { label: 'Total Actions', value: 0 },
+            { label: 'Today', value: 0 },
+            { label: 'Failed Actions', value: 0 },
+            { label: 'Unique Users', value: 0 }
+          ];
+          this.isLoadingAudit = false;
+        }
+      });
+  }
+
+  /* Get paginated audit logs */
+  get paginatedAuditLogs(): AuditLog[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.auditLogs.slice(startIndex, endIndex);
+  }
+
+  /* Get total pages */
+  get totalPages(): number {
+    return Math.ceil(this.totalAuditLogs / this.itemsPerPage);
+  }
+
+  /* Navigate to page */
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      // Reload audit data when page changes
+      if (this.activeTab === 'audit') {
+        this.loadAuditData();
+      }
+    }
+  }
+
+  /* Format timestamp for display */
+  formatTimestamp(timestamp: string): string {
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   /* Create booking trends line chart */
@@ -372,7 +459,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.bookingTrendsCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Destroy existing chart before creating new one
     if (this.bookingTrendsChart) {
       this.bookingTrendsChart.destroy();
     }
@@ -426,7 +512,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.borrowingTrendsCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Destroy existing chart before creating new one
     if (this.borrowingTrendsChart) {
       this.borrowingTrendsChart.destroy();
     }
@@ -473,7 +558,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.equipmentPieCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Destroy existing chart before creating new one
     if (this.equipmentPieChart) {
       this.equipmentPieChart.destroy();
     }
@@ -521,7 +605,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     const ctx = this.userPieCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Destroy existing chart before creating new one
     if (this.userPieChart) {
       this.userPieChart.destroy();
     }
@@ -633,6 +716,21 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
           stats: this.userStats
         };
 
+      case 'audit':
+        return {
+          title: 'Audit Logs Report',
+          headers: ['Timestamp', 'User', 'Action', 'Module', 'Details', 'Status'],
+          data: this.auditLogs.map(log => [
+            this.formatTimestamp(log.timestamp),
+            log.user,
+            log.action,
+            log.module,
+            log.details,
+            log.status.toUpperCase()
+          ]),
+          stats: this.auditStats
+        };
+
       default:
         return {
           title: 'Report',
@@ -644,13 +742,10 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
 
   /* Refresh data for the current tab */
   refreshData(): void {
-    // Show a subtle notification or console log
     console.log(`Refreshing ${this.activeTab} data...`);
 
-    // Only reload dashboard stats (shared across all tabs)
     this.loadDashboardStats();
 
-    // Only refresh the CURRENT tab's data, not all tabs
     switch (this.activeTab) {
       case 'facility':
         this.facilityDataLoaded = false;
@@ -667,6 +762,11 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
         this.topUsers = [];
         this.loadUserData();
         break;
+      case 'audit':
+        this.auditDataLoaded = false;
+        this.auditLogs = [];
+        this.loadAuditData();
+        break;
     }
   }
 
@@ -679,6 +779,8 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
         return this.isLoadingEquipment;
       case 'user':
         return this.isLoadingUser;
+      case 'audit':
+        return this.isLoadingAudit;
       default:
         return false;
     }

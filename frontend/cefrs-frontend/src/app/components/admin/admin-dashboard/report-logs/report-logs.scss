@@ -937,3 +937,162 @@ $font-family: 'Roboto', sans-serif;
     max-height: 100%;
   }
 }
+
+// Type Badge
+.type-badge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e0e7ff;
+  color: #3730a3;
+  white-space: nowrap;
+
+  @include respond-to('mobile-all') {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+}
+
+// Action Badge
+.action-badge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #dbeafe;
+  color: #1e40af;
+  white-space: nowrap;
+
+  @include respond-to('mobile-all') {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+}
+
+// Audit Table Specific Styles
+.audit-table {
+  .timestamp-cell {
+    white-space: nowrap;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+
+    @include respond-to('mobile-all') {
+      font-size: 11px;
+    }
+  }
+
+  .details-cell {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include respond-to('mobile-all') {
+      max-width: 150px;
+    }
+  }
+}
+
+// Status Badge - Additional variants for audit logs
+.status-badge {
+  &.status-success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  &.status-failed {
+    background: #fecaca;
+    color: #991b1b;
+  }
+
+  &.status-warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+}
+
+// Pagination Styles
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid $border-color;
+
+  @include respond-to('mobile-all') {
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+}
+
+.pagination-button {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  font-family: $font-family;
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-primary;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  @include respond-to('mobile-all') {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  &:hover:not(:disabled) {
+    background: $primary-color;
+    color: white;
+    border-color: $primary-color;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+
+  @include respond-to('mobile-all') {
+    gap: 2px;
+  }
+}
+
+.page-number {
+  min-width: 40px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  font-family: $font-family;
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-primary;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  @include respond-to('mobile-all') {
+    min-width: 32px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  &:hover {
+    background: #fafafa;
+  }
+
+  &.active {
+    background: $primary-color;
+    color: white;
+    border-color: $primary-color;
+  }
+}
