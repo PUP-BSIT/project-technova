@@ -40,7 +40,7 @@ public class FacilityReservation {
     private String purpose;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private ReservationStatus status = ReservationStatus.PENDING;
     
     @Column(name = "admin_notes", columnDefinition = "TEXT")
