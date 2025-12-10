@@ -9,6 +9,7 @@ import com.campus.facility_reservation.repository.EquipmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.campus.facility_reservation.annotation.Audited;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +44,7 @@ public class EquipmentService {
                 .collect(Collectors.toList());
     }
 
+    @Audited(action = "CREATE", table = "equipment")
     @Transactional
     public EquipmentDTO createEquipment(EquipmentRequestDTO request) {
         Equipment equipment = new Equipment();
@@ -64,6 +66,7 @@ public class EquipmentService {
         return convertToDTO(saved);
     }
 
+    @Audited(action = "UPDATE", table = "equipment")
     @Transactional
     public EquipmentDTO updateEquipment(Long id, EquipmentRequestDTO request) {
         Equipment equipment = equipmentRepository.findById(id)
@@ -85,6 +88,7 @@ public class EquipmentService {
         return convertToDTO(updated);
     }
 
+    @Audited(action = "DELETE", table = "equipment")
     @Transactional
     public void deleteEquipment(Long id) {
         equipmentRepository.deleteById(id);
