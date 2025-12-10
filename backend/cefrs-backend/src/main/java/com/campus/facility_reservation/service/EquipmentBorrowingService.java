@@ -25,6 +25,7 @@ public class EquipmentBorrowingService {
     private final EquipmentRepository equipmentRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final EmailService emailService;
 
     public List<EquipmentBorrowingDTO> getAllBorrowings() {
         return borrowingRepository.findAll().stream()
@@ -192,6 +193,13 @@ public class EquipmentBorrowingService {
         }
 
         EquipmentBorrowing updated = borrowingRepository.save(borrowing);
+
+        // Send email notification based on status change
+        if (status == BorrowingStatus.APPROVED) {
+            emailService.sendEquipmentApprovalEmail(updated.getUser(), updated, approval.getAdminNotes());
+        } else if (status == BorrowingStatus.REJECTED) {
+            emailService.sendEquipmentRejectionEmail(updated.getUser(), updated, approval.getAdminNotes());
+        }
 
         // If this borrowing was APPROVED before and is now being changed to a
         // non-APPROVED
