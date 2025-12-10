@@ -1,5 +1,24 @@
 @import '../student-dashboard.scss';
 
+// Container for the entire facilities page
+.facilities-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// Fixed header section (header + search bar)
+.fixed-header-section {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: $white;
+  flex-shrink: 0;
+  border-bottom: 1px solid $border-color;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 // Match header placement with Equipment page
 .page-header {
   padding: $spacing-md $spacing-3xl $spacing-xs;
@@ -38,6 +57,15 @@
   &:hover {
     color: $text-primary;
   }
+}
+
+// Scrollable content area (facilities grid, loading, no-data messages)
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .facilities-grid {
@@ -158,6 +186,10 @@
 
   .search-input-wrapper {
     max-width: 100%; // allow full-width on small/mobile screens without overflow
+  }
+
+  .facilities-container {
+    height: calc(100vh - 80px); // Account for hamburger button on mobile
   }
 }
 
