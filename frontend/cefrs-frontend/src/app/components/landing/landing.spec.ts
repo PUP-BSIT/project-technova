@@ -2,22 +2,46 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { LandingComponent } from './landing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 
 describe('LandingComponent', () => {
   let component: LandingComponent;
   let fixture: ComponentFixture<LandingComponent>;
   let router: Router;
+  let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LandingComponent, RouterTestingModule]
+      imports: [LandingComponent, RouterTestingModule, HttpClientTestingModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LandingComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
+
+    // Stub any outgoing API requests the component triggers on init
+    const reqs = httpMock.match(req => req.url.includes('/api/'));
+    reqs.forEach(req => {
+      const url = req.request.url;
+      if (url.includes('/api/equipment/available')) {
+        req.flush([]);
+      } else if (url.includes('/api/facilities/available')) {
+        req.flush([]);
+      } else if (url.includes('/api/user/profile')) {
+        req.flush({ id: null, firstName: '', lastName: '' });
+      } else if (url.includes('/api/reservations/me')) {
+        req.flush([]);
+      } else if (url.includes('/api/equipment-borrowing/me')) {
+        req.flush([]);
+      } else if (url.includes('/api/reports/dashboard')) {
+        req.flush({});
+      } else {
+        req.flush([]);
+      }
+    });
   });
 
   it('should create', () => {
