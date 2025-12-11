@@ -53,7 +53,7 @@ export class MyRequests implements OnInit {
       const borrowings: any[] = borResp?.data || [];
 
       const resMapped = reservations.map(r => ({
-        id: `RES-${r.id}`,
+        id: `FAC-${r.id}`,
         title: r.facilityName || 'Facility Reservation',
         type: 'Facility' as const,
         status: this.prettyStatus(r.status),
@@ -65,7 +65,7 @@ export class MyRequests implements OnInit {
       }));
 
       const borMapped = borrowings.map(b => ({
-        id: `BOR-${b.id}`,
+        id: `EQP-${b.id}`,
         title: b.equipmentName || 'Equipment Borrowing',
         type: 'Equipment' as const,
         status: this.prettyStatus(b.status),
@@ -88,7 +88,7 @@ export class MyRequests implements OnInit {
       reservations.forEach((r: any) => {
         if (r.facilityId) {
           this.facilityService.getFacilityById(r.facilityId).toPromise().then(f => {
-            const idx = this.allRequests.findIndex(it => it.id === `RES-${r.id}`);
+            const idx = this.allRequests.findIndex(it => it.id === `FAC-${r.id}`);
             if (idx !== -1) {
               this.allRequests[idx].imageUrl = f?.imageUrl || '';
             }
@@ -102,7 +102,7 @@ export class MyRequests implements OnInit {
       borrowings.forEach((b: any) => {
         if (b.equipmentId) {
           this.equipmentService.getEquipmentById(b.equipmentId).toPromise().then(e => {
-            const idx = this.allRequests.findIndex(it => it.id === `BOR-${b.id}`);
+            const idx = this.allRequests.findIndex(it => it.id === `EQP-${b.id}`);
             if (idx !== -1) {
               this.allRequests[idx].imageUrl = e?.imageUrl || '';
             }
