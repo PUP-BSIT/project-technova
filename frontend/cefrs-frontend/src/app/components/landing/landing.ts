@@ -152,7 +152,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   goToStudentRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/register'], { queryParams: { role: 'STUDENT' } });
     this.closeMenus();
   }
 
@@ -162,7 +162,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   goToOrgRegister() {
-    this.router.navigate(['/org-register']);
+    this.router.navigate(['/org-register'], { queryParams: { role: 'CAMPUS_ORGANIZATION' } });
     this.closeMenus();
   }
 
