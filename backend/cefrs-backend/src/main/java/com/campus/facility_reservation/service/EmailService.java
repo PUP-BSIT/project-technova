@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -48,7 +49,7 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Facility approval email sent to {} for reservation {}", user.getEmail(), reservation.getId());
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Failed to send facility approval email to {}: {}", user.getEmail(), e.getMessage());
         }
     }
@@ -72,7 +73,7 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Facility rejection email sent to {} for reservation {}", user.getEmail(), reservation.getId());
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Failed to send facility rejection email to {}: {}", user.getEmail(), e.getMessage());
         }
     }
@@ -96,7 +97,7 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Equipment approval email sent to {} for borrowing {}", user.getEmail(), borrowing.getId());
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Failed to send equipment approval email to {}: {}", user.getEmail(), e.getMessage());
         }
     }
@@ -120,7 +121,7 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Equipment rejection email sent to {} for borrowing {}", user.getEmail(), borrowing.getId());
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Failed to send equipment rejection email to {}: {}", user.getEmail(), e.getMessage());
         }
     }
@@ -298,7 +299,8 @@ public class EmailService {
     private String buildEquipmentApprovalHtml(User user, EquipmentBorrowing borrowing, String adminNotes) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
         String borrowDate = borrowing.getBorrowDate().format(formatter);
-        String returnDate = borrowing.getReturnDate().format(formatter);
+        // Use the expected return date since the request is still in approval flow
+        String returnDate = borrowing.getExpectedReturnDate().format(formatter);
 
         return "<!DOCTYPE html>" +
                 "<html lang='en'>" +
@@ -394,7 +396,7 @@ public class EmailService {
     private String buildEquipmentRejectionHtml(User user, EquipmentBorrowing borrowing, String adminNotes) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
         String borrowDate = borrowing.getBorrowDate().format(formatter);
-        String returnDate = borrowing.getReturnDate().format(formatter);
+        String returnDate = borrowing.getExpectedReturnDate().format(formatter);
 
         return "<!DOCTYPE html>" +
                 "<html lang='en'>" +
