@@ -47,7 +47,7 @@ export class OrgMyRequestComponent implements OnInit {
   private mapReservationToRequest(r: any): Request {
     const status = this.prettyStatus(r.status);
     return {
-      id: `RES-${r.id}`,
+      id: `FAC-${r.id}`,
       title: r.facilityName || 'Facility Reservation',
       type: 'Facility',
       status,
@@ -61,7 +61,7 @@ export class OrgMyRequestComponent implements OnInit {
   private mapBorrowingToRequest(b: any): Request {
     const status = this.prettyStatus(b.status);
     return {
-      id: `BOR-${b.id}`,
+      id: `EQP-${b.id}`,
       title: b.equipmentName || 'Equipment Borrowing',
       type: 'Equipment',
       status,
@@ -109,7 +109,7 @@ export class OrgMyRequestComponent implements OnInit {
       reservations.forEach((r: any) => {
         if (r.facilityId) {
           this.facilityService.getFacilityById(r.facilityId).toPromise().then(f => {
-            const idx = this.allRequests.findIndex(it => it.id === `RES-${r.id}`);
+            const idx = this.allRequests.findIndex(it => it.id === `FAC-${r.id}`);
             if (idx !== -1) this.allRequests[idx].imageUrl = f?.imageUrl || '';
           }).catch(() => {});
         }
@@ -118,7 +118,7 @@ export class OrgMyRequestComponent implements OnInit {
       borrowings.forEach((b: any) => {
         if (b.equipmentId) {
           this.equipmentService.getEquipmentById(b.equipmentId).toPromise().then(e => {
-            const idx = this.allRequests.findIndex(it => it.id === `BOR-${b.id}`);
+            const idx = this.allRequests.findIndex(it => it.id === `EQP-${b.id}`);
             if (idx !== -1) this.allRequests[idx].imageUrl = e?.imageUrl || '';
           }).catch(() => {});
         }

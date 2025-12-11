@@ -39,6 +39,9 @@ public class FacilityReservation {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String purpose;
     
+    @Column(name = "request_id", nullable = false, unique = true, length = 50)
+    private String requestId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ReservationStatus status = ReservationStatus.PENDING;
@@ -61,6 +64,10 @@ public class FacilityReservation {
     
     @PrePersist
     protected void onCreate() {
+        if (requestId == null || requestId.isBlank()) {
+            // Generate a readable request code with the FAC prefix
+            requestId = "FAC-" + System.currentTimeMillis();
+        }
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }

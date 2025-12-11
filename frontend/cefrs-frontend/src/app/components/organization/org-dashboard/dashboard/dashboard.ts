@@ -204,7 +204,7 @@ export class Dashboard implements OnInit {
       const borrowings: any[] = borResp?.data || [];
 
       const resMapped = reservations.map(r => ({
-        id: `RES-${r.id}`,
+        id: `FAC-${r.id}`,
         title: r.facilityName || 'Facility Reservation',
         type: 'Facility' as const,
         status: this.prettyStatus(r.status),
@@ -215,7 +215,7 @@ export class Dashboard implements OnInit {
       }));
 
       const borMapped = borrowings.map(b => ({
-        id: `BOR-${b.id}`,
+        id: `EQP-${b.id}`,
         title: b.equipmentName || 'Equipment Borrowing',
         type: 'Equipment' as const,
         status: this.prettyStatus(b.status),
