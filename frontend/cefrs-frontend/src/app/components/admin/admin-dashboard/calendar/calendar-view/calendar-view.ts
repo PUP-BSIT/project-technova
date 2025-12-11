@@ -49,8 +49,8 @@ export class CalendarView implements OnInit, OnDestroy {
   selectedEvent: CalendarEvent | null = null;
   showEventModal = false;
   filterType: 'all' | 'facility' | 'equipment' = 'all';
-  // Changed: Default filter is now 'APPROVED' instead of 'all'
-  filterStatus: 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE' = 'APPROVED';
+  // Show APPROVED and OVERDUE by default
+  filterStatus: 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE' | 'APPROVED_OVERDUE' = 'APPROVED_OVERDUE';
   isLoading = false;
   adminId: number = 0;
 
@@ -109,8 +109,15 @@ export class CalendarView implements OnInit, OnDestroy {
       filteredEvents = filteredEvents.filter(event => event.extendedProps.type === this.filterType);
     }
 
-    // Filter by status
-    if (this.filterStatus !== 'all') {
+    // Filter by status - combined APPROVED + OVERDUE
+    if (this.filterStatus === 'APPROVED_OVERDUE') {
+      // Show both APPROVED and OVERDUE by default
+      filteredEvents = filteredEvents.filter(event =>
+        event.extendedProps.status === 'APPROVED' ||
+        event.extendedProps.status === 'OVERDUE'
+      );
+    } else if (this.filterStatus !== 'all') {
+      // Show specific status
       filteredEvents = filteredEvents.filter(event => event.extendedProps.status === this.filterStatus);
     }
 
@@ -147,7 +154,7 @@ export class CalendarView implements OnInit, OnDestroy {
     this.updateCalendarEvents();
   }
 
-  onFilterStatusChange(status: 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE'): void {
+  onFilterStatusChange(status: 'all' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'BORROWED' | 'RETURNED' | 'OVERDUE' | 'APPROVED_OVERDUE'): void {
     this.filterStatus = status;
     this.updateCalendarEvents();
   }

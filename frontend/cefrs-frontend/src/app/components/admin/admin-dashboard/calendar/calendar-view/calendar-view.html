@@ -18,21 +18,26 @@
     <div class="filter-group">
       <label>Status:</label>
       <select [(ngModel)]="filterStatus" (change)="onFilterStatusChange(filterStatus)" class="filter-select">
-        <option value="APPROVED">Approved (Default)</option>
+        <option value="APPROVED_OVERDUE">Approved + Overdue (Default)</option>
         <option value="all">All Status</option>
+        <option value="APPROVED">Approved Only</option>
+        <option value="OVERDUE">Overdue Only</option>
         <option value="PENDING">Pending</option>
         <option value="REJECTED">Rejected</option>
         <option value="BORROWED">Borrowed</option>
         <option value="RETURNED">Returned</option>
-        <option value="OVERDUE">Overdue</option>
       </select>
     </div>
 
-    <!-- Legend - Updated to highlight Approved as primary -->
+    <!-- Legend - Updated to show Approved + Overdue as default -->
     <div class="legend">
       <span class="legend-item legend-primary">
         <span class="legend-dot" style="background: #10b981;"></span>
-        Approved (Shown by default)
+        Approved
+      </span>
+      <span class="legend-item legend-primary">
+        <span class="legend-dot" style="background: #ef4444;"></span>
+        Overdue ⚠️
       </span>
       <span class="legend-item">
         <span class="legend-dot" style="background: #f59e0b;"></span>
@@ -42,16 +47,10 @@
         <span class="legend-dot" style="background: #3b82f6;"></span>
         Borrowed
       </span>
-      <span class="legend-item">
-        <span class="legend-dot" style="background: #ef4444;"></span>
-        Overdue/Rejected
-      </span>
     </div>
   </div>
 
-  @if (isLoading) {
-    <div class="loading-message">Loading calendar events...</div>
-  }
+  <div class="loading-message" *ngIf="isLoading">Loading calendar events...</div>
 
   <!-- Calendar -->
   <div class="calendar-wrapper">
@@ -59,85 +58,73 @@
   </div>
 
   <!-- Event Details Modal -->
-  @if (showEventModal && selectedEvent) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2>{{ selectedEvent.extendedProps.type === 'facility' ? 'Facility Reservation' : 'Equipment Borrowing' }}</h2>
-          <button class="close-button" (click)="closeModal()">×</button>
+  <div class="modal-overlay" *ngIf="showEventModal && selectedEvent" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ selectedEvent.extendedProps.type === 'facility' ? 'Facility Reservation' : 'Equipment Borrowing' }}</h2>
+        <button class="close-button" (click)="closeModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detail-row">
+          <strong>ID:</strong>
+          <span>{{ selectedEvent.id }}</span>
         </div>
 
-        <div class="modal-body">
-          <div class="detail-row">
-            <strong>ID:</strong>
-            <span>{{ selectedEvent.id }}</span>
-          </div>
-
-          <div class="detail-row">
-            <strong>Title:</strong>
-            <span>{{ selectedEvent.title }}</span>
-          </div>
-
-          <div class="detail-row">
-            <strong>User:</strong>
-            <span>{{ selectedEvent.extendedProps.userName }}</span>
-          </div>
-
-          <div class="detail-row">
-            <strong>Email:</strong>
-            <span>{{ selectedEvent.extendedProps.userEmail }}</span>
-          </div>
-
-          <div class="detail-row">
-            <strong>Start:</strong>
-            <span>{{ selectedEvent.start }}</span>
-          </div>
-
-          @if (selectedEvent.end) {
-            <div class="detail-row">
-              <strong>End:</strong>
-              <span>{{ selectedEvent.end }}</span>
-            </div>
-          }
-
-          @if (selectedEvent.extendedProps.quantity) {
-            <div class="detail-row">
-              <strong>Quantity:</strong>
-              <span>{{ selectedEvent.extendedProps.quantity }} unit(s)</span>
-            </div>
-          }
-
-          @if (selectedEvent.extendedProps.purpose) {
-            <div class="detail-row">
-              <strong>Purpose:</strong>
-              <span>{{ selectedEvent.extendedProps.purpose }}</span>
-            </div>
-          }
-
-          <div class="detail-row">
-            <strong>Status:</strong>
-            <span [class]="'status-badge ' + getStatusBadgeClass(selectedEvent.extendedProps.status)">
-              {{ selectedEvent.extendedProps.status }}
-            </span>
-          </div>
-
-          @if (selectedEvent.extendedProps.adminNotes) {
-            <div class="detail-row">
-              <strong>Admin Notes:</strong>
-              <span>{{ selectedEvent.extendedProps.adminNotes }}</span>
-            </div>
-          }
+        <div class="detail-row">
+          <strong>Title:</strong>
+          <span>{{ selectedEvent.title }}</span>
         </div>
 
-        <div class="modal-footer">
-          @if (selectedEvent.extendedProps.status === 'PENDING') {
-            <button class="btn-approve" (click)="approveEvent()">Approve</button>
-            <button class="btn-reject" (click)="rejectEvent()">Reject</button>
-          }
-          <button class="btn-delete" (click)="deleteEvent()">Delete</button>
-          <button class="btn-cancel" (click)="closeModal()">Close</button>
+        <div class="detail-row">
+          <strong>User:</strong>
+          <span>{{ selectedEvent.extendedProps.userName }}</span>
+        </div>
+
+        <div class="detail-row">
+          <strong>Email:</strong>
+          <span>{{ selectedEvent.extendedProps.userEmail }}</span>
+        </div>
+
+        <div class="detail-row">
+          <strong>Start:</strong>
+          <span>{{ selectedEvent.start }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="selectedEvent.end">
+          <strong>End:</strong>
+          <span>{{ selectedEvent.end }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="selectedEvent.extendedProps.quantity">
+          <strong>Quantity:</strong>
+          <span>{{ selectedEvent.extendedProps.quantity }} unit(s)</span>
+        </div>
+
+        <div class="detail-row" *ngIf="selectedEvent.extendedProps.purpose">
+          <strong>Purpose:</strong>
+          <span>{{ selectedEvent.extendedProps.purpose }}</span>
+        </div>
+
+        <div class="detail-row">
+          <strong>Status:</strong>
+          <span [class]="'status-badge ' + getStatusBadgeClass(selectedEvent.extendedProps.status)">
+            {{ selectedEvent.extendedProps.status }}
+          </span>
+        </div>
+
+        <div class="detail-row" *ngIf="selectedEvent.extendedProps.adminNotes">
+          <strong>Admin Notes:</strong>
+          <span>{{ selectedEvent.extendedProps.adminNotes }}</span>
         </div>
       </div>
+
+      <div class="modal-footer">
+        <button class="btn-approve" *ngIf="selectedEvent.extendedProps.status === 'PENDING'" (click)="approveEvent()">Approve</button>
+        <button class="btn-reject" *ngIf="selectedEvent.extendedProps.status === 'PENDING'" (click)="rejectEvent()">Reject</button>
+        <button class="btn-delete" (click)="deleteEvent()">Delete</button>
+        <button class="btn-cancel" (click)="closeModal()">Close</button>
+      </div>
     </div>
-  }
+  </div>
 </div>
