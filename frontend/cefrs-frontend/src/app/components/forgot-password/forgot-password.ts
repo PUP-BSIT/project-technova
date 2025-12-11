@@ -175,39 +175,31 @@ export class ForgotPassword implements OnInit {
     }
   }
 
-  validatePassword(): boolean {
+  async resetPassword(): Promise<void> {
     this.errorMessage = '';
 
     if (!this.newPassword) {
       this.errorMessage = 'Please enter a new password';
-      return false;
+      return;
     }
 
     if (this.newPassword.length < 8) {
       this.errorMessage = 'Password must be at least 8 characters long';
-      return false;
+      return;
     }
 
     if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(this.newPassword)) {
       this.errorMessage = 'Password must contain uppercase, lowercase, and numbers';
-      return false;
+      return;
     }
 
     if (!this.confirmPassword) {
       this.errorMessage = 'Please confirm your password';
-      return false;
+      return;
     }
 
     if (this.newPassword !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match';
-      return false;
-    }
-
-    return true;
-  }
-
-  async resetPassword(): Promise<void> {
-    if (!this.validatePassword()) {
       return;
     }
 
@@ -245,23 +237,6 @@ export class ForgotPassword implements OnInit {
 
   goToPreviousPage(): void {
     window.history.back();
-  }
-
-  // Password requirement checks
-  hasMinLength(): boolean {
-    return this.newPassword.length >= 8;
-  }
-
-  hasUppercase(): boolean {
-    return /[A-Z]/.test(this.newPassword);
-  }
-
-  hasLowercase(): boolean {
-    return /[a-z]/.test(this.newPassword);
-  }
-
-  hasNumber(): boolean {
-    return /[0-9]/.test(this.newPassword);
   }
 
   // Utility Methods
