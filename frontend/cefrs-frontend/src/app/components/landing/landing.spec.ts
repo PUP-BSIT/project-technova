@@ -63,13 +63,13 @@ describe('LandingComponent', () => {
   it('should navigate to student register when goToStudentRegister is called', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.goToStudentRegister();
-    expect(navigateSpy).toHaveBeenCalledWith(['/register']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/register'], { queryParams: { role: 'STUDENT' } });
   });
 
   it('should navigate to organization register when goToOrgRegister is called', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.goToOrgRegister();
-    expect(navigateSpy).toHaveBeenCalledWith(['/org-register']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/org-register'], { queryParams: { role: 'CAMPUS_ORGANIZATION' } });
   });
 
   it('should render the hero title', () => {
