@@ -61,7 +61,7 @@
         <div class="request-card">
           <div class="request-card-header">
             <div>
-              <span class="request-id">R{{ request.id }}</span>
+              <span class="request-id">{{ formatRequestId(request) }}</span>
               <span [class]="'status-badge ' + getStatusClass(request.status)">
                 {{ request.status | titlecase }}
               </span>
@@ -164,7 +164,7 @@
       <div class="modal-info">
         <div class="info-row">
           <span class="info-label">Request ID:</span>
-          <span class="info-value">R{{ selectedRequest?.id }}</span>
+          <span class="info-value">{{ selectedRequest ? formatRequestId(selectedRequest) : '' }}</span>
         </div>
         <div class="info-row">
           <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
@@ -219,7 +219,7 @@
       <div class="modal-info">
         <div class="info-row">
           <span class="info-label">Request ID:</span>
-          <span class="info-value">R{{ selectedRequest?.id }}</span>
+          <span class="info-value">{{ selectedRequest ? formatRequestId(selectedRequest) : '' }}</span>
         </div>
         <div class="info-row">
           <span class="info-label">{{ selectedRequest?.type === 'facility' ? 'Facility:' : 'Equipment:' }}</span>
