@@ -129,9 +129,11 @@ public class EmailService {
     // ==================== HTML Email Templates ====================
 
     private String buildFacilityApprovalHtml(User user, FacilityReservation reservation, String adminNotes) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy | hh:mm a");
-        String reservationDateTime = reservation.getStartTime().format(formatter) + " - " + 
-                                     reservation.getEndTime().format(formatter);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+        String reservationDateTime = reservation.getReservationDate().format(dateFormatter) + " | " +
+                                     reservation.getStartTime().format(timeFormatter) + " - " +
+                                     reservation.getEndTime().format(timeFormatter);
 
         return "<!DOCTYPE html>" +
                 "<html lang='en'>" +
@@ -215,9 +217,11 @@ public class EmailService {
     }
 
     private String buildFacilityRejectionHtml(User user, FacilityReservation reservation, String adminNotes) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy | hh:mm a");
-        String reservationDateTime = reservation.getStartTime().format(formatter) + " - " + 
-                                     reservation.getEndTime().format(formatter);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+        String reservationDateTime = reservation.getReservationDate().format(dateFormatter) + " | " +
+                                     reservation.getStartTime().format(timeFormatter) + " - " +
+                                     reservation.getEndTime().format(timeFormatter);
 
         return "<!DOCTYPE html>" +
                 "<html lang='en'>" +
