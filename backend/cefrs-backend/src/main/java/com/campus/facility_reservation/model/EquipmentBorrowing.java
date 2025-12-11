@@ -38,6 +38,9 @@ public class EquipmentBorrowing {
     @Column(name = "actual_return_date")
     private LocalDate actualReturnDate;
     
+    @Column(name = "request_id", nullable = false, unique = true, length = 50)
+    private String requestId;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String purpose;
     
@@ -63,6 +66,10 @@ public class EquipmentBorrowing {
     
     @PrePersist
     protected void onCreate() {
+        if (requestId == null || requestId.isBlank()) {
+            // Generate a readable request code with the EQP prefix
+            requestId = "EQP-" + System.currentTimeMillis();
+        }
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
