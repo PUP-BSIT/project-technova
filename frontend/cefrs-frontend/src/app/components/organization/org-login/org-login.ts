@@ -102,7 +102,7 @@ export class OrgLoginComponent {
   }
 
   goToRegister(): void {
-    this.router.navigate(['/org-register']);
+    this.router.navigate(['/org-register'], { queryParams: { role: 'CAMPUS_ORGANIZATION' } });
   }
 
   goToLanding(): void {
