@@ -151,6 +151,7 @@ export class ManageRequest implements OnInit {
         req.name.toLowerCase().includes(query) ||
         req.requester.toLowerCase().includes(query) ||
         req.id.toString().includes(query) ||
+        this.formatRequestId(req).toLowerCase().includes(query) ||
         req.purpose.toLowerCase().includes(query)
       );
     }
@@ -354,6 +355,14 @@ export class ManageRequest implements OnInit {
       'waitlisted': 'status-waitlisted'
     };
     return statusMap[status.toLowerCase()] || 'status-pending';
+  }
+
+  formatRequestId(request: UnifiedRequest): string {
+    if (request.type === 'facility') {
+      return `REQFAC-${String(request.id).padStart(4, '0')}`;
+    } else {
+      return `REQEQP-${String(request.id).padStart(4, '0')}`;
+    }
   }
 
   markRequestReturned(request: UnifiedRequest): void {
