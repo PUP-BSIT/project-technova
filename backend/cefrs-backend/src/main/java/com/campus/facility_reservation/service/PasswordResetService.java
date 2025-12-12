@@ -7,6 +7,7 @@ import com.campus.facility_reservation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class PasswordResetService {
 
     private static final int EXPIRATION_MINUTES = 15;
 
+    @Transactional
     public void createPasswordResetToken(String email) throws Exception {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
@@ -39,6 +41,7 @@ public class PasswordResetService {
         emailService.sendPasswordResetEmail(user, code);
     }
 
+    @Transactional
     public User validateTokenAndGetUser(String token) throws Exception {
         Optional<PasswordResetToken> t = tokenRepository.findByToken(token);
         if (t.isEmpty()) {
@@ -54,6 +57,7 @@ public class PasswordResetService {
         return prt.getUser();
     }
 
+    @Transactional
     public void resetPassword(String token, String newPassword) throws Exception {
         User user = validateTokenAndGetUser(token);
         user.setPassword(passwordEncoder.encode(newPassword));
