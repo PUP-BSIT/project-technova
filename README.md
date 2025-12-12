@@ -38,6 +38,8 @@ These accounts are available to explore the system without registration.
 * **Permissions:** Can **view** resources, submit basic **facility reservations**, and **borrow** equipment.
 
 ### 🏛️ 2. Admin Account
+The administrative interface for this application can be accessed at the following URL:
+[https://www.cefrs.site/admin-login](https://www.cefrs.site/admin-login)
 
 * **Email:** `facultyadmin@gmail.com`
 * **Password:** `Faculty@123`
