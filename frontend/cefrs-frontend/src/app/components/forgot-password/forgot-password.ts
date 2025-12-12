@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-forgot-password',
@@ -38,7 +38,7 @@ export class ForgotPassword implements OnInit {
   // Loading states
   isLoading: boolean = false;
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient, private ngZone: NgZone, private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     // Initialize component
@@ -94,15 +94,24 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      await this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone })
-        .pipe(catchError(err => {
-          return throwError(() => err);
-        }))
-        .toPromise();
-
-      this.currentStep = 2;
-      this.startResendTimer();
+      console.debug('Sending forgot-password request for', this.emailOrPhone);
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).pipe(timeout(10000)));
+      console.debug('Forgot-password response received', resp);
+      this.isLoading = false;
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.currentStep = 2;
+          this.startResendTimer();
+          this.cd.detectChanges();
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Failed to send verification code. Please try again.';
+          this.cd.detectChanges();
+        });
+      }
     } catch (error: any) {
+      console.error('Forgot-password error', error);
       this.errorMessage = error?.error?.message || 'Failed to send verification code. Please try again.';
     } finally {
       this.isLoading = false;
@@ -130,9 +139,22 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      await this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).toPromise();
-      this.startResendTimer();
+      console.debug('Resending forgot-password request for', this.emailOrPhone);
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).pipe(timeout(10000)));
+      console.debug('Resend response received', resp);
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.startResendTimer();
+          this.cd.detectChanges();
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Failed to resend code. Please try again.';
+          this.cd.detectChanges();
+        });
+      }
     } catch (error: any) {
+      console.error('Resend error', error);
       this.errorMessage = error?.error?.message || 'Failed to resend code. Please try again.';
     } finally {
       this.isLoading = false;
@@ -164,9 +186,22 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      await this.http.post<any>('/api/auth/validate-reset-token', { token: this.verificationCode }).toPromise();
-      this.currentStep = 3;
+      console.debug('Validating token', this.verificationCode);
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/validate-reset-token', { token: this.verificationCode }).pipe(timeout(10000)));
+      console.debug('Token validation response', resp);
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.currentStep = 3;
+          this.cd.detectChanges();
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Invalid verification code';
+          this.cd.detectChanges();
+        });
+      }
     } catch (error: any) {
+      console.error('Token validation error', error);
       this.errorMessage = error?.error?.message || 'Invalid verification code';
     } finally {
       this.isLoading = false;
@@ -214,10 +249,18 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      await this.http.post<any>('/api/auth/reset-password', { token: this.verificationCode, newPassword: this.newPassword }).toPromise();
-      this.router.navigate(['/login'], { 
-        queryParams: { passwordReset: 'success' } 
-      });
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/reset-password', { token: this.verificationCode, newPassword: this.newPassword }).pipe(timeout(10000)));
+      console.debug('Reset password response', resp);
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.router.navigate(['/login'], { queryParams: { passwordReset: 'success' } });
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Failed to reset password. Please try again.';
+          this.cd.detectChanges();
+        });
+      }
     } catch (error: any) {
       this.errorMessage = error?.error?.message || 'Failed to reset password. Please try again.';
     } finally {

@@ -79,7 +79,9 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         try {
             passwordResetService.createPasswordResetToken(request.getEmail());
-            return ResponseEntity.ok(new AuthResponse(null, null, "Verification code sent if the email exists."));
+            AuthResponse resp = new AuthResponse(null, null, "Verification code sent if the email exists.");
+            resp.setSuccess(true);
+            return ResponseEntity.ok(resp);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new AuthResponse(null, null, "Failed: " + e.getMessage()));
         }
@@ -89,7 +91,9 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         try {
             passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
-            return ResponseEntity.ok(new AuthResponse(null, null, "Password reset successful."));
+            AuthResponse resp = new AuthResponse(null, null, "Password reset successful.");
+            resp.setSuccess(true);
+            return ResponseEntity.ok(resp);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new AuthResponse(null, null, "Failed: " + e.getMessage()));
         }
@@ -99,7 +103,9 @@ public class AuthController {
     public ResponseEntity<?> validateResetToken(@RequestBody ValidateTokenRequest request) {
         try {
             passwordResetService.validateTokenAndGetUser(request.getToken());
-            return ResponseEntity.ok(new AuthResponse(null, null, "Token valid."));
+            AuthResponse resp = new AuthResponse(null, null, "Token valid.");
+            resp.setSuccess(true);
+            return ResponseEntity.ok(resp);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new AuthResponse(null, null, "Invalid token: " + e.getMessage()));
         }
