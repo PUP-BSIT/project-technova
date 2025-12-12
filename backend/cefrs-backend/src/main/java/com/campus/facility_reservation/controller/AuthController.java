@@ -5,6 +5,10 @@ import com.campus.facility_reservation.dto.AuthResponse;
 import com.campus.facility_reservation.dto.LoginRequest;
 import com.campus.facility_reservation.dto.RefreshTokenRequest;
 import com.campus.facility_reservation.service.AuthService;
+import com.campus.facility_reservation.service.PasswordResetService;
+import com.campus.facility_reservation.dto.ForgotPasswordRequest;
+import com.campus.facility_reservation.dto.ResetPasswordRequest;
+import com.campus.facility_reservation.dto.ValidateTokenRequest;
 import com.campus.facility_reservation.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +25,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
@@ -66,5 +73,35 @@ public class AuthController {
         // This line now correctly uses the injected 'userRepository'
         boolean isAvailable = !userRepository.existsByPhoneNumber(phoneNumber);
         return ResponseEntity.ok(isAvailable);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        try {
+            passwordResetService.createPasswordResetToken(request.getEmail());
+            return ResponseEntity.ok(new AuthResponse(null, null, "Verification code sent if the email exists."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new AuthResponse(null, null, "Failed: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+            return ResponseEntity.ok(new AuthResponse(null, null, "Password reset successful."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new AuthResponse(null, null, "Failed: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/validate-reset-token")
+    public ResponseEntity<?> validateResetToken(@RequestBody ValidateTokenRequest request) {
+        try {
+            passwordResetService.validateTokenAndGetUser(request.getToken());
+            return ResponseEntity.ok(new AuthResponse(null, null, "Token valid."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new AuthResponse(null, null, "Invalid token: " + e.getMessage()));
+        }
     }
 }
