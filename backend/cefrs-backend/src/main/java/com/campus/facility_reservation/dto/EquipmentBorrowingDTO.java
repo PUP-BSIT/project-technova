@@ -11,6 +11,9 @@ public class EquipmentBorrowingDTO {
     private Long id;
     private Long userId;
     private String userName;
+    private String userRole;
+    private String studentId;
+    private String organizationName;
     private Long equipmentId;
     private String equipmentName;
     private Integer quantity;
