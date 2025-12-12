@@ -87,9 +87,6 @@
                 @else if (request.type === 'facility' && (request.status === 'approved' || request.status === 'pending')) {
                   <button class="return-button" (click)="markRequestReturned(request)" [disabled]="actionLoading">Mark Returned</button>
                 }
-                <span class="action-status-label" [ngClass]="getStatusClass(request.status)">
-                  {{ request.status | titlecase }}
-                </span>
               }
             </div>
           </div>
