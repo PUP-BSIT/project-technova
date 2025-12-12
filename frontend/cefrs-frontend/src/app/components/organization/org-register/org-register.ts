@@ -77,7 +77,7 @@ export class OrgRegisterComponent implements OnInit {
       if (roleFromUrl) {
         // Verify the role is correct for organization registration
         if (roleFromUrl === 'CAMPUS_ORGANIZATION' || roleFromUrl === 'ORGANIZATION') {
-          console.log('Successfully set role from URL:', roleFromUrl);
+          
         } else {
           // If wrong role, redirect to role selection
           console.error('Error: Invalid role for organization registration. Redirecting.');
@@ -205,11 +205,11 @@ export class OrgRegisterComponent implements OnInit {
       role: 'CAMPUS_ORGANIZATION'
     };
 
-    console.log('Sending organization registration data:', registerData);
+    
 
     this.authService.register(registerData).subscribe({
       next: (response) => {
-        console.log('Organization registration successful:', response);
+        
         this.isLoading = false;
         this.currentStep = 4; // Move to success step
       },
