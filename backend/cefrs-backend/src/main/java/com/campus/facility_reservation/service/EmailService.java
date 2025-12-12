@@ -482,4 +482,32 @@ public class EmailService {
                 "</body>" +
                 "</html>";
     }
+
+    @Transactional
+    public void sendPasswordResetEmail(User user, String code) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            String subject = "Password Reset Verification Code";
+            String htmlContent = "<!DOCTYPE html>" +
+                    "<html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "<title>Password Reset</title><style>body{font-family:Segoe UI,Segoe,Arial,sans-serif;background:#f5f7fa;} .container{max-width:600px;margin:30px auto;background:#fff;padding:24px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);} .code{display:inline-block;padding:12px 18px;background:#111827;color:#fff;border-radius:6px;font-weight:700;font-size:20px;letter-spacing:4px}</style></head><body>" +
+                    "<div class='container'><h2>Password Reset</h2><p>Hello " + user.getFirstName() + ",</p>" +
+                    "<p>Use the verification code below to reset your password. This code expires in 15 minutes.</p>" +
+                    "<p style='text-align:center'><span class='code'>" + code + "</span></p>" +
+                    "<p>If you did not request this, you can safely ignore this email.</p>" +
+                    "<p>— CEFRS Team</p></div></body></html>";
+
+            helper.setFrom(mailFrom, mailFromName);
+            helper.setTo(user.getEmail());
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("Password reset email sent to {}", user.getEmail());
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            log.error("Failed to send password reset email to {}: {}", user.getEmail(), e.getMessage());
+        }
+    }
 }

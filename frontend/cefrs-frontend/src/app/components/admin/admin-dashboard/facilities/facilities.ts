@@ -83,7 +83,7 @@ export class Facilities implements OnInit, OnDestroy {
             imageUrl: f.imageUrl
           }));
           this.isLoading = false;
-          console.log('Facilities loaded:', this.facilities);
+          
         },
         error: (error) => {
           console.error('Error loading facilities:', error);
@@ -209,7 +209,7 @@ export class Facilities implements OnInit, OnDestroy {
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
         this.photoPreview = compressedBase64;
 
-        console.log('Compressed image size:', (compressedBase64.length / 1024).toFixed(2) + 'KB');
+        
       };
       img.src = e.target?.result as string;
     };

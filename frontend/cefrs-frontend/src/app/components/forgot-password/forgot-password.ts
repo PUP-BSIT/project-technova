@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.scss']
 })
@@ -34,8 +37,12 @@ export class ForgotPassword implements OnInit {
   
   // Loading states
   isLoading: boolean = false;
+  // Confirmation modal
+  showConfirmationModal: boolean = false;
+  confirmationMessage: string = '';
+  private confirmationTimeoutId: any = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient, private ngZone: NgZone, private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     // Initialize component
@@ -44,6 +51,9 @@ export class ForgotPassword implements OnInit {
   ngOnDestroy(): void {
     if (this.resendInterval) {
       clearInterval(this.resendInterval);
+    }
+    if (this.confirmationTimeoutId) {
+      clearTimeout(this.confirmationTimeoutId);
     }
   }
 
@@ -91,14 +101,25 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      // Simulate API call
-      await this.simulateApiCall(1500);
-      
-      // Move to verification step
-      this.currentStep = 2;
-      this.startResendTimer();
-    } catch (error) {
-      this.errorMessage = 'Failed to send verification code. Please try again.';
+      console.debug('Sending forgot-password request for', this.emailOrPhone);
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).pipe(timeout(10000)));
+      console.debug('Forgot-password response received', resp);
+      this.isLoading = false;
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.currentStep = 2;
+          this.startResendTimer();
+          this.cd.detectChanges();
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Failed to send verification code. Please try again.';
+          this.cd.detectChanges();
+        });
+      }
+    } catch (error: any) {
+      console.error('Forgot-password error', error);
+      this.errorMessage = error?.error?.message || 'Failed to send verification code. Please try again.';
     } finally {
       this.isLoading = false;
     }
@@ -125,11 +146,23 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      await this.simulateApiCall(1000);
-      this.startResendTimer();
-      // Show success message (you can add a success message property)
-    } catch (error) {
-      this.errorMessage = 'Failed to resend code. Please try again.';
+      console.debug('Resending forgot-password request for', this.emailOrPhone);
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).pipe(timeout(10000)));
+      console.debug('Resend response received', resp);
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.startResendTimer();
+          this.cd.detectChanges();
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Failed to resend code. Please try again.';
+          this.cd.detectChanges();
+        });
+      }
+    } catch (error: any) {
+      console.error('Resend error', error);
+      this.errorMessage = error?.error?.message || 'Failed to resend code. Please try again.';
     } finally {
       this.isLoading = false;
     }
@@ -156,14 +189,30 @@ export class ForgotPassword implements OnInit {
     if (!this.validateVerificationCode()) {
       return;
     }
-
     this.isLoading = true;
     this.errorMessage = '';
 
-    // No backend check: immediately proceed to reset step.
-    await this.simulateApiCall(300);
-    this.currentStep = 3;
-    this.isLoading = false;
+    try {
+      console.debug('Validating token', this.verificationCode);
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/validate-reset-token', { token: this.verificationCode }).pipe(timeout(10000)));
+      console.debug('Token validation response', resp);
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.currentStep = 3;
+          this.cd.detectChanges();
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Invalid verification code';
+          this.cd.detectChanges();
+        });
+      }
+    } catch (error: any) {
+      console.error('Token validation error', error);
+      this.errorMessage = error?.error?.message || 'Invalid verification code';
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   // Step 3 Methods
@@ -207,18 +256,45 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      // Simulate API call
-      await this.simulateApiCall(1500);
-      
-      // Password reset successful - redirect to login
-      this.router.navigate(['/login'], { 
-        queryParams: { passwordReset: 'success' } 
-      });
-    } catch (error) {
-      this.errorMessage = 'Failed to reset password. Please try again.';
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/reset-password', { token: this.verificationCode, newPassword: this.newPassword }).pipe(timeout(10000)));
+      console.debug('Reset password response', resp);
+      if (resp && resp.success) {
+        this.ngZone.run(() => {
+          this.showConfirmation(resp?.message || 'Password reset successful. Redirecting to login...');
+        });
+      } else {
+        this.ngZone.run(() => {
+          this.errorMessage = resp?.message || 'Failed to reset password. Please try again.';
+          this.cd.detectChanges();
+        });
+      }
+    } catch (error: any) {
+      this.errorMessage = error?.error?.message || 'Failed to reset password. Please try again.';
     } finally {
       this.isLoading = false;
     }
+  }
+
+  showConfirmation(message: string): void {
+    this.confirmationMessage = message;
+    this.showConfirmationModal = true;
+    this.cd.detectChanges();
+    if (this.confirmationTimeoutId) {
+      clearTimeout(this.confirmationTimeoutId);
+    }
+    this.confirmationTimeoutId = setTimeout(() => {
+      this.closeModalAndGoLogin();
+    }, 5000);
+  }
+
+  closeModalAndGoLogin(): void {
+    if (this.confirmationTimeoutId) {
+      clearTimeout(this.confirmationTimeoutId);
+      this.confirmationTimeoutId = null;
+    }
+    this.showConfirmationModal = false;
+    this.cd.detectChanges();
+    this.router.navigate(['/login'], { queryParams: { passwordReset: 'success' } });
   }
 
   // Navigation Methods

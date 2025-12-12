@@ -93,7 +93,7 @@ export class Equipment implements OnInit, OnDestroy {
             status: e.status
           }));
           this.isLoading = false;
-          console.log('Equipment loaded:', this.equipment);
+          
         },
         error: (error) => {
           console.error('Error loading equipment:', error);
@@ -229,7 +229,7 @@ export class Equipment implements OnInit, OnDestroy {
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
         this.photoPreview = compressedBase64;
 
-        console.log('Compressed image size:', (compressedBase64.length / 1024).toFixed(2) + 'KB');
+        
       };
       img.src = e.target?.result as string;
     };

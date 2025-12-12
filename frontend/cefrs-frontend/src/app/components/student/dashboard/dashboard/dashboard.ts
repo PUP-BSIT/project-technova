@@ -96,13 +96,11 @@ export class Dashboard implements OnInit {
     // Try to get userId from user object or localStorage
     const userId = this.user?.id || this.getUserIdFromStorage();
     
-    console.log('Fetching stats for userId:', userId);
-    
     if (userId && userId > 0) {
       // First try to get stats from the dashboard API
       this.dashboardService.getUserStats(userId).subscribe({
         next: (response) => {
-          console.log('Dashboard API response:', response);
+          
           if (response.success && response.data) {
             this.stats = {
               activeReservations: Number(response.data.activeReservations) || 0,
@@ -110,7 +108,7 @@ export class Dashboard implements OnInit {
               pendingRequests: Number(response.data.pendingRequests) || 0,
               totalRequests: Number(response.data.totalRequests) || 0
             };
-            console.log('Stats updated from API:', this.stats);
+            
           } else {
             console.warn('Dashboard API response structure unexpected, falling back to manual calculation', response);
             // Fallback if response structure is different
@@ -146,31 +144,30 @@ export class Dashboard implements OnInit {
       const reservations: any[] = resResp?.data || [];
       const borrowings: any[] = borResp?.data || [];
 
-      console.log('Manual stats calculation - Reservations:', reservations);
-      console.log('Manual stats calculation - Borrowings:', borrowings);
+      
 
       // Log all reservation statuses for debugging
       reservations.forEach(r => {
-        console.log(`Reservation ${r.id}: status = "${r.status}" (type: ${typeof r.status})`);
+        
       });
 
       this.stats.totalRequests = reservations.length + borrowings.length;
       
       // Active Reservations: Approved facility reservations + Approved/Borrowed equipment
-      const approvedReservations = reservations.filter(r => {
+        const approvedReservations = reservations.filter(r => {
         const status = r.status ? r.status.toUpperCase() : '';
         const isApproved = status === 'APPROVED';
         if (isApproved) {
-          console.log(`Found approved reservation: ${r.id} - ${r.facilityName || 'Unknown'}`);
+          
         }
         return isApproved;
       });
       
-      const activeEquipment = borrowings.filter(b => {
+        const activeEquipment = borrowings.filter(b => {
         const status = b.status ? b.status.toUpperCase() : '';
         const isActive = status === 'APPROVED' || status === 'BORROWED';
         if (isActive) {
-          console.log(`Found active equipment: ${b.id} - ${b.equipmentName || 'Unknown'} (status: ${b.status})`);
+          
         }
         return isActive;
       });
@@ -189,7 +186,7 @@ export class Dashboard implements OnInit {
         b.status && b.status.toUpperCase() === 'PENDING'
       ).length;
 
-      console.log('Manual stats calculated:', this.stats);
+      
     }).catch(err => {
       console.error('Error fetching stats manually', err);
     });

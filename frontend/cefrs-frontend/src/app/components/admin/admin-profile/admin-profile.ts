@@ -96,11 +96,11 @@ export class AdminProfileComponent implements OnInit {
       address: this.profileForm.get('address')?.value
     };
 
-    console.log('Sending update payload:', payload);
+    
 
     this.profileService.updateProfile(payload).subscribe({
       next: (response) => {
-        console.log('Update successful:', response);
+        
         this.successMessage = 'Profile updated successfully.';
         this.errorMessage = '';
         this.isEditing = false;

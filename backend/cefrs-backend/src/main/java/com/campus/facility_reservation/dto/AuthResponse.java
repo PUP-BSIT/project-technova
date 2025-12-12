@@ -7,6 +7,7 @@ public class AuthResponse {
     private String tokenType = "Bearer";
     private Long userId;
     private String role;
+    private boolean success = false;
 
     public AuthResponse() {}
 
@@ -48,4 +49,7 @@ public class AuthResponse {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public boolean isSuccess() { return success; }
+    public void setSuccess(boolean success) { this.success = success; }
 }

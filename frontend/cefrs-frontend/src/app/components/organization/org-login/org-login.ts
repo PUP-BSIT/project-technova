@@ -42,15 +42,15 @@ export class OrgLoginComponent {
 		if (this.errors.email || this.errors.password) return;
 
     this.isLoading = true;
-    console.log('Logging in as organization:', this.credentials);
+    
 
     this.authService.login(this.credentials.email, this.credentials.password).subscribe({
       next: (response) => {
-        console.log('Login successful:', response);
+        
         this.isLoading = false;
 
         const role = this.authService.getUserRole();
-        console.log('User role:', role);
+        
         // Redirect to org-dashboard for organization users
         if (role === 'CAMPUS_ORGANIZATION') {
           this.router.navigate(['/org-dashboard']);
