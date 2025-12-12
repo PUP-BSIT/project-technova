@@ -11,6 +11,9 @@ public class FacilityReservationDTO {
     private Long id;
     private Long userId;
     private String userName;
+    private String userRole;
+    private String studentId;
+    private String organizationName;
     private Long facilityId;
     private String facilityName;
     private String reservationDate;
