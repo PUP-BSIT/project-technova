@@ -37,6 +37,10 @@ export class ForgotPassword implements OnInit {
   
   // Loading states
   isLoading: boolean = false;
+  // Confirmation modal
+  showConfirmationModal: boolean = false;
+  confirmationMessage: string = '';
+  private confirmationTimeoutId: any = null;
 
   constructor(private router: Router, private http: HttpClient, private ngZone: NgZone, private cd: ChangeDetectorRef) {}
 
@@ -47,6 +51,9 @@ export class ForgotPassword implements OnInit {
   ngOnDestroy(): void {
     if (this.resendInterval) {
       clearInterval(this.resendInterval);
+    }
+    if (this.confirmationTimeoutId) {
+      clearTimeout(this.confirmationTimeoutId);
     }
   }
 
@@ -253,7 +260,7 @@ export class ForgotPassword implements OnInit {
       console.debug('Reset password response', resp);
       if (resp && resp.success) {
         this.ngZone.run(() => {
-          this.router.navigate(['/login'], { queryParams: { passwordReset: 'success' } });
+          this.showConfirmation(resp?.message || 'Password reset successful. Redirecting to login...');
         });
       } else {
         this.ngZone.run(() => {
@@ -266,6 +273,28 @@ export class ForgotPassword implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  showConfirmation(message: string): void {
+    this.confirmationMessage = message;
+    this.showConfirmationModal = true;
+    this.cd.detectChanges();
+    if (this.confirmationTimeoutId) {
+      clearTimeout(this.confirmationTimeoutId);
+    }
+    this.confirmationTimeoutId = setTimeout(() => {
+      this.closeModalAndGoLogin();
+    }, 5000);
+  }
+
+  closeModalAndGoLogin(): void {
+    if (this.confirmationTimeoutId) {
+      clearTimeout(this.confirmationTimeoutId);
+      this.confirmationTimeoutId = null;
+    }
+    this.showConfirmationModal = false;
+    this.cd.detectChanges();
+    this.router.navigate(['/login'], { queryParams: { passwordReset: 'success' } });
   }
 
   // Navigation Methods
