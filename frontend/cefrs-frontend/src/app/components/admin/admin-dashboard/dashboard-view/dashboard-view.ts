@@ -111,7 +111,6 @@ export class DashboardView implements OnInit, OnDestroy {
             }));
 
           this.isLoading = false;
-          console.log('Dashboard data loaded:', this.stats, this.pendingRequests);
         },
         error: (error) => {
           console.error('Error loading dashboard data:', error);
