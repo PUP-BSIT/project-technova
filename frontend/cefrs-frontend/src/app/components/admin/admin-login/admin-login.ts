@@ -92,11 +92,11 @@ export class AdminLogin {
     const email = this.loginForm.value.email;
     const password = this.loginForm.value.password;
 
-    console.log('Logging in as admin:', email);
+    
 
     this.authService.login(email, password).subscribe({
       next: (response) => {
-        console.log('Login successful:', response);
+        
         this.isLoading = false;
 
         const role = this.authService.getUserRole();
@@ -172,7 +172,7 @@ export class AdminLogin {
 
     this.authService.forgotPassword(this.forgotPasswordEmail).subscribe({
       next: (response) => {
-        console.log('Password reset email sent:', response);
+        
         this.forgotPasswordLoading = false;
         this.forgotPasswordSuccess = true;
       },

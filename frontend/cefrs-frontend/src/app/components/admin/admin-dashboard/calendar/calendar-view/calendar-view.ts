@@ -91,7 +91,6 @@ export class CalendarView implements OnInit, OnDestroy {
           this.events = events;
           this.updateCalendarEvents();
           this.isLoading = false;
-          console.log('Calendar events loaded:', events);
         },
         error: (error) => {
           console.error('Error loading calendar events:', error);
@@ -115,8 +114,6 @@ export class CalendarView implements OnInit, OnDestroy {
     }
 
     this.calendarOptions.events = filteredEvents as EventInput[];
-
-    console.log(`Displaying ${filteredEvents.length} events (Filter: Type=${this.filterType}, Status=${this.filterStatus})`);
   }
 
   handleEventClick(clickInfo: EventClickArg): void {
@@ -128,7 +125,6 @@ export class CalendarView implements OnInit, OnDestroy {
   }
 
   handleDateClick(arg: any): void {
-    console.log('Date clicked:', arg.dateStr);
     // We can implement create new reservation/borrowing here
   }
 

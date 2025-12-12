@@ -177,7 +177,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             };
           }
 
-          console.log('Dashboard stats loaded:', stats);
+          
         },
         error: (error) => {
           console.error('Error loading dashboard stats:', error);
@@ -742,7 +742,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
 
   /* Refresh data for the current tab */
   refreshData(): void {
-    console.log(`Refreshing ${this.activeTab} data...`);
+    
 
     this.loadDashboardStats();
 

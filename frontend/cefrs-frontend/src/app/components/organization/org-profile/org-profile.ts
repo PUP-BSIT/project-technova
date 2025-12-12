@@ -112,7 +112,7 @@ export class OrgProfileComponent implements OnInit {
       password: ''
     };
 
-    console.log('Sending update data:', updateData);
+    
 
     this.profileForm.disable();
 

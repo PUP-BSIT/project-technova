@@ -33,14 +33,12 @@ export class AuthService {
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    console.log('AuthService initialized');
   }
 
   register(userData: any): Observable<LoginResponse> {
-    console.log('Registering user:', userData);
     return this.http.post<LoginResponse>(`${this.apiUrl}/register`, userData).pipe(
       tap((response: LoginResponse) => {
-        console.log('Registration successful:', response);
+        
         if (response.accessToken) {
           this.storeTokens(response);
           this.isAuthenticatedSubject.next(true);
@@ -54,10 +52,9 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<LoginResponse> {
-    console.log('Logging in user:', email);
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       tap((response: LoginResponse) => {
-        console.log('Login successful:', response);
+        
         if (response.accessToken) {
           this.storeTokens(response);
           this.isAuthenticatedSubject.next(true);
@@ -71,7 +68,6 @@ export class AuthService {
   }
 
   logout(): void {
-    console.log('Logging out user');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userId');
@@ -80,14 +76,13 @@ export class AuthService {
   }
 
   getUserProfile(): Observable<UserProfile> {
-    console.log('Fetching user profile');
     // Note: The ProfileService (which you also provided) calls the same endpoint.
     // It's usually better to have only one service responsible for a resource (User/Profile).
     // If you plan to use this one instead of ProfileService, ensure you update
     // the Dashboard and Profile components to use this method.
     return this.http.get<UserProfile>(`${this.userApiUrl}/profile`).pipe(
       tap((profile: UserProfile) => {
-        console.log('User profile fetched:', profile);
+        
       }),
       catchError((error) => {
         console.error('Error fetching profile:', error);
@@ -97,10 +92,9 @@ export class AuthService {
   }
 
   updateUserProfile(userData: any): Observable<UserProfile> {
-    console.log('Updating user profile:', userData);
     return this.http.patch<UserProfile>(`${this.userApiUrl}/update`, userData).pipe(
       tap((profile: UserProfile) => {
-        console.log('Profile updated:', profile);
+        
       }),
       catchError((error) => {
         console.error('Profile update error:', error);
@@ -110,7 +104,6 @@ export class AuthService {
   }
 
   private storeTokens(response: LoginResponse): void {
-    console.log('Storing tokens in localStorage');
     localStorage.setItem('accessToken', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
     localStorage.setItem('userId', response.userId.toString());
@@ -137,7 +130,7 @@ export class AuthService {
   checkPhoneNumberAvailability(phoneNumber: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/check-phone?phoneNumber=${phoneNumber}`).pipe(
       tap((isAvailable) => {
-        console.log('Phone availability check:', phoneNumber, isAvailable);
+        
       }),
       catchError((error) => {
         console.error('Error checking phone availability:', error);
@@ -151,10 +144,9 @@ export class AuthService {
   }
 
   forgotPassword(email: string): Observable<any> {
-    console.log('Sending password reset email to:', email);
     return this.http.post(`${this.apiUrl}/forgot-password`, { email }).pipe(
       tap((response) => {
-        console.log('Password reset email sent:', response);
+        
       }),
       catchError((error) => {
         console.error('Forgot password error:', error);
@@ -164,10 +156,9 @@ export class AuthService {
   }
 
   resetPassword(token: string, newPassword: string): Observable<any> {
-    console.log('Resetting password with token');
     return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword }).pipe(
       tap((response) => {
-        console.log('Password reset successful:', response);
+        
       }),
       catchError((error) => {
         console.error('Reset password error:', error);
