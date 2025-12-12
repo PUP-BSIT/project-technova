@@ -324,10 +324,12 @@ $font-family: 'Roboto', sans-serif;
   .detail-item {
     display: flex;
     gap: 8px;
+    align-items: center;
 
     @include respond-to('s') {
       flex-direction: column;
       gap: 4px;
+      align-items: flex-start;
     }
 
     .detail-label {
@@ -355,6 +357,45 @@ $font-family: 'Roboto', sans-serif;
       @include respond-to('s') {
         font-size: 12px;
       }
+    }
+
+    .requester-info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-badge {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+      letter-spacing: 0.2px;
+
+      &.role-organization {
+        background: #fff4e5;
+        color: #92400e;
+        border: 1px solid #f3d5b5;
+      }
+
+      &.role-student {
+        background: #eef2ff;
+        color: #312e81;
+        border: 1px solid #c7d2fe;
+      }
+
+      &.role-user {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+      }
+    }
+
+    .requester-meta {
+      color: $text-secondary;
+      font-size: 13px;
     }
   }
 
@@ -590,6 +631,12 @@ $font-family: 'Roboto', sans-serif;
     .info-value {
       color: $text-primary;
       font-size: 14px;
+
+      .info-note {
+        color: $text-secondary;
+        margin-left: 6px;
+        font-size: 13px;
+      }
 
       @include respond-to('mobile-all') {
         font-size: 13px;
