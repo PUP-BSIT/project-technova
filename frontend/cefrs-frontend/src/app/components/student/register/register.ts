@@ -59,13 +59,11 @@ export class RegisterComponent implements OnInit {
 
       if (roleFromUrl) {
         if (roleFromUrl === 'ORGANIZATION' || roleFromUrl === 'CAMPUS_ORGANIZATION') {
-          console.log('Redirecting to org-register');
           this.router.navigate(['/org-register'], { queryParams: { role: roleFromUrl } });
           return;
         }
         
         this.formData.role = roleFromUrl;
-        console.log('Successfully set role from URL:', this.formData.role);
       } else {
         console.error('Error: Role parameter is missing from the URL. Redirecting.');
         this.router.navigate(['/select-role']); // selection path
@@ -230,11 +228,11 @@ export class RegisterComponent implements OnInit {
       studentId: this.formData.studentId
     };
 
-    console.log('Sending registration data:', registerData);
+    
 
     this.authService.register(registerData).subscribe({
       next: (response) => {
-        console.log('Registration successful:', response);
+        
         this.isLoading = false;
         this.currentStep = 4; // Move to success step
       },

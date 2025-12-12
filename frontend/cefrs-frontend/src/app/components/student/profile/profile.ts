@@ -123,7 +123,7 @@ export class StudentProfileComponent implements OnInit {
       password: ''  // You might need to handle this differently
     };
 
-    console.log('Sending update data:', updateData);
+    
 
     this.profileForm.disable();
 
@@ -153,7 +153,6 @@ export class StudentProfileComponent implements OnInit {
   }
 
   onViewChanged(view: string): void {
-    console.log('View changed to:', view);
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 50);

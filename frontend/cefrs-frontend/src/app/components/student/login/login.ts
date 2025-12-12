@@ -104,16 +104,14 @@ export class LoginComponent implements OnInit {
     if (this.errors.email || this.errors.password) return;
 
     this.isLoading = true;
-    console.log('Login attempt:', this.credentials);
 
     this.authService.login(this.credentials.email, this.credentials.password).subscribe({
       next: (response) => {
-        console.log('Login successful:', response);
+        
         this.isLoading = false;
 
         // Get role from localStorage (stored by AuthService after successful login)
         const role = this.authService.getUserRole();
-        console.log('User role:', role);
 
         // Only allow STUDENT role on this login page
         if (role === 'STUDENT') {
