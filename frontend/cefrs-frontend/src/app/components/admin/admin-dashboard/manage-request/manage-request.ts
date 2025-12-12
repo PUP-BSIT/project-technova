@@ -11,6 +11,9 @@ interface UnifiedRequest {
   type: 'facility' | 'equipment';
   name: string;
   requester: string;
+  requesterRole?: string;
+  studentId?: string | null;
+  organizationName?: string | null;
   userName: string;
   dateTime?: string;
   borrowDate?: string;
@@ -96,6 +99,9 @@ export class ManageRequest implements OnInit {
             type: 'facility',
             name: r.facilityName,
             requester: r.userName,
+          requesterRole: r.userRole,
+          studentId: r.studentId,
+          organizationName: r.organizationName,
             userName: r.userName,
             facilityId: r.facilityId,
             reservationDate: r.reservationDate,
@@ -117,6 +123,9 @@ export class ManageRequest implements OnInit {
             type: 'equipment',
             name: b.equipmentName,
             requester: b.userName,
+          requesterRole: b.userRole,
+          studentId: b.studentId,
+          organizationName: b.organizationName,
             userName: b.userName,
             equipmentId: b.equipmentId,
             borrowDate: b.borrowDate,
@@ -150,6 +159,9 @@ export class ManageRequest implements OnInit {
       filtered = filtered.filter(req =>
         req.name.toLowerCase().includes(query) ||
         req.requester.toLowerCase().includes(query) ||
+        (req.requesterRole && req.requesterRole.toLowerCase().includes(query)) ||
+        (req.organizationName && req.organizationName.toLowerCase().includes(query)) ||
+        (req.studentId && req.studentId.toLowerCase().includes(query)) ||
         req.id.toString().includes(query) ||
         this.formatRequestId(req).toLowerCase().includes(query) ||
         req.purpose.toLowerCase().includes(query)
@@ -363,6 +375,28 @@ export class ManageRequest implements OnInit {
     } else {
       return `REQEQP-${String(request.id).padStart(4, '0')}`;
     }
+  }
+
+  getRoleLabel(request: UnifiedRequest): string {
+    const role = request.requesterRole?.toUpperCase() || '';
+    if (role.includes('ORGANIZATION')) return 'Organization';
+    if (role.includes('STUDENT')) return 'Student';
+    return 'User';
+  }
+
+  getRoleClass(request: UnifiedRequest): string {
+    const role = request.requesterRole?.toUpperCase() || '';
+    if (role.includes('ORGANIZATION')) return 'role-organization';
+    if (role.includes('STUDENT')) return 'role-student';
+    return 'role-user';
+  }
+
+  isOrganization(request: UnifiedRequest): boolean {
+    return (request.requesterRole || '').toUpperCase().includes('ORGANIZATION');
+  }
+
+  isStudent(request: UnifiedRequest): boolean {
+    return (request.requesterRole || '').toUpperCase().includes('STUDENT');
   }
 
   markRequestReturned(request: UnifiedRequest): void {
