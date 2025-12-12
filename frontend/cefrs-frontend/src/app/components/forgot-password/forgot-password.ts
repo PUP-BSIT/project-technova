@@ -2,11 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.scss']
 })
@@ -35,7 +38,7 @@ export class ForgotPassword implements OnInit {
   // Loading states
   isLoading: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
     // Initialize component
@@ -91,14 +94,16 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      // Simulate API call
-      await this.simulateApiCall(1500);
-      
-      // Move to verification step
+      await this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone })
+        .pipe(catchError(err => {
+          return throwError(() => err);
+        }))
+        .toPromise();
+
       this.currentStep = 2;
       this.startResendTimer();
-    } catch (error) {
-      this.errorMessage = 'Failed to send verification code. Please try again.';
+    } catch (error: any) {
+      this.errorMessage = error?.error?.message || 'Failed to send verification code. Please try again.';
     } finally {
       this.isLoading = false;
     }
@@ -125,11 +130,10 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      await this.simulateApiCall(1000);
+      await this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).toPromise();
       this.startResendTimer();
-      // Show success message (you can add a success message property)
-    } catch (error) {
-      this.errorMessage = 'Failed to resend code. Please try again.';
+    } catch (error: any) {
+      this.errorMessage = error?.error?.message || 'Failed to resend code. Please try again.';
     } finally {
       this.isLoading = false;
     }
@@ -156,14 +160,17 @@ export class ForgotPassword implements OnInit {
     if (!this.validateVerificationCode()) {
       return;
     }
-
     this.isLoading = true;
     this.errorMessage = '';
 
-    // No backend check: immediately proceed to reset step.
-    await this.simulateApiCall(300);
-    this.currentStep = 3;
-    this.isLoading = false;
+    try {
+      await this.http.post<any>('/api/auth/validate-reset-token', { token: this.verificationCode }).toPromise();
+      this.currentStep = 3;
+    } catch (error: any) {
+      this.errorMessage = error?.error?.message || 'Invalid verification code';
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   // Step 3 Methods
@@ -207,15 +214,12 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      // Simulate API call
-      await this.simulateApiCall(1500);
-      
-      // Password reset successful - redirect to login
+      await this.http.post<any>('/api/auth/reset-password', { token: this.verificationCode, newPassword: this.newPassword }).toPromise();
       this.router.navigate(['/login'], { 
         queryParams: { passwordReset: 'success' } 
       });
-    } catch (error) {
-      this.errorMessage = 'Failed to reset password. Please try again.';
+    } catch (error: any) {
+      this.errorMessage = error?.error?.message || 'Failed to reset password. Please try again.';
     } finally {
       this.isLoading = false;
     }
