@@ -290,6 +290,11 @@ $font-family: 'Roboto', sans-serif;
       background: #cfe2ff;
       color: #084298;
     }
+
+    &.status-waitlisted {
+      background: #fbbf24;
+      color: #78350f;
+    }
   }
 
   .request-title {
