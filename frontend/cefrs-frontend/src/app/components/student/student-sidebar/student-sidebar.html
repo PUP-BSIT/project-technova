@@ -2,26 +2,26 @@
   [class.is-collapsed]="!isSidebarOpen" 
   [class.is-mobile]="isMobileView"
   [class.collapsed-desktop]="isCollapsed && isDesktop">
-  @if (isDesktop) {
-    <button class="collapse-btn" (click)="toggleCollapse()" [title]="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-      @if (isCollapsed) {
-        <!-- Arrow right icon when collapsed (to expand) -->
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      } @else {
-        <!-- X icon when expanded (to collapse) -->
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      }
-    </button>
-  }
   <div class="logo-section">
     <div class="logo-image">
       <img src="assets/logo-white.png" alt="CEFRS Logo" />
     </div>
+    @if (isDesktop) {
+      <button class="collapse-btn" (click)="toggleCollapse()" [title]="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        @if (isCollapsed) {
+          <!-- Arrow right icon when collapsed (to expand) -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        } @else {
+          <!-- X icon when expanded (to collapse) -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        }
+      </button>
+    }
     <div class="logo-text" [class.hide-on-collapse]="isCollapsed && isDesktop">CEFRS</div>
   </div>
 
