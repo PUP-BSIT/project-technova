@@ -21,9 +21,11 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
   @Input() sidenav!: MatSidenav;
 
   @Output() viewChanged = new EventEmitter<string>();
+  @Output() collapsedChanged = new EventEmitter<boolean>();
 
   isSidebarOpen = true;
   isMobileView = false;
+  isCollapsed = false; // Desktop collapse state
   private readonly DESKTOP_BREAKPOINT = 1024;
   private initialized = false;
 
@@ -137,5 +139,19 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
 
   closeLogoutModal(): void {
     this.showLogoutModal = false;
+  }
+
+  toggleCollapse(): void {
+    // Only allow collapse on desktop
+    if (!this.isMobileView) {
+      // Toggle between expanded and collapsed (icons only) states
+      // Sidebar stays open, just changes width
+      this.isCollapsed = !this.isCollapsed;
+      this.collapsedChanged.emit(this.isCollapsed);
+    }
+  }
+
+  get isDesktop(): boolean {
+    return !this.isMobileView;
   }
 }
