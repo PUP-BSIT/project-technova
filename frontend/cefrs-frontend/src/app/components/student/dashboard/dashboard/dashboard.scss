@@ -3,6 +3,15 @@
 .page-header {
   padding: $spacing-md $spacing-3xl $spacing-xs;
   margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  
+  h1 {
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-xs;
+    font-family: $font-family; // Roboto
+  }
 }
 
 .welcome-banner {
@@ -10,6 +19,8 @@
   color: $white;
   padding: $spacing-xs $spacing-3xl;
   margin-bottom: $spacing-sm;
+  width: 100%;
+  box-sizing: border-box;
 
   h2 {
     font-size: $font-size-4xl;
@@ -30,6 +41,8 @@
   grid-template-columns: repeat(4, 1fr);
   gap: $spacing-lg;
   padding: $spacing-md $spacing-3xl $spacing-lg;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .stat-card {
@@ -65,6 +78,8 @@
 
 .recent-section {
   padding: 0 $spacing-3xl $spacing-2xl;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .section-header {
@@ -214,7 +229,17 @@
 }
 
 @media (max-width: 768px) {
-  .page-header,
+  .page-header {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg; // Compact padding, avoid hamburger button
+    padding-left: 80px !important; // Avoid hamburger button - ensure it's applied
+    
+    h1 {
+      font-size: $font-size-2xl; // Smaller title on mobile
+      font-weight: $font-weight-medium; // Bold
+      font-family: $font-family; // Roboto
+    }
+  }
+  
   .welcome-banner,
   .stats-grid,
   .recent-section,

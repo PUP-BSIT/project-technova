@@ -6,6 +6,8 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 // Fixed header section (header + search controls)
@@ -22,11 +24,31 @@
 .page-header {
   padding: $spacing-md $spacing-3xl $spacing-xs;
   margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  
+  h1 {
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-xs;
+    font-family: $font-family; // Roboto
+  }
+  
+  .page-subtitle {
+    color: $text-secondary;
+    font-size: $font-size-lg;
+    margin-top: $spacing-sm;
+    font-family: $font-family; // Roboto
+  }
 }
 
 .search-controls {
   padding: $spacing-xs $spacing-3xl $spacing-sm;
   margin-bottom: $spacing-sm;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  gap: $spacing-lg;
 }
 
 // Scrollable content area (equipment grid, loading, no-data messages)
@@ -43,6 +65,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: $spacing-xl;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .equipment-card {
@@ -159,20 +183,47 @@
 }
 
 @media (max-width: 768px) {
-  .page-header,
-  .search-controls,
+  .page-header {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg; // Compact padding, avoid hamburger button
+    padding-left: 80px !important; // Avoid hamburger button - ensure it's applied
+    
+    h1 {
+      font-size: $font-size-2xl; // Smaller title on mobile
+      font-weight: $font-weight-medium; // Bold
+      margin-bottom: $spacing-xs;
+      font-family: $font-family; // Roboto
+    }
+    
+    .page-subtitle {
+      font-size: $font-size-sm; // Smaller subtitle on mobile
+      margin-top: 0;
+      font-family: $font-family; // Roboto
+    }
+  }
+  
+  .search-controls {
+    padding: $spacing-xs $spacing-lg $spacing-sm; // More compact on mobile
+    margin-bottom: $spacing-sm;
+    flex-direction: column; // Stack vertically on mobile
+    gap: $spacing-sm;
+    
+    .search-input,
+    .filter-select {
+      width: 100%;
+      padding: $spacing-sm $spacing-md; // Smaller padding on mobile
+      font-size: $font-size-sm;
+    }
+    
+    .filter-select {
+      min-width: auto; // Remove min-width on mobile
+    }
+  }
+  
   .equipment-grid {
     padding-left: $spacing-lg;
     padding-right: $spacing-lg;
-  }
-
-  .equipment-grid {
     padding-bottom: $spacing-2xl;
     gap: $spacing-lg;
-  }
-
-  .search-controls {
-    margin-bottom: $spacing-sm;
   }
 
   .equipment-image {
