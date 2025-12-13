@@ -94,7 +94,18 @@
           <div class="request-details-grid">
             <div class="detail-item">
               <span class="detail-label">Requester:</span>
-              <span class="detail-value">{{ request.requester }}</span>
+              <div class="requester-info">
+                <span class="detail-value">{{ request.requester }}</span>
+                <span class="role-badge" [ngClass]="getRoleClass(request)">
+                  {{ getRoleLabel(request) }}
+                </span>
+                @if (isOrganization(request) && request.organizationName) {
+                  <span class="requester-meta">{{ request.organizationName }}</span>
+                }
+                @if (isStudent(request) && request.studentId) {
+                  <span class="requester-meta">ID: {{ request.studentId }}</span>
+                }
+              </div>
             </div>
             @if (request.dateTime) {
               <div class="detail-item">
@@ -171,6 +182,18 @@
           <span class="info-label">Requester:</span>
           <span class="info-value">{{ selectedRequest?.requester }}</span>
         </div>
+        <div class="info-row">
+          <span class="info-label">Requester Type:</span>
+          <span class="info-value">
+            {{ selectedRequest ? getRoleLabel(selectedRequest) : '' }}
+            @if (selectedRequest && isOrganization(selectedRequest) && selectedRequest.organizationName) {
+              <span class="info-note">({{ selectedRequest.organizationName }})</span>
+            }
+            @if (selectedRequest && isStudent(selectedRequest) && selectedRequest.studentId) {
+              <span class="info-note">(ID: {{ selectedRequest.studentId }})</span>
+            }
+          </span>
+        </div>
       </div>
 
       <div class="modal-form-group">
@@ -225,6 +248,18 @@
         <div class="info-row">
           <span class="info-label">Requester:</span>
           <span class="info-value">{{ selectedRequest?.requester }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Requester Type:</span>
+          <span class="info-value">
+            {{ selectedRequest ? getRoleLabel(selectedRequest) : '' }}
+            @if (selectedRequest && isOrganization(selectedRequest) && selectedRequest.organizationName) {
+              <span class="info-note">({{ selectedRequest.organizationName }})</span>
+            }
+            @if (selectedRequest && isStudent(selectedRequest) && selectedRequest.studentId) {
+              <span class="info-note">(ID: {{ selectedRequest.studentId }})</span>
+            }
+          </span>
         </div>
       </div>
 

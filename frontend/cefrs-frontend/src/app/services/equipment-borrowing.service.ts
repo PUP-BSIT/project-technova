@@ -20,6 +20,9 @@ export interface EquipmentBorrowing {
   id: number;
   userId: number;
   userName: string;
+  userRole?: string;
+  studentId?: string;
+  organizationName?: string;
   equipmentId: number;
   equipmentName: string;
   quantity: number;

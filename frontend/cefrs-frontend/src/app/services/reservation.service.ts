@@ -19,6 +19,9 @@ export interface Reservation {
   id: number;
   userId: number;
   userName: string;
+  userRole?: string;
+  studentId?: string;
+  organizationName?: string;
   facilityId: number;
   facilityName: string;
   reservationDate: string;
