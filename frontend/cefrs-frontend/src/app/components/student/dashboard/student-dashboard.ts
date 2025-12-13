@@ -34,6 +34,7 @@ export class StudentDashboard implements OnInit, AfterViewInit {
   currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' = 'dashboard';
   isSidebarOpen = true;
   isMobileView = false;
+  isSidebarCollapsed = false;
   private readonly DESKTOP_BREAKPOINT = 1024;
 
   constructor(
@@ -132,6 +133,17 @@ export class StudentDashboard implements OnInit, AfterViewInit {
     // Close sidebar on mobile after navigation
     if (this.isMobileView && this.sidenav) {
       this.sidenav.close();
+    }
+  }
+
+  onSidebarCollapsedChange(collapsed: boolean): void {
+    this.isSidebarCollapsed = collapsed;
+    // Force Angular Material to recalculate layout
+    if (this.sidenav && !this.isMobileView) {
+      // Trigger change detection to update layout
+      setTimeout(() => {
+        this.cdr.detectChanges();
+      }, 0);
     }
   }
 }
