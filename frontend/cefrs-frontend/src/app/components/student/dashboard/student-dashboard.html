@@ -48,7 +48,7 @@
     }
 
     @if (currentView === 'dashboard') {
-      <app-dashboard></app-dashboard>
+      <app-dashboard (viewChangeRequest)="onSidebarViewChange($event)"></app-dashboard>
     }
 
     @if (currentView === 'facilities') {

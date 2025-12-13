@@ -374,6 +374,7 @@ $transition-base: 0.3s;
   font-family: $font-family;
 }
 
+// Status badge styles (used in dashboard and other components)
 .status-badge {
   padding: 6px 14px;
   border-radius: 20px;
@@ -406,6 +407,11 @@ $transition-base: 0.3s;
   &.status-completed {
     background: $light-blue;
     color: $white;
+  }
+
+  &.status-waitlisted {
+    background: #fbbf24;
+    color: #78350f;
   }
 
   &.status-available {
