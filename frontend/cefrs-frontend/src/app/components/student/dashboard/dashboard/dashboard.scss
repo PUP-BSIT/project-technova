@@ -95,17 +95,27 @@
   }
 }
 
+.view-all-btn,
 .see-all-btn {
   background: none;
   border: none;
-  color: $text-secondary;
+  color: $primary-color;
   font-size: $font-size-base;
+  font-weight: $font-weight-medium;
   cursor: pointer;
   font-family: $font-family;
   text-decoration: none;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  transition: all $transition-fast ease;
 
   &:hover {
-    color: $text-primary;
+    color: $primary-dark;
+    background: rgba($primary-color, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
@@ -123,6 +133,52 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: $shadow-md;
+  transition: all $transition-fast ease;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+.status-badge {
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  text-transform: capitalize;
+  font-family: $font-family;
+  white-space: nowrap;
+
+  &.status-pending {
+    background: #fcd34d;
+    color: #78350f;
+  }
+
+  &.status-approved {
+    background: #7fe87f;
+    color: #1a5c1a;
+  }
+
+  &.status-rejected {
+    background: #fca5a5;
+    color: #7f1d1d;
+  }
+
+  &.status-returned {
+    background: #cfe2ff;
+    color: #084298;
+  }
+
+  &.status-completed {
+    background: #cfe2ff;
+    color: #084298;
+  }
+
+  &.status-waitlisted {
+    background: #fbbf24;
+    color: #78350f;
+  }
 }
 
 .request-info {

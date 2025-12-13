@@ -1,5 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../../../services/auth';
 import { ReservationService } from '../../../../services/reservation.service';
 import { EquipmentBorrowingService } from '../../../../services/equipment-borrowing.service';
@@ -41,6 +43,9 @@ export class Dashboard implements OnInit {
   private reservationService = inject(ReservationService);
   private borrowingService = inject(EquipmentBorrowingService);
   private dashboardService = inject(DashboardService);
+  private router = inject(Router);
+  
+  @Output() viewChangeRequest = new EventEmitter<string>();
 
   user: User | null = null;
   
@@ -55,12 +60,13 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.fetchUserProfile();
-    this.fetchRecentRequests();
+    // fetchRecentRequests will be called after user profile is loaded
     
-    // Refresh stats periodically (every 30 seconds) to catch updates
+    // Refresh stats and recent requests periodically (every 30 seconds) to catch updates
     setInterval(() => {
       if (this.user?.id) {
         this.fetchStats();
+        this.fetchRecentRequests();
       }
     }, 30000);
   }
@@ -72,6 +78,8 @@ export class Dashboard implements OnInit {
         this.user.name = `${profile.firstName} ${profile.lastName}`;
         // Fetch stats after user profile is loaded
         this.fetchStats();
+        // Fetch recent requests after user profile is loaded
+        this.fetchRecentRequests();
       },
       error: (err) => {
         console.error('Error fetching user profile:', err);
@@ -138,8 +146,8 @@ export class Dashboard implements OnInit {
 
   private fetchStatsManually(): void {
     Promise.all([
-      this.reservationService.getMyReservations().toPromise(),
-      this.borrowingService.getMyBorrowings().toPromise()
+      firstValueFrom(this.reservationService.getMyReservations()),
+      firstValueFrom(this.borrowingService.getMyBorrowings())
     ]).then(([resResp, borResp]) => {
       const reservations: any[] = resResp?.data || [];
       const borrowings: any[] = borResp?.data || [];
@@ -193,14 +201,35 @@ export class Dashboard implements OnInit {
   }
 
   fetchRecentRequests(): void {
+    // Get current user ID to ensure we only fetch this user's requests
+    const userId = this.user?.id || this.getUserIdFromStorage();
+    
+    if (!userId || userId <= 0) {
+      console.warn('No user ID available for fetching recent requests');
+      this.recentRequests = [];
+      return;
+    }
+
     Promise.all([
-      this.reservationService.getMyReservations().toPromise(),
-      this.borrowingService.getMyBorrowings().toPromise()
+      firstValueFrom(this.reservationService.getMyReservations()),
+      firstValueFrom(this.borrowingService.getMyBorrowings())
     ]).then(([resResp, borResp]) => {
       const reservations: any[] = resResp?.data || [];
       const borrowings: any[] = borResp?.data || [];
 
-      const resMapped = reservations.map(r => ({
+      // Filter to ensure we only show requests for the current user
+      // The API should already return only the current user's requests, but we filter again for safety
+      const userReservations = reservations.filter(r => {
+        // Check if reservation belongs to current user
+        return !r.userId || r.userId === userId || r.studentId === userId;
+      });
+
+      const userBorrowings = borrowings.filter(b => {
+        // Check if borrowing belongs to current user
+        return !b.userId || b.userId === userId || b.studentId === userId;
+      });
+
+      const resMapped = userReservations.map(r => ({
         id: `FAC-${r.id}`,
         title: r.facilityName || 'Facility Reservation',
         type: 'Facility' as const,
@@ -211,7 +240,7 @@ export class Dashboard implements OnInit {
         adminNotes: r.adminNotes || ''
       }));
 
-      const borMapped = borrowings.map(b => ({
+      const borMapped = userBorrowings.map(b => ({
         id: `EQP-${b.id}`,
         title: b.equipmentName || 'Equipment Borrowing',
         type: 'Equipment' as const,
@@ -223,16 +252,28 @@ export class Dashboard implements OnInit {
         adminNotes: b.adminNotes || ''
       }));
 
+      // Sort by creation date (most recent first)
       const allRequests = [...resMapped, ...borMapped].sort((a, b) => {
-        const aRaw = (a as any).createdAtRaw || a.requestDate;
-        const bRaw = (b as any).createdAtRaw || b.requestDate;
-        return (new Date(bRaw).getTime() || 0) - (new Date(aRaw).getTime() || 0);
+        const aRaw = (a as any).createdAtRaw;
+        const bRaw = (b as any).createdAtRaw;
+        if (aRaw && bRaw) {
+          return new Date(bRaw).getTime() - new Date(aRaw).getTime();
+        }
+        // Fallback to requestDate if createdAtRaw is not available
+        return (new Date(b.requestDate).getTime() || 0) - (new Date(a.requestDate).getTime() || 0);
       });
 
+      // Get the 5 most recent requests
       this.recentRequests = allRequests.slice(0, 5);
     }).catch(err => {
       console.error('Error fetching recent requests', err);
+      this.recentRequests = [];
     });
+  }
+
+  navigateToRequests(): void {
+    // Emit event to parent component to switch to requests view
+    this.viewChangeRequest.emit('requests');
   }
 
   private prettyStatus(raw: string): string {
@@ -244,7 +285,8 @@ export class Dashboard implements OnInit {
       RETURNED: 'Returned',
       COMPLETED: 'Completed',
       OVERDUE: 'Overdue',
-      BORROWED: 'Borrowed'
+      BORROWED: 'Borrowed',
+      WAITLISTED: 'Waitlisted'
     };
     return map[raw.toUpperCase()] || raw;
   }
@@ -255,7 +297,8 @@ export class Dashboard implements OnInit {
       Pending: 'status-pending',
       Rejected: 'status-rejected',
       Returned: 'status-returned',
-      Completed: 'status-completed'
+      Completed: 'status-completed',
+      Waitlisted: 'status-waitlisted'
     };
     return map[status] || '';
   }
