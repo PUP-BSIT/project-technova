@@ -6,6 +6,8 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 // Fixed header section (header + search bar)
@@ -23,10 +25,28 @@
 .page-header {
   padding: $spacing-md $spacing-3xl $spacing-xs;
   margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  
+  h1 {
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-xs;
+    font-family: $font-family; // Roboto
+  }
+  
+  .page-subtitle {
+    color: $text-secondary;
+    font-size: $font-size-lg;
+    margin-top: $spacing-sm;
+    font-family: $font-family; // Roboto
+  }
 }
 
 .search-bar {
   padding: $spacing-xs $spacing-3xl $spacing-sm;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-input-wrapper {
@@ -74,6 +94,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: $spacing-xl;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .facility-card {
@@ -173,8 +195,28 @@
 }
 
 @media (max-width: 768px) {
-  .page-header,
-  .search-bar,
+  .page-header {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg; // Compact padding, avoid hamburger button
+    padding-left: 80px !important; // Avoid hamburger button - ensure it's applied
+    
+    h1 {
+      font-size: $font-size-2xl; // Smaller title on mobile
+      font-weight: $font-weight-medium; // Bold
+      margin-bottom: $spacing-xs;
+      font-family: $font-family; // Roboto
+    }
+    
+    .page-subtitle {
+      font-size: $font-size-sm; // Smaller subtitle on mobile
+      margin-top: 0;
+      font-family: $font-family; // Roboto
+    }
+  }
+  
+  .search-bar {
+    padding: $spacing-xs $spacing-lg $spacing-sm; // More compact on mobile
+  }
+  
   .facilities-grid {
     padding-left: $spacing-lg;
     padding-right: $spacing-lg;
@@ -186,6 +228,11 @@
 
   .search-input-wrapper {
     max-width: 100%; // allow full-width on small/mobile screens without overflow
+  }
+  
+  .search-input-wrapper .search-input {
+    padding: $spacing-sm $spacing-md; // Smaller padding on mobile
+    font-size: $font-size-sm;
   }
 
   .facilities-container {

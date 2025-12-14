@@ -1,4 +1,29 @@
-<mat-sidenav-container class="dashboard-container">
+<!-- Mobile Hamburger Button - visible only on mobile -->
+@if (isMobileView) {
+  <button 
+    class="mobile-hamburger-button" 
+    [class.is-open]="isSidebarOpen"
+    (click)="toggleSidebar()" 
+    [attr.aria-expanded]="isSidebarOpen"
+    aria-label="Toggle navigation menu">
+    @if (isSidebarOpen) {
+      <!-- X icon when sidebar is open -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    } @else {
+      <!-- Hamburger icon when sidebar is closed -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    }
+  </button>
+}
+
+<mat-sidenav-container class="dashboard-container" [class.sidebar-collapsed-container]="isSidebarCollapsed && !isMobileView">
   <mat-sidenav 
     #sidenav
     [(opened)]="isSidebarOpen"
@@ -6,36 +31,24 @@
     [fixedInViewport]="!isMobileView"
     [fixedTopGap]="0"
     [fixedBottomGap]="0"
-    class="sidebar-sidenav">
+    class="sidebar-sidenav"
+    [class.sidebar-collapsed]="isSidebarCollapsed && !isMobileView">
     <app-student-sidebar 
       [currentView]="currentView" 
       [sidenav]="sidenav"
-      (viewChanged)="onSidebarViewChange($event)">
+      (viewChanged)="onSidebarViewChange($event)"
+      (collapsedChanged)="onSidebarCollapsedChange($event)">
     </app-student-sidebar>
   </mat-sidenav>
 
   <mat-sidenav-content class="main-content">
-    <!-- Hamburger button - visible on both mobile and desktop -->
-    <button
-      mat-icon-button
-      class="hamburger-button"
-      type="button"
-      (click)="toggleSidebar()"
-      [attr.aria-expanded]="isSidebarOpen"
-      aria-label="Toggle navigation menu">
-      <span class="hamburger-icon" [class.is-open]="isSidebarOpen">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-    </button>
 
     @if (currentView === 'settings') {
       <router-outlet></router-outlet>
     }
 
     @if (currentView === 'dashboard') {
-      <app-dashboard></app-dashboard>
+      <app-dashboard (viewChangeRequest)="onSidebarViewChange($event)"></app-dashboard>
     }
 
     @if (currentView === 'facilities') {

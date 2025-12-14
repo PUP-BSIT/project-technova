@@ -1,49 +1,71 @@
 <aside class="sidebar" 
   [class.is-collapsed]="!isSidebarOpen" 
-  [class.is-mobile]="isMobileView">
+  [class.is-mobile]="isMobileView"
+  [class.collapsed-desktop]="isCollapsed && isDesktop">
   <div class="logo-section">
     <div class="logo-image">
       <img src="assets/logo-white.png" alt="CEFRS Logo" />
     </div>
-    <div class="logo-text">CEFRS</div>
+    @if (isDesktop) {
+      <button class="collapse-btn" (click)="toggleCollapse()" [title]="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        @if (isCollapsed) {
+          <!-- Arrow right icon when collapsed (to expand) -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        } @else {
+          <!-- X icon when expanded (to collapse) -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        }
+      </button>
+    }
+    <div class="logo-text" [class.hide-on-collapse]="isCollapsed && isDesktop">CEFRS</div>
   </div>
 
   <nav class="nav-menu">
     <button class="nav-item" 
       [class.active]="currentView === 'dashboard'" 
-      (click)="navigateTo('dashboard')">
+      (click)="navigateTo('dashboard')"
+      [title]="isCollapsed && isDesktop ? 'Dashboard' : ''">
       <img src="assets/dashboard.png" alt="Dashboard Icon" class="icon" />
-        Dashboard
+      <span [class.hide-on-collapse]="isCollapsed && isDesktop">Dashboard</span>
     </button>
     <button class="nav-item" 
       [class.active]="currentView === 'facilities'" 
-      (click)="navigateTo('facilities')">
+      (click)="navigateTo('facilities')"
+      [title]="isCollapsed && isDesktop ? 'Facilities' : ''">
       <img src="assets/facilities.png" alt="Facilities Icon" class="icon-2" />
-        Facilities
+      <span [class.hide-on-collapse]="isCollapsed && isDesktop">Facilities</span>
     </button>
     <button class="nav-item" 
       [class.active]="currentView === 'equipment'" 
-      (click)="navigateTo('equipment')">
+      (click)="navigateTo('equipment')"
+      [title]="isCollapsed && isDesktop ? 'Equipment' : ''">
       <img src="assets/equipment.png" alt="Equipment Icon" class="icon-2" />
-        Equipment
+      <span [class.hide-on-collapse]="isCollapsed && isDesktop">Equipment</span>
     </button>
     <button class="nav-item" 
       [class.active]="currentView === 'requests'" 
-      (click)="navigateTo('requests')">
+      (click)="navigateTo('requests')"
+      [title]="isCollapsed && isDesktop ? 'My Request' : ''">
       <img src="assets/requests.png" alt="Requests Icon" class="icon-2" />
-        My Request
+      <span [class.hide-on-collapse]="isCollapsed && isDesktop">My Request</span>
     </button>
     <!-- <button class="nav-item" [class.active]="currentView === 'transactions'" (click)="navigateTo('transactions')">Transactions</button> -->
     <button class="nav-item" 
       [class.active]="currentView === 'settings'" 
-      (click)="navigateTo('settings')">
+      (click)="navigateTo('settings')"
+      [title]="isCollapsed && isDesktop ? 'Settings' : ''">
       <img src="assets/settings.png" alt="Settings Icon" class="icon-2" />
-        Settings
+      <span [class.hide-on-collapse]="isCollapsed && isDesktop">Settings</span>
     </button>
   </nav>
 
   <div class="user-profile">
-    <div class="user-details">
+    <div class="user-details" [class.hide-on-collapse]="isCollapsed && isDesktop">
       @if (user) {
         <div class="user-info">
           <div class="user-name">{{ user.name }}</div>

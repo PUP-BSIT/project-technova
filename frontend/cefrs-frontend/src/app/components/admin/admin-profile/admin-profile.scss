@@ -1,352 +1,200 @@
-// Breakpoints
-$mobile-s: 375px;
-$mobile-m: 425px;
-$mobile-l: 768px;
-$tablet: 1024px;
-
-.profile-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.main-content {
-  flex: 1;
-  padding: 20px;
-  background-color: #f5f5f5;
-
-  @media (max-width: $mobile-l) {
-    padding: 16px;
-  }
-
-  @media (max-width: $mobile-m) {
-    padding: 12px;
-  }
+.profile-container-wrapper {
+  padding: 1rem;
 }
 
 .profile-container {
   max-width: 900px;
   margin: 0 auto;
+  padding: 0;
+  background-color: transparent;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
 
-  @media (max-width: $mobile-l) {
-    max-width: 100%;
-  }
-}
+  .nav-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 
-.nav-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-
-  @media (max-width: $mobile-l) {
-    margin-bottom: 16px;
-  }
-
-  @media (max-width: $mobile-m) {
-    margin-bottom: 14px;
-  }
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-
-  @media (max-width: $mobile-l) {
-    font-size: 20px;
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #7d0b12;
+      margin: 0;
+    }
   }
 
-  @media (max-width: $mobile-m) {
-    margin-top: 5px;
-    margin-left: 50px;
-    font-size: 24px;
-    margin-bottom: 15px;
-  }
-}
-
-.profile-card {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-
-  @media (max-width: $mobile-l) {
-    padding: 20px;
-    border-radius: 6px;
+  .profile-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 24px;
   }
 
-  @media (max-width: $mobile-m) {
-    padding: 16px;
-  }
-}
-
-.admin-header {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee;
-
-  @media (max-width: $mobile-l) {
-    font-size: 18px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+  .user-header {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #7d0b12;
+    margin-bottom: 1rem;
   }
 
-  @media (max-width: $mobile-m) {
-    font-size: 16px;
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-  }
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 20px;
-  row-gap: 20px;
-
-  @media (max-width: $mobile-l) {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  @media (max-width: $mobile-m) {
-    gap: 14px;
-  }
-}
-
-.form-group {
-  margin-bottom: 16px;
-
-  @media (max-width: $mobile-l) {
-    margin-bottom: 0;
-  }
-}
-
-.form-group-full {
-  grid-column: 1 / -1;
-}
-
-.full-width {
-  grid-column: 1 / -1;
-}
-
-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 6px;
-  color: #555;
-
-  @media (max-width: $mobile-m) {
-    font-size: 13px;
-    margin-bottom: 5px;
-  }
-}
-
-input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-
-  @media (max-width: $mobile-m) {
-    padding: 9px 10px;
-    font-size: 13px;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: #4a90e2;
-  }
-
-  &:disabled {
-    background-color: #f9f9f9;
-    color: #666;
-  }
-
-  &.invalid {
-    border-color: #e74c3c;
-  }
-}
-
-.error {
-  color: #e74c3c;
-  font-size: 12px;
-  margin-top: 4px;
-  display: block;
-
-  @media (max-width: $mobile-m) {
-    font-size: 11px;
-  }
-}
-
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-
-  @media (max-width: $mobile-l) {
-    margin-top: 20px;
-    gap: 10px;
-  }
-
-  @media (max-width: $mobile-m) {
+  .form-grid {
+    display: flex;
     flex-direction: column;
-    margin-top: 16px;
-    gap: 8px;
-  }
-}
-
-button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-size: 14px;
-
-  @media (max-width: $mobile-l) {
-    padding: 10px 14px;
-    font-size: 13px;
+    gap: 1.3rem;
   }
 
-  @media (max-width: $mobile-m) {
-    width: 100%;
-    padding: 11px 16px;
-    font-size: 14px;
-  }
-}
+  .form-group {
+    display: flex;
+    flex-direction: column;
 
-.btn-edit {
-  background-color: #4a90e2;
-  color: white;
+    label {
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #333;
+    }
 
-  &:hover {
-    background-color: #3a7bc8;
-  }
+    input {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      font-family: 'Roboto', sans-serif;
 
-  &:active {
-    transform: scale(0.98);
-  }
-}
+      &:focus {
+        border-color: #7d0b12;
+      }
 
-.btn-password {
-  background-color: #f5f5f5;
-  color: #333;
+      &:disabled {
+        background-color: #f9f9f9;
+        color: #666;
+      }
 
-  &:hover {
-    background-color: #e5e5e5;
-  }
+      &.invalid {
+        border-color: #d93025;
+      }
+    }
 
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-.btn-save {
-  background-color: #2ecc71;
-  color: white;
-
-  &:hover {
-    background-color: #27ae60;
+    small.error {
+      color: #d93025;
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+    }
   }
 
-  &:disabled {
-    background-color: #95e6b8;
-    cursor: not-allowed;
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.3s;
+      font-family: 'Roboto', sans-serif;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    .edit-btn {
+      background-color: #7d0b12;
+      color: #fff;
+
+      &:hover {
+        background-color: #a3121d;
+      }
+    }
+
+    .save-btn {
+      background-color: #136f2e;
+      color: #fff;
+
+      &:hover {
+        background-color: #0e5925;
+      }
+    }
+
+    .change-pass-btn {
+      background-color: #4b5563;
+      color: #fff;
+
+      &:hover {
+        background-color: #374151;
+      }
+    }
   }
 
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-}
+  .alert {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: 'Roboto', sans-serif;
 
-.btn-cancel {
-  background-color: #f5f5f5;
-  color: #333;
+    &.success {
+      background-color: #e6f4ea;
+      color: #137333;
+      border: 1px solid #c1e1c5;
+    }
 
-  &:hover {
-    background-color: #e5e5e5;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-.success-message {
-  margin-top: 16px;
-  padding: 10px;
-  background-color: #d4edda;
-  color: #155724;
-  border-radius: 4px;
-  font-size: 14px;
-
-  @media (max-width: $mobile-m) {
-    margin-top: 14px;
-    padding: 9px;
-    font-size: 13px;
-  }
-}
-
-.error-message {
-  margin-top: 16px;
-  padding: 10px;
-  background-color: #f8d7da;
-  color: #721c24;
-  border-radius: 4px;
-  font-size: 14px;
-
-  @media (max-width: $mobile-m) {
-    margin-top: 14px;
-    padding: 9px;
-    font-size: 13px;
+    &.error {
+      background-color: #fce8e6;
+      color: #d93025;
+      border: 1px solid #f5c6cb;
+    }
   }
 }
 
 // Loading state
 p {
-  font-size: 14px;
+  font-size: 0.95rem;
   color: #666;
+  font-family: 'Roboto', sans-serif;
+}
 
-  @media (max-width: $mobile-m) {
-    font-size: 13px;
+// Responsive Design
+@media (max-width: 1024px) {
+  .profile-container {
+    .profile-card {
+      padding: 20px;
+    }
   }
 }
 
-// Ensure proper spacing on very small screens
-@media (max-width: $mobile-s) {
-  .main-content {
-    padding: 10px;
+@media (max-width: 425px) {
+  .profile-container-wrapper {
+    padding: 0.5rem;
   }
+  
+  .profile-container {
+    .profile-card {
+      padding: 1rem;
+    }
 
-  .profile-card {
-    padding: 14px;
-  }
+    .nav-header {
+      .page-title {
+        font-size: 1.5rem;
+      }
+    }
 
-  .page-title {
-    font-size: 16px;
-  }
+    .user-header {
+      font-size: 1.1rem;
+    }
 
-  .admin-header {
-    font-size: 15px;
-  }
+    .button-group {
+      flex-direction: column;
+      gap: 0.75rem;
 
-  input {
-    padding: 8px 10px;
-    font-size: 12px;
-  }
-
-  button {
-    padding: 10px 14px;
-    font-size: 13px;
+      button {
+        width: 100%;
+      }
+    }
   }
 }

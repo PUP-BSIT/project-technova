@@ -3,6 +3,15 @@
 .page-header {
   padding: $spacing-md $spacing-3xl $spacing-xs;
   margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  
+  h1 {
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-xs;
+    font-family: $font-family; // Roboto
+  }
 }
 
 .welcome-banner {
@@ -10,6 +19,8 @@
   color: $white;
   padding: $spacing-xs $spacing-3xl;
   margin-bottom: $spacing-sm;
+  width: 100%;
+  box-sizing: border-box;
 
   h2 {
     font-size: $font-size-4xl;
@@ -30,6 +41,8 @@
   grid-template-columns: repeat(4, 1fr);
   gap: $spacing-lg;
   padding: $spacing-md $spacing-3xl $spacing-lg;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .stat-card {
@@ -65,6 +78,8 @@
 
 .recent-section {
   padding: 0 $spacing-3xl $spacing-2xl;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .section-header {
@@ -80,17 +95,27 @@
   }
 }
 
+.view-all-btn,
 .see-all-btn {
   background: none;
   border: none;
-  color: $text-secondary;
+  color: $primary-color;
   font-size: $font-size-base;
+  font-weight: $font-weight-medium;
   cursor: pointer;
   font-family: $font-family;
   text-decoration: none;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  transition: all $transition-fast ease;
 
   &:hover {
-    color: $text-primary;
+    color: $primary-dark;
+    background: rgba($primary-color, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
@@ -108,6 +133,52 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: $shadow-md;
+  transition: all $transition-fast ease;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+.status-badge {
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  text-transform: capitalize;
+  font-family: $font-family;
+  white-space: nowrap;
+
+  &.status-pending {
+    background: #fcd34d;
+    color: #78350f;
+  }
+
+  &.status-approved {
+    background: #7fe87f;
+    color: #1a5c1a;
+  }
+
+  &.status-rejected {
+    background: #fca5a5;
+    color: #7f1d1d;
+  }
+
+  &.status-returned {
+    background: #cfe2ff;
+    color: #084298;
+  }
+
+  &.status-completed {
+    background: #cfe2ff;
+    color: #084298;
+  }
+
+  &.status-waitlisted {
+    background: #fbbf24;
+    color: #78350f;
+  }
 }
 
 .request-info {
@@ -214,7 +285,17 @@
 }
 
 @media (max-width: 768px) {
-  .page-header,
+  .page-header {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg; // Compact padding, avoid hamburger button
+    padding-left: 80px !important; // Avoid hamburger button - ensure it's applied
+    
+    h1 {
+      font-size: $font-size-2xl; // Smaller title on mobile
+      font-weight: $font-weight-medium; // Bold
+      font-family: $font-family; // Roboto
+    }
+  }
+  
   .welcome-banner,
   .stats-grid,
   .recent-section,

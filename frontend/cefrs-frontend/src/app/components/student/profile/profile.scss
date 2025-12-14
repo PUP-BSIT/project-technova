@@ -149,12 +149,22 @@
     align-items: center;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    padding-left: 0;
 
     .page-title {
       font-size: 1.8rem;
       font-weight: 600;
       color: #7d0b12;
       margin: 0;
+    }
+    
+    @media (max-width: 768px) {
+      padding-left: 80px; // Avoid hamburger button
+      margin-bottom: 1rem;
+      
+      .page-title {
+        font-size: 1.4rem; // Smaller on mobile
+      }
     }
   }
 
