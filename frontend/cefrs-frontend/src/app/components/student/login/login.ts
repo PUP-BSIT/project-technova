@@ -20,14 +20,15 @@ export class LoginComponent implements OnInit {
   showPassword: boolean = false;
   selectedRole: string = '';
   isLoading: boolean = false;
+  rememberMe: boolean = true; // Default to true for better UX
 
   credentials = {
     email: '',
     password: ''
   };
-	 errors = { email: '', password: '' };
+  errors = { email: '', password: '' };
   infoMessage: string = '';
-  
+
   // Validation flags
   showEmailError = false;
 
@@ -50,26 +51,26 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-	clearError(field: 'email' | 'password'): void {
-		this.errors[field] = '';
+  clearError(field: 'email' | 'password'): void {
+    this.errors[field] = '';
     this.infoMessage = '';
     if (field === 'email') {
       this.showEmailError = false;
     }
-	}
-  
+  }
+
   isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
-  
+
   isValidStudentId(studentId: string): boolean {
     // Student ID format: YYYY-XXXXX-XX-X (e.g., 2023-00439-TG-0)
     // Accepts both uppercase and lowercase letters
     const studentIdRegex = /^\d{4}-\d{5}-[A-Za-z]{2}-\d$/;
     return studentIdRegex.test(studentId);
   }
-  
+
   isEmailOrStudentId(input: string): 'email' | 'studentId' | 'invalid' {
     if (this.isValidEmail(input)) {
       return 'email';
@@ -81,7 +82,7 @@ export class LoginComponent implements OnInit {
 
   onLogin(): void {
     this.infoMessage = '';
-		this.errors = { email: '', password: '' };
+    this.errors = { email: '', password: '' };
     this.showEmailError = false;
 
     // Validate email/student ID field
@@ -95,19 +96,18 @@ export class LoginComponent implements OnInit {
         this.showEmailError = true;
       }
     }
-    
+
     // Validate password
     if (!this.credentials.password || !this.credentials.password.trim()) {
       this.errors.password = 'Password is required.';
     }
-    
+
     if (this.errors.email || this.errors.password) return;
 
     this.isLoading = true;
 
-    this.authService.login(this.credentials.email, this.credentials.password).subscribe({
+    this.authService.login(this.credentials.email, this.credentials.password, this.rememberMe).subscribe({
       next: (response) => {
-        
         this.isLoading = false;
 
         // Get role from localStorage (stored by AuthService after successful login)
@@ -126,29 +126,29 @@ export class LoginComponent implements OnInit {
         console.error('Login error:', error);
         this.isLoading = false;
 
-				let backendMsg = '';
-				if (error.error?.message) {
-					backendMsg = error.error.message.replace(/^Login failed: /, '');
-				} else if (error.message) {
-					backendMsg = error.message;
-				}
+        let backendMsg = '';
+        if (error.error?.message) {
+          backendMsg = error.error.message.replace(/^Login failed: /, '');
+        } else if (error.message) {
+          backendMsg = error.message;
+        }
 
-				if (!backendMsg) {
-					this.errors.password = 'Login failed. Please check your credentials.';
-					return;
-				}
+        if (!backendMsg) {
+          this.errors.password = 'Login failed. Please check your credentials.';
+          return;
+        }
 
-				if (/email.*not registered|student id.*not registered/i.test(backendMsg)) {
-					this.errors.email = 'This email address or Student ID is not registered.';
-					this.showEmailError = true;
-				} else if (/incorrect password/i.test(backendMsg)) {
-					this.errors.password = 'Incorrect password. Please try again.';
-				} else if (/deactivated/i.test(backendMsg)) {
-					this.errors.email = 'This account has been deactivated.';
-					this.showEmailError = true;
-				} else {
-					this.errors.password = backendMsg;
-				}
+        if (/email.*not registered|student id.*not registered/i.test(backendMsg)) {
+          this.errors.email = 'This email address or Student ID is not registered.';
+          this.showEmailError = true;
+        } else if (/incorrect password/i.test(backendMsg)) {
+          this.errors.password = 'Incorrect password. Please try again.';
+        } else if (/deactivated/i.test(backendMsg)) {
+          this.errors.email = 'This account has been deactivated.';
+          this.showEmailError = true;
+        } else {
+          this.errors.password = backendMsg;
+        }
       }
     });
   }
@@ -174,4 +174,3 @@ export class LoginComponent implements OnInit {
     window.history.back();
   }
 }
-
