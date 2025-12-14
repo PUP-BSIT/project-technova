@@ -14,6 +14,7 @@ import { AuthService } from '../../../services/auth';
 export class AdminLogin {
   showPassword = false;
   isLoading = false;
+  rememberMe = true; // Default to true
   showForgotPasswordModal = false;
   forgotPasswordEmail = '';
   forgotPasswordLoading = false;
@@ -92,11 +93,8 @@ export class AdminLogin {
     const email = this.loginForm.value.email;
     const password = this.loginForm.value.password;
 
-    
-
-    this.authService.login(email, password).subscribe({
+    this.authService.login(email, password, this.rememberMe).subscribe({
       next: (response) => {
-        
         this.isLoading = false;
 
         const role = this.authService.getUserRole();
@@ -172,7 +170,6 @@ export class AdminLogin {
 
     this.authService.forgotPassword(this.forgotPasswordEmail).subscribe({
       next: (response) => {
-        
         this.forgotPasswordLoading = false;
         this.forgotPasswordSuccess = true;
       },

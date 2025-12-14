@@ -59,8 +59,25 @@
         }
       </div>
 
-      <div class="forgot-password">
-        <a href="#" (click)="onForgotPassword($event)">Forgot password?</a>
+      <!-- Remember Me and Forgot Password Row -->
+      <div class="remember-forgot-container">
+        <div class="remember-me-wrapper">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            name="rememberMe"
+            [(ngModel)]="rememberMe"
+            [ngModelOptions]="{standalone: true}"
+            class="remember-checkbox"
+          />
+          <label for="rememberMe" class="remember-label">
+            Remember me
+          </label>
+        </div>
+
+        <a class="forgot-password-link" href="#" (click)="onForgotPassword($event)">
+          Forgot password?
+        </a>
       </div>
 
       <button type="submit" class="btn-login" [disabled]="isLoading">
