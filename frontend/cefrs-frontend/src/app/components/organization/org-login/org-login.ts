@@ -16,41 +16,40 @@ export class OrgLoginComponent {
   private authService = inject(AuthService);
 
   credentials = { email: '', password: '' };
-		errors = { email: '', password: '' };
+  errors = { email: '', password: '' };
   showPassword = false;
   isLoading = false;
+  rememberMe = true; // Default to true
   errorMessage = '';
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
-		clearError(field: 'email' | 'password'): void {
-			this.errors[field] = '';
-		}
+  clearError(field: 'email' | 'password'): void {
+    this.errors[field] = '';
+  }
 
   onLogin(): void {
-		this.errorMessage = '';
-		this.errors = { email: '', password: '' };
+    this.errorMessage = '';
+    this.errors = { email: '', password: '' };
 
-		if (!this.credentials.email) {
-			this.errors.email = 'Email is required.';
-		}
-		if (!this.credentials.password) {
-			this.errors.password = 'Password is required.';
-		}
-		if (this.errors.email || this.errors.password) return;
+    if (!this.credentials.email) {
+      this.errors.email = 'Email is required.';
+    }
+    if (!this.credentials.password) {
+      this.errors.password = 'Password is required.';
+    }
+    if (this.errors.email || this.errors.password) return;
 
     this.isLoading = true;
-    
 
-    this.authService.login(this.credentials.email, this.credentials.password).subscribe({
+    this.authService.login(this.credentials.email, this.credentials.password, this.rememberMe).subscribe({
       next: (response) => {
-        
         this.isLoading = false;
 
         const role = this.authService.getUserRole();
-        
+
         // Redirect to org-dashboard for organization users
         if (role === 'CAMPUS_ORGANIZATION') {
           this.router.navigate(['/org-dashboard']);
@@ -67,31 +66,31 @@ export class OrgLoginComponent {
         console.error('Login error:', error);
         this.isLoading = false;
 
-				// Extract error message from backend response and map to fields
-				let backendMsg = '';
-				if (error.error?.message) {
-					backendMsg = error.error.message.replace(/^Login failed: /, '');
-				} else if (error.message) {
-					backendMsg = error.message;
-				}
+        // Extract error message from backend response and map to fields
+        let backendMsg = '';
+        if (error.error?.message) {
+          backendMsg = error.error.message.replace(/^Login failed: /, '');
+        } else if (error.message) {
+          backendMsg = error.message;
+        }
 
-				// Default/fallback
-				if (!backendMsg) {
-					this.errors.password = 'Login failed. Please check your credentials.';
-					return;
-				}
+        // Default/fallback
+        if (!backendMsg) {
+          this.errors.password = 'Login failed. Please check your credentials.';
+          return;
+        }
 
-				// Map common backend messages to field errors
-				if (/email not registered/i.test(backendMsg)) {
-					this.errors.email = 'This email is not registered.';
-				} else if (/incorrect password/i.test(backendMsg)) {
-					this.errors.password = 'Incorrect password. Please try again.';
-				} else if (/deactivated/i.test(backendMsg)) {
-					this.errors.email = 'This account is deactivated.';
-				} else {
-					// If message is ambiguous, show under password by convention
-					this.errors.password = backendMsg;
-				}
+        // Map common backend messages to field errors
+        if (/email not registered/i.test(backendMsg)) {
+          this.errors.email = 'This email is not registered.';
+        } else if (/incorrect password/i.test(backendMsg)) {
+          this.errors.password = 'Incorrect password. Please try again.';
+        } else if (/deactivated/i.test(backendMsg)) {
+          this.errors.email = 'This account is deactivated.';
+        } else {
+          // If message is ambiguous, show under password by convention
+          this.errors.password = backendMsg;
+        }
       }
     });
   }

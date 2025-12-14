@@ -12,11 +12,11 @@
           id="email"
           name="email"
           placeholder="yourorg@gmail.com"
-			[(ngModel)]="credentials.email"
-			(ngModelChange)="clearError('email')"
+          [(ngModel)]="credentials.email"
+          (ngModelChange)="clearError('email')"
           required
         />
-		<div class="field-error" *ngIf="errors.email">{{ errors.email }}</div>
+        <div class="field-error" *ngIf="errors.email">{{ errors.email }}</div>
       </div>
 
       <div class="form-group">
@@ -27,8 +27,8 @@
             id="password"
             name="password"
             placeholder="Enter your password"
-			[(ngModel)]="credentials.password"
-			(ngModelChange)="clearError('password')"
+            [(ngModel)]="credentials.password"
+            (ngModelChange)="clearError('password')"
             required
           />
           <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
@@ -40,14 +40,33 @@
             </svg>
           </button>
         </div>
-		<div class="field-error" *ngIf="errors.password">{{ errors.password }}</div>
+        <div class="field-error" *ngIf="errors.password">{{ errors.password }}</div>
       </div>
 
-      <div class="forgot-password">
-        <a href="#" (click)="onForgotPassword($event)">Forgot password?</a>
+      <!-- Remember Me and Forgot Password Row -->
+      <div class="remember-forgot-container">
+        <div class="remember-me-wrapper">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            name="rememberMe"
+            [(ngModel)]="rememberMe"
+            class="remember-checkbox"
+          />
+          <label for="rememberMe" class="remember-label">
+            Remember me
+          </label>
+        </div>
+
+        <a class="forgot-password-link" href="#" (click)="onForgotPassword($event)">
+          Forgot password?
+        </a>
       </div>
 
-      <button type="submit" class="btn-login">Login</button>
+      <button type="submit" class="btn-login" [disabled]="isLoading">
+        <ng-container *ngIf="isLoading; else loginText">Logging in...</ng-container>
+        <ng-template #loginText>Login</ng-template>
+      </button>
 
       <div class="signup-link">
         Don't have an account? <a (click)="goToRegister()">Sign up</a>
