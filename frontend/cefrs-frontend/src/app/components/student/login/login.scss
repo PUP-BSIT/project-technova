@@ -84,7 +84,7 @@ html {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
-  
+
   h1 {
     font-size: $font-xl;
     color: $primary-color;
@@ -92,7 +92,7 @@ html {
     text-align: center;
     font-weight: $font-bold;
   }
-  
+
   .subtitle {
     font-size: $font-md;
     color: $text-primary;
@@ -100,6 +100,7 @@ html {
     text-align: center;
     font-weight: $font-regular;
   }
+
   position: relative;
 }
 
@@ -140,19 +141,19 @@ html {
 .login-form {
   .form-group {
     margin-bottom: $spacing-lg;
-    
+
     label {
       display: block;
       margin-bottom: $spacing-xs;
       color: $text-primary;
       font-weight: $font-medium;
       font-size: $font-sm;
-      
+
       .required {
         color: $primary-color;
       }
     }
-    
+
     input {
       width: 100%;
       padding: 14px $spacing-md;
@@ -163,24 +164,24 @@ html {
       background: $input-background;
       transition: border-color $transition-base;
       box-sizing: border-box;
-      
+
       &:focus {
         outline: none;
         border-color: $border-focus;
       }
-      
+
       &::placeholder {
         color: $text-placeholder;
       }
     }
-    
+
     .input-with-icon {
       position: relative;
-      
+
       input {
         padding-right: 45px;
       }
-      
+
       .toggle-password {
         position: absolute;
         right: $spacing-sm;
@@ -195,28 +196,29 @@ html {
         justify-content: center;
         color: $text-secondary;
         transition: color $transition-base;
-        
+
         &:hover {
           color: darken($text-secondary, 20%);
         }
-        
+
         svg {
           width: 20px;
           height: 20px;
         }
       }
     }
+
     .field-error {
       color: #dc2626;
       font-size: $font-xs;
       margin-top: 6px;
     }
   }
-  
+
   .forgot-password-link {
     text-align: center;
     margin-bottom: $spacing-lg;
-    
+
     a {
       color: $accent-color;
       text-decoration: none;
@@ -224,13 +226,13 @@ html {
       font-weight: $font-medium;
       transition: all $transition-base;
       cursor: pointer;
-      
+
       &:hover {
         text-decoration: underline;
       }
     }
   }
-  
+
   .btn-login {
     width: 100%;
     padding: 14px;
@@ -244,7 +246,7 @@ html {
     transition: background $transition-base;
     font-family: 'Roboto', sans-serif;
     margin-bottom: $spacing-lg;
-    
+
     &:hover {
       background: $primary-hover;
     }
@@ -254,7 +256,7 @@ html {
       cursor: not-allowed;
     }
   }
-  
+
   .info-message {
     text-align: center;
     font-size: $font-sm;
@@ -266,14 +268,14 @@ html {
     text-align: center;
     font-size: $font-sm;
     color: $text-primary;
-    
+
     a {
       color: $secondary-color;
       text-decoration: none;
       font-weight: $font-medium;
       cursor: pointer;
       transition: all $transition-base;
-      
+
       &:hover {
         text-decoration: underline;
       }
@@ -281,3 +283,81 @@ html {
   }
 }
 
+.remember-forgot-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0 1.5rem 0;
+  gap: 1rem;
+}
+
+.remember-me-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remember-checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: #631212; // Change to match primary color
+  border-radius: 3px;
+
+  &:focus {
+    outline: 2px solid rgba(31, 1, 1, 0.3);
+    outline-offset: 2px;
+  }
+}
+
+.remember-label {
+  font-size: 0.875rem;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  font-weight: 400;
+
+  &:hover {
+    color: #000;
+  }
+}
+
+// TODO: Update the existing .forgot-password-link to work in the new layout
+.forgot-password-link {
+  font-size: 0.875rem;
+  color: #631212; // Change to match primary color
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: #631212;
+    text-decoration: underline;
+  }
+
+  &:focus {
+    outline: 2px solid rgba(31, 1, 1, 0.3);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+// Responsive design for mobile
+@media (max-width: 640px) {
+  .remember-forgot-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .remember-me-wrapper {
+    width: 100%;
+  }
+
+  .forgot-password-link {
+    width: 100%;
+  }
+}

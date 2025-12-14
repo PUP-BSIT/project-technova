@@ -53,8 +53,24 @@
         <div class="field-error" *ngIf="errors.password">{{ errors.password }}</div>
       </div>
       
-      <div class="forgot-password-link">
-        <a (click)="onForgotPassword($event)">Forgot password?</a>
+      <!-- Remember Me and Forgot Password Row -->
+      <div class="remember-forgot-container">
+        <div class="remember-me-wrapper">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            name="rememberMe"
+            [(ngModel)]="rememberMe"
+            class="remember-checkbox"
+          />
+          <label for="rememberMe" class="remember-label">
+            Remember me
+          </label>
+        </div>
+
+        <a class="forgot-password-link" (click)="onForgotPassword($event)">
+          Forgot password?
+        </a>
       </div>
 
       <div class="info-message" *ngIf="infoMessage">
@@ -73,4 +89,3 @@
     </form>
   </div>
 </div>
-
