@@ -9,7 +9,7 @@ $text: #000;
 $placeholder: #b8b8b8;
 $radius: 20px;
 
-/* ✅ Remove default spacing */
+/* Remove default spacing */
 :host {
   display: block;
   height: 100vh;
@@ -36,7 +36,7 @@ $radius: 20px;
 
 .org-login-card {
   background: $card-bg;
-  padding: 60px 80px; 
+  padding: 60px 80px;
   border-radius: $radius;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: left;
@@ -116,13 +116,13 @@ $radius: 20px;
       position: relative;
       width: 100%;
       display: block;
-      
+
       input {
         padding-right: 45px;
         width: 100%;
         box-sizing: border-box;
       }
-      
+
       .toggle-password {
         position: absolute;
         right: 12px;
@@ -137,11 +137,11 @@ $radius: 20px;
         justify-content: center;
         color: #6b7280;
         transition: color 0.3s ease;
-        
+
         &:hover {
           color: darken(#6b7280, 20%);
         }
-        
+
         svg {
           width: 20px;
           height: 20px;
@@ -150,21 +150,69 @@ $radius: 20px;
     }
   }
 
-  .forgot-password {
-    text-align: center;
-    margin-top: -8px;
-    margin-bottom: 28px;
+  // Remember Me and Forgot Password Container
+  .remember-forgot-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: -8px 0 28px 0;
+    gap: 1rem;
+  }
 
-    a {
-      color: $accent;
-      font-weight: 500;
-      text-decoration: none;
-      font-size: 14px;
+  .remember-me-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-      &:hover {
-        text-decoration: underline;
-      }
+  .remember-checkbox {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    accent-color: $primary;
+    border-radius: 3px;
+
+    &:focus {
+      outline: 2px solid rgba($primary, 0.3);
+      outline-offset: 2px;
     }
+  }
+
+  .remember-label {
+    font-size: 14px;
+    color: $text;
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+    font-weight: 400;
+
+    &:hover {
+      color: darken($text, 20%);
+    }
+  }
+
+  .forgot-password-link {
+    color: $accent;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus {
+      outline: 2px solid rgba($accent, 0.3);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  .forgot-password {
+    display: none;
   }
 
   .btn-login {
@@ -180,8 +228,13 @@ $radius: 20px;
     transition: background 0.3s ease;
     font-family: 'Roboto', sans-serif;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background: $hover;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 
@@ -222,6 +275,20 @@ $radius: 20px;
   &:hover {
     background: rgba($primary, 0.15);
     border-color: $primary;
+  }
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .remember-forgot-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .remember-me-wrapper,
+  .forgot-password-link {
+    width: 100%;
   }
 }
 
