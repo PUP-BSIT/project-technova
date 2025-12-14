@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 interface LoginResponse {
   accessToken: string;
@@ -32,15 +33,35 @@ export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
+    // Listen for storage changes from other tabs
+    this.setupStorageListener();
+  }
+
+  private setupStorageListener(): void {
+    window.addEventListener('storage', (event: StorageEvent) => {
+      // This event only fires when storage changes in OTHER tabs
+      if (event.key === 'accessToken') {
+        if (event.newValue) {
+          // Token added/updated in another tab - update auth state
+          this.isAuthenticatedSubject.next(true);
+        } else {
+          // Token removed in another tab - logout this tab too
+          this.isAuthenticatedSubject.next(false);
+          this.router.navigate(['/login']);
+        }
+      }
+    });
   }
 
   register(userData: any): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/register`, userData).pipe(
       tap((response: LoginResponse) => {
-        
         if (response.accessToken) {
-          this.storeTokens(response);
+          this.storeTokens(response, true); // Default remember me to true
           this.isAuthenticatedSubject.next(true);
         }
       }),
@@ -51,12 +72,11 @@ export class AuthService {
     );
   }
 
-  login(email: string, password: string): Observable<LoginResponse> {
+  login(email: string, password: string, rememberMe: boolean = true): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       tap((response: LoginResponse) => {
-        
         if (response.accessToken) {
-          this.storeTokens(response);
+          this.storeTokens(response, rememberMe);
           this.isAuthenticatedSubject.next(true);
         }
       }),
@@ -68,21 +88,18 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('role');
+    // Clear from both localStorage and sessionStorage
+    ['accessToken', 'refreshToken', 'userId', 'role'].forEach(key => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
     this.isAuthenticatedSubject.next(false);
   }
 
   getUserProfile(): Observable<UserProfile> {
-    // Note: The ProfileService (which you also provided) calls the same endpoint.
-    // It's usually better to have only one service responsible for a resource (User/Profile).
-    // If you plan to use this one instead of ProfileService, ensure you update
-    // the Dashboard and Profile components to use this method.
     return this.http.get<UserProfile>(`${this.userApiUrl}/profile`).pipe(
       tap((profile: UserProfile) => {
-        
+        console.log('User profile fetched:', profile);
       }),
       catchError((error) => {
         console.error('Error fetching profile:', error);
@@ -94,7 +111,7 @@ export class AuthService {
   updateUserProfile(userData: any): Observable<UserProfile> {
     return this.http.patch<UserProfile>(`${this.userApiUrl}/update`, userData).pipe(
       tap((profile: UserProfile) => {
-        
+        console.log('Profile updated:', profile);
       }),
       catchError((error) => {
         console.error('Profile update error:', error);
@@ -103,24 +120,30 @@ export class AuthService {
     );
   }
 
-  private storeTokens(response: LoginResponse): void {
-    localStorage.setItem('accessToken', response.accessToken);
-    localStorage.setItem('refreshToken', response.refreshToken);
-    localStorage.setItem('userId', response.userId.toString());
-    localStorage.setItem('role', response.role);
+  private storeTokens(response: LoginResponse, rememberMe: boolean): void {
+    const storage = rememberMe ? localStorage : sessionStorage;
+
+    storage.setItem('accessToken', response.accessToken);
+    storage.setItem('refreshToken', response.refreshToken);
+    storage.setItem('userId', response.userId.toString());
+    storage.setItem('role', response.role);
   }
 
   private hasToken(): boolean {
-    return !!localStorage.getItem('accessToken');
+    return !!this.getToken();
   }
 
   getToken(): string | null {
-    // Correctly returns the access token key: 'accessToken'
-    return localStorage.getItem('accessToken');
+    // Check both storages
+    return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
   }
 
   getUserRole(): string | null {
-    return localStorage.getItem('role');
+    return localStorage.getItem('role') || sessionStorage.getItem('role');
+  }
+
+  getUserId(): string | null {
+    return localStorage.getItem('userId') || sessionStorage.getItem('userId');
   }
 
   isLoggedIn(): boolean {
@@ -130,7 +153,7 @@ export class AuthService {
   checkPhoneNumberAvailability(phoneNumber: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/check-phone?phoneNumber=${phoneNumber}`).pipe(
       tap((isAvailable) => {
-        
+        console.log('Phone availability:', isAvailable);
       }),
       catchError((error) => {
         console.error('Error checking phone availability:', error);
@@ -146,7 +169,7 @@ export class AuthService {
   forgotPassword(email: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/forgot-password`, { email }).pipe(
       tap((response) => {
-        
+        console.log('Forgot password response:', response);
       }),
       catchError((error) => {
         console.error('Forgot password error:', error);
@@ -158,7 +181,7 @@ export class AuthService {
   resetPassword(token: string, newPassword: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword }).pipe(
       tap((response) => {
-        
+        console.log('Reset password response:', response);
       }),
       catchError((error) => {
         console.error('Reset password error:', error);
