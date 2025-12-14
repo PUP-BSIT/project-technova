@@ -10,6 +10,7 @@ import { StudentDashboard } from './components/student/dashboard/student-dashboa
 import { OrgDashboardComponent } from './components/organization/org-dashboard/org-dashboard';
 import { AdminDashboard } from './components/admin/admin-dashboard/admin-dashboard';
 import { AuthGuard } from './guards/auth-guard';
+import { LoginRedirectGuard } from './guards/login-redirect-guard'; // ← ADD THIS IMPORT
 import { AdminProfileComponent } from './components/admin/admin-profile/admin-profile';
 import { AdminChangePasswordComponent } from './components/admin/admin-change-password/admin-change-password';
 import { CalendarView } from './components/admin/admin-dashboard/calendar/calendar-view/calendar-view';
@@ -34,13 +35,19 @@ import { ForgotPassword } from './components/forgot-password/forgot-password';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
-  { path: 'select-role', component: RoleSelectionComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'org-login', component: OrgLoginComponent },
-  { path: 'admin-login', component: AdminLogin },
-  { path: 'register', component: RegisterComponent },
-  { path: 'org-register', component: OrgRegisterComponent },
-  { path: 'admin-register', component: AdminRegister },
+  { path: 'select-role', component: RoleSelectionComponent, canActivate: [LoginRedirectGuard] },
+
+  // Login Routes - Add LoginRedirectGuard to prevent logged-in users from accessing
+  { path: 'login', component: LoginComponent, canActivate: [LoginRedirectGuard] },
+  { path: 'org-login', component: OrgLoginComponent, canActivate: [LoginRedirectGuard] },
+  { path: 'admin-login', component: AdminLogin, canActivate: [LoginRedirectGuard] },
+
+  // Register Routes - Add LoginRedirectGuard to prevent logged-in users from accessing
+  { path: 'register', component: RegisterComponent, canActivate: [LoginRedirectGuard] },
+  { path: 'org-register', component: OrgRegisterComponent, canActivate: [LoginRedirectGuard] },
+  { path: 'admin-register', component: AdminRegister, canActivate: [LoginRedirectGuard] },
+
+  // Password Reset Routes - Keep these accessible to both logged-in and logged-out users
   { path: 'forgot-password', component: ForgotPassword },
   { path: 'reset-password', component: ResetPassword },
 
