@@ -63,7 +63,7 @@
 
   <main class="main-content">
     @if (currentView === 'dashboard') {
-      <app-dashboard-view></app-dashboard-view>
+      <app-dashboard-view (viewAllRequested)="onViewAllRequested()"></app-dashboard-view>
     } @else if (currentView === 'manage-request') {
       <app-manage-request></app-manage-request>
     } @else if (currentView === 'calendar') {

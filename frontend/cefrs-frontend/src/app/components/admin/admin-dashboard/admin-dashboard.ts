@@ -129,6 +129,10 @@ export class AdminDashboard implements OnInit {
     this.closeSidenav(); // Close sidenav after navigation on mobile
   }
 
+  onViewAllRequested(): void {
+    this.setCurrentView('manage-request');
+  }
+
   logout(): void {
     this.showLogoutModal = true;
   }
