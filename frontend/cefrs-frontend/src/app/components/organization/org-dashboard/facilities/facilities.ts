@@ -89,7 +89,8 @@ export class OrgFacilitiesComponent implements OnInit {
       Available: 'status-available',
       AVAILABLE: 'status-available',
       Reserved: 'status-reserved',
-      RESERVED: 'status-reserved'
+      RESERVED: 'status-reserved',
+      Waitlisted: 'status-waitlisted'
     };
     return map[status] || 'status-available';
   }

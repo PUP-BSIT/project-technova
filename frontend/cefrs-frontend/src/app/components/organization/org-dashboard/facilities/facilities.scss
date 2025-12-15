@@ -132,11 +132,35 @@
 }
 
 @media (max-width: 768px) {
-  .page-header,
-  .search-bar,
+  .page-header {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg;
+    padding-left: 80px !important;
+
+    h1 {
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-medium;
+      font-family: $font-family;
+    }
+
+    .page-subtitle {
+      font-size: $font-size-sm;
+      margin-top: 0;
+      font-family: $font-family;
+    }
+  }
+
+  .search-bar {
+    padding: $spacing-xs $spacing-lg $spacing-sm;
+  }
+
+  .search-input {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-sm;
+  }
+
   .facilities-grid {
-    padding-left: $spacing-2xl;
-    padding-right: $spacing-2xl;
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
   }
 
   .facilities-container {

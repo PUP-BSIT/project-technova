@@ -3,6 +3,11 @@
 .page-header {
   padding: $spacing-md $spacing-3xl $spacing-xs;
   margin-bottom: 0;
+
+  @media (max-width: 768px) {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg;
+    padding-left: 80px !important;
+  }
 }
 
 .welcome-banner {
@@ -93,6 +98,20 @@
   }
 }
 
+.view-all-btn {
+  background: none;
+  border: none;
+  color: $primary-color;
+  font-size: $font-size-base;
+  cursor: pointer;
+  font-family: $font-family;
+  text-decoration: underline;
+
+  &:hover {
+    color: darken($primary-color, 10%);
+  }
+}
+
 .requests-list {
   display: flex;
   flex-direction: column;
@@ -107,6 +126,12 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: $shadow-md;
+  transition: background $transition-fast ease, transform $transition-fast ease;
+
+  &:hover {
+    background: lighten($gray-lighter, 2%);
+    transform: translateY(-2px);
+  }
 }
 
 .request-info {
@@ -124,6 +149,11 @@
   font-size: $font-size-sm;
   color: $text-secondary;
   font-family: $font-family;
+}
+
+.status-badge.status-waitlisted {
+  background: #fbbf24;
+  color: #78350f;
 }
 
 .transactions-list {
@@ -220,6 +250,7 @@
   .search-bar {
     padding-left: $spacing-lg;
     padding-right: $spacing-lg;
+    padding-left: 80px !important;
   }
 
   .stats-grid {

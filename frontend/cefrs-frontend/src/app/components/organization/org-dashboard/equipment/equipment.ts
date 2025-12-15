@@ -235,7 +235,8 @@ export class OrgEquipmentComponent implements OnInit {
       Available: 'status-available',
       AVAILABLE: 'status-available',
       Reserved: 'status-reserved',
-      Completed: 'status-completed'
+      Completed: 'status-completed',
+      Waitlisted: 'status-waitlisted'
     };
     return map[status] || '';
   }

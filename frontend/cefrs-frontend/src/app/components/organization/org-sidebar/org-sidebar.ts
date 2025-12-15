@@ -20,9 +20,11 @@ export class OrgSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() currentView = 'dashboard';
   @Input() sidenav!: MatSidenav;
   @Output() viewChanged = new EventEmitter<string>();
+  @Output() collapsedChanged = new EventEmitter<boolean>();
 
   isSidebarOpen = true;
   isMobileView = false;
+  isCollapsed = false; // Desktop collapse state
   private readonly DESKTOP_BREAKPOINT = 1024;
   private initialized = false;
 
@@ -140,6 +142,18 @@ export class OrgSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
   logout(): void {
     // Show confirmation modal instead of immediate logout
     this.showLogoutModal = true;
+  }
+
+  toggleCollapse(): void {
+    // Desktop-only collapse/expand that keeps sidenav open but shrinks width
+    if (!this.isMobileView) {
+      this.isCollapsed = !this.isCollapsed;
+      this.collapsedChanged.emit(this.isCollapsed);
+    }
+  }
+
+  get isDesktop(): boolean {
+    return !this.isMobileView;
   }
 
   confirmLogout(): void {

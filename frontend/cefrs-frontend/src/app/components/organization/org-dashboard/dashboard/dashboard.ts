@@ -1,9 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../services/auth';
 import { ReservationService } from '../../../../services/reservation.service';
 import { EquipmentBorrowingService } from '../../../../services/equipment-borrowing.service';
 import { DashboardService } from '../../../../services/dashboard.service';
+import { firstValueFrom } from 'rxjs';
 
 interface User {
   id: number;
@@ -42,6 +43,8 @@ export class Dashboard implements OnInit {
   private borrowingService = inject(EquipmentBorrowingService);
   private dashboardService = inject(DashboardService);
 
+  @Output() viewChangeRequest = new EventEmitter<string>();
+
   user: User | null = null;
   
   stats = {
@@ -55,7 +58,6 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.fetchUserProfile();
-    this.fetchRecentRequests();
     
     // Refresh stats periodically (every 30 seconds) to catch updates
     setInterval(() => {
@@ -72,6 +74,7 @@ export class Dashboard implements OnInit {
         this.user.name = `${profile.firstName} ${profile.lastName}`;
         // Fetch stats after user profile is loaded
         this.fetchStats();
+        this.fetchRecentRequests();
       },
       error: (err) => {
         console.error('Error fetching user profile:', err);
@@ -138,8 +141,8 @@ export class Dashboard implements OnInit {
 
   private fetchStatsManually(): void {
     Promise.all([
-      this.reservationService.getMyReservations().toPromise(),
-      this.borrowingService.getMyBorrowings().toPromise()
+      firstValueFrom(this.reservationService.getMyReservations()),
+      firstValueFrom(this.borrowingService.getMyBorrowings())
     ]).then(([resResp, borResp]) => {
       const reservations: any[] = resResp?.data || [];
       const borrowings: any[] = borResp?.data || [];
@@ -193,14 +196,23 @@ export class Dashboard implements OnInit {
   }
 
   fetchRecentRequests(): void {
+    const userId = this.user?.id || this.getUserIdFromStorage();
+    if (!userId || userId <= 0) {
+      this.recentRequests = [];
+      return;
+    }
+
     Promise.all([
-      this.reservationService.getMyReservations().toPromise(),
-      this.borrowingService.getMyBorrowings().toPromise()
+      firstValueFrom(this.reservationService.getMyReservations()),
+      firstValueFrom(this.borrowingService.getMyBorrowings())
     ]).then(([resResp, borResp]) => {
       const reservations: any[] = resResp?.data || [];
       const borrowings: any[] = borResp?.data || [];
 
-      const resMapped = reservations.map(r => ({
+      const userReservations = reservations.filter(r => !r.userId || r.userId === userId || r.studentId === userId);
+      const userBorrowings = borrowings.filter(b => !b.userId || b.userId === userId || b.studentId === userId);
+
+      const resMapped = userReservations.map(r => ({
         id: `FAC-${r.id}`,
         title: r.facilityName || 'Facility Reservation',
         type: 'Facility' as const,
@@ -211,7 +223,7 @@ export class Dashboard implements OnInit {
         adminNotes: r.adminNotes || ''
       }));
 
-      const borMapped = borrowings.map(b => ({
+      const borMapped = userBorrowings.map(b => ({
         id: `EQP-${b.id}`,
         title: b.equipmentName || 'Equipment Borrowing',
         type: 'Equipment' as const,
@@ -224,15 +236,23 @@ export class Dashboard implements OnInit {
       }));
 
       const allRequests = [...resMapped, ...borMapped].sort((a, b) => {
-        const aRaw = (a as any).createdAtRaw || a.requestDate;
-        const bRaw = (b as any).createdAtRaw || b.requestDate;
-        return (new Date(bRaw).getTime() || 0) - (new Date(aRaw).getTime() || 0);
+        const aRaw = (a as any).createdAtRaw;
+        const bRaw = (b as any).createdAtRaw;
+        if (aRaw && bRaw) {
+          return new Date(bRaw).getTime() - new Date(aRaw).getTime();
+        }
+        return (new Date(b.requestDate).getTime() || 0) - (new Date(a.requestDate).getTime() || 0);
       });
 
       this.recentRequests = allRequests.slice(0, 5);
     }).catch(err => {
       console.error('Error fetching recent requests', err);
+      this.recentRequests = [];
     });
+  }
+
+  navigateToRequests(): void {
+    this.viewChangeRequest.emit('requests');
   }
 
   private prettyStatus(raw: string): string {
@@ -244,7 +264,8 @@ export class Dashboard implements OnInit {
       RETURNED: 'Returned',
       COMPLETED: 'Completed',
       OVERDUE: 'Overdue',
-      BORROWED: 'Borrowed'
+      BORROWED: 'Borrowed',
+      WAITLISTED: 'Waitlisted'
     };
     return map[raw.toUpperCase()] || raw;
   }
@@ -255,7 +276,8 @@ export class Dashboard implements OnInit {
       Pending: 'status-pending',
       Rejected: 'status-rejected',
       Returned: 'status-returned',
-      Completed: 'status-completed'
+      Completed: 'status-completed',
+      Waitlisted: 'status-waitlisted'
     };
     return map[status] || '';
   }
