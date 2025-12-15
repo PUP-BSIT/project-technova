@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { ReportService } from '../../../../services/report.service';
 import { CalendarService } from '../../../../services/calendar.service';
@@ -27,10 +27,12 @@ interface DashboardStats {
   templateUrl: './dashboard-view.html',
   styleUrls: ['./dashboard-view.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, RouterModule]
 })
 export class DashboardView implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+
+  @Output() viewAllRequested = new EventEmitter<void>();
 
   pendingRequests: PendingRequest[] = [];
   stats: DashboardStats = {
@@ -199,8 +201,7 @@ export class DashboardView implements OnInit, OnDestroy {
   }
 
   viewAllRequests(): void {
-    // Navigate to manage requests page
-    this.router.navigate(['/admin-dashboard/manage-request']);
+    this.viewAllRequested.emit();
   }
 
   // Navigate to manage requests with specific filter
