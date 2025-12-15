@@ -38,6 +38,7 @@ export class OrgDashboardComponent implements OnInit, AfterViewInit {
   currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' = 'dashboard';
   isSidebarOpen = true;
   isMobileView = false;
+  isSidebarCollapsed = false;
   private readonly DESKTOP_BREAKPOINT = 1024;
 
   constructor(private router: Router, private cdr: ChangeDetectorRef) {}
@@ -133,6 +134,16 @@ export class OrgDashboardComponent implements OnInit, AfterViewInit {
     // Close sidebar on mobile after navigation
     if (this.isMobileView && this.sidenav) {
       this.sidenav.close();
+    }
+  }
+
+  onSidebarCollapsedChange(collapsed: boolean): void {
+    this.isSidebarCollapsed = collapsed;
+    // Force Angular Material to recalc layout when width changes on desktop
+    if (this.sidenav && !this.isMobileView) {
+      setTimeout(() => {
+        this.cdr.detectChanges();
+      }, 0);
     }
   }
 }
