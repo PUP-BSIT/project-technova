@@ -57,6 +57,7 @@ $spacing-4xl: 48px;
 
 // Layout
 $sidebar-width: 280px;
+$sidebar-width-collapsed: 80px;
 
 // Border Radius
 $radius-sm: 4px;
@@ -81,7 +82,8 @@ $transition-base: 0.3s;
   ::ng-deep .mat-drawer-container {
     background-color: transparent;
     height: 100vh;
-    overflow: hidden;
+    overflow: visible;
+    width: 100%;
   }
 
   ::ng-deep .mat-drawer {
@@ -90,6 +92,29 @@ $transition-base: 0.3s;
     height: 100vh !important;
     max-height: 100vh !important;
     overflow: hidden !important;
+    transition: transform $transition-fast ease, width $transition-fast ease;
+    transform: translateX(0);
+
+    // Desktop: collapse width
+    @media (min-width: 1025px) {
+      &.sidebar-collapsed {
+        width: $sidebar-width-collapsed !important;
+        min-width: $sidebar-width-collapsed !important;
+        max-width: $sidebar-width-collapsed !important;
+      }
+    }
+
+    // Mobile: slide-in drawer
+    @media (max-width: 1024px) {
+      width: $sidebar-width !important;
+      min-width: $sidebar-width !important;
+      max-width: $sidebar-width !important;
+      transform: translateX(-100%);
+
+      &.mat-drawer-opened {
+        transform: translateX(0);
+      }
+    }
   }
 
   ::ng-deep .mat-drawer-inner-container {
@@ -114,6 +139,78 @@ $transition-base: 0.3s;
 
   ::ng-deep .mat-drawer-content {
     height: 100vh;
+    transition: margin-left $transition-fast ease !important;
+    box-sizing: border-box;
+    overflow-x: hidden !important;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  // Smooth backdrop animation
+  ::ng-deep .mat-drawer-backdrop {
+    transition: opacity $transition-fast ease, visibility $transition-fast ease;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  @media (max-width: 1024px) {
+    ::ng-deep .mat-drawer-backdrop {
+      opacity: 0;
+      visibility: hidden;
+
+      &.mat-drawer-backdrop-visible {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  // Ensure children fill width and avoid overflow
+  ::ng-deep .mat-drawer-content > * {
+    transition: all $transition-fast ease;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    overflow-x: hidden !important;
+    min-width: 0;
+    position: relative;
+
+    @media (max-width: 1024px) {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  // Desktop: explicit width calculations for collapsed/expanded
+  @media (min-width: 1025px) {
+    &.sidebar-collapsed-container {
+      ::ng-deep .mat-drawer-content {
+        width: calc(100% - #{$sidebar-width-collapsed}) !important;
+        margin-left: $sidebar-width-collapsed !important;
+        overflow-x: hidden !important;
+      }
+    }
+
+    &:not(.sidebar-collapsed-container) {
+      ::ng-deep .mat-drawer-content {
+        width: calc(100% - #{$sidebar-width}) !important;
+        margin-left: $sidebar-width !important;
+      }
+    }
+  }
+
+  // Mobile: full width regardless of sidebar state
+  @media (max-width: 1024px) {
+    ::ng-deep .mat-drawer-content {
+      width: 100% !important;
+      margin-left: 0 !important;
+    }
+
+    ::ng-deep .mat-drawer-opened ~ .mat-drawer-content {
+      width: 100% !important;
+      margin-left: 0 !important;
+    }
   }
 
 }
@@ -123,29 +220,46 @@ $transition-base: 0.3s;
   height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: width $transition-fast ease;
+
+  &.sidebar-collapsed {
+    width: $sidebar-width-collapsed;
+  }
 }
 
 .main-content {
   padding: 0;
   min-height: 100vh;
+  position: relative;
+  transition: all $transition-fast ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-.hamburger-button {
+// Mobile Hamburger Button
+.mobile-hamburger-button {
+  display: none;
   position: fixed;
-  top: $spacing-xl;
-  left: $spacing-xl;
-  z-index: 1000;
+  top: 16px;
+  left: 16px;
+  z-index: 1001;
   background: $white;
   box-shadow: $shadow-md;
   border: 1px solid $border-color;
   border-radius: $radius-lg;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 48px;
   height: 48px;
   cursor: pointer;
   transition: all $transition-base ease;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 1024px) {
+    display: flex;
+  }
 
   &:hover {
     background: $gray-lighter;
@@ -156,42 +270,25 @@ $transition-base: 0.3s;
     transform: scale(0.95);
   }
 
-  .hamburger-icon {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+  svg {
     width: 24px;
-    height: 18px;
-    cursor: pointer;
+    height: 24px;
+    color: $primary-color;
+    transition: opacity $transition-fast ease, transform $transition-fast ease;
+  }
 
-    span {
-      width: 100%;
-      height: 2px;
-      background-color: $primary-color;
-      border-radius: 2px;
-      transition: all $transition-base ease;
-      transform-origin: center;
-    }
-
-    &.is-open {
-      span:nth-child(1) {
-        transform: rotate(45deg) translate(6px, 6px);
-      }
-
-      span:nth-child(2) {
-        opacity: 0;
-      }
-
-      span:nth-child(3) {
-        transform: rotate(-45deg) translate(6px, -6px);
-      }
+  &.is-open {
+    svg {
+      transform: rotate(0deg);
     }
   }
 }
 
 @media (max-width: 1024px) {
   .main-content {
-    padding-top: 80px;
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-top: 60px; // leave space for floating hamburger
   }
 }
 
@@ -207,6 +304,15 @@ $transition-base: 0.3s;
     margin-bottom: $spacing-xs;
     font-family: $font-family;
   }
+
+  @media (max-width: 768px) {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg;
+    padding-left: 80px !important; // Avoid overlap with hamburger
+
+    h1 {
+      font-size: $font-size-2xl;
+    }
+  }
 }
 
 .page-subtitle {
@@ -214,6 +320,11 @@ $transition-base: 0.3s;
   font-size: $font-size-lg;
   margin-top: $spacing-sm;
   font-family: $font-family;
+
+  @media (max-width: 768px) {
+    font-size: $font-size-sm;
+    margin-top: 0;
+  }
 }
 
 .loading-message {
@@ -275,6 +386,11 @@ $transition-base: 0.3s;
   &.status-reserved {
     background: $danger-color;
     color: $white;
+  }
+
+  &.status-waitlisted {
+    background: #fbbf24;
+    color: #78350f;
   }
 }
 
