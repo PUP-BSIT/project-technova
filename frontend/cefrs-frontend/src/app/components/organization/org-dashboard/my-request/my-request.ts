@@ -5,6 +5,7 @@ import { ReservationService } from '../../../../services/reservation.service';
 import { EquipmentBorrowingService } from '../../../../services/equipment-borrowing.service';
 import { FacilityService } from '../../../../services/facility.service';
 import { EquipmentService } from '../../../../services/equipment.service';
+import { firstValueFrom } from 'rxjs';
 
 interface Request {
   id: string;
@@ -82,7 +83,8 @@ export class OrgMyRequestComponent implements OnInit {
       RETURNED: 'Returned',
       COMPLETED: 'Completed',
       OVERDUE: 'Overdue',
-      BORROWED: 'Borrowed'
+      BORROWED: 'Borrowed',
+      WAITLISTED: 'Waitlisted'
     };
     return map[raw.toUpperCase()] || raw;
   }
@@ -91,8 +93,8 @@ export class OrgMyRequestComponent implements OnInit {
     this.loading = true;
     // fetch reservations and borrowings in parallel
     Promise.all([
-      this.reservationService.getMyReservations().toPromise(),
-      this.borrowingService.getMyBorrowings().toPromise()
+      firstValueFrom(this.reservationService.getMyReservations()),
+      firstValueFrom(this.borrowingService.getMyBorrowings())
     ]).then(([resResp, borResp]) => {
       const reservations: any[] = resResp?.data || [];
       const borrowings: any[] = borResp?.data || [];
@@ -108,7 +110,7 @@ export class OrgMyRequestComponent implements OnInit {
       // fetch images for items
       reservations.forEach((r: any) => {
         if (r.facilityId) {
-          this.facilityService.getFacilityById(r.facilityId).toPromise().then(f => {
+          firstValueFrom(this.facilityService.getFacilityById(r.facilityId)).then(f => {
             const idx = this.allRequests.findIndex(it => it.id === `FAC-${r.id}`);
             if (idx !== -1) this.allRequests[idx].imageUrl = f?.imageUrl || '';
           }).catch(() => {});
@@ -117,7 +119,7 @@ export class OrgMyRequestComponent implements OnInit {
 
       borrowings.forEach((b: any) => {
         if (b.equipmentId) {
-          this.equipmentService.getEquipmentById(b.equipmentId).toPromise().then(e => {
+          firstValueFrom(this.equipmentService.getEquipmentById(b.equipmentId)).then(e => {
             const idx = this.allRequests.findIndex(it => it.id === `EQP-${b.id}`);
             if (idx !== -1) this.allRequests[idx].imageUrl = e?.imageUrl || '';
           }).catch(() => {});
@@ -180,7 +182,8 @@ export class OrgMyRequestComponent implements OnInit {
       Pending: 'status-pending',
       Rejected: 'status-rejected',
       Returned: 'status-returned',
-      Completed: 'status-completed'
+      Completed: 'status-completed',
+      Waitlisted: 'status-waitlisted'
     };
     return map[status] || '';
   }
