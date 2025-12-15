@@ -149,14 +149,43 @@
 }
 
 @media (max-width: 768px) {
-  .page-header,
-  .search-controls,
-  .equipment-grid {
-    padding-left: $spacing-lg;
-    padding-right: $spacing-lg;
+  .page-header {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg;
+    padding-left: 80px !important;
+
+    h1 {
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-medium;
+      font-family: $font-family;
+    }
+
+    .page-subtitle {
+      font-size: $font-size-sm;
+      margin-top: 0;
+    }
+  }
+
+  .search-controls {
+    padding: $spacing-xs $spacing-lg $spacing-sm;
+    margin-bottom: $spacing-sm;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    .search-input,
+    .filter-select {
+      width: 100%;
+      padding: $spacing-sm $spacing-md;
+      font-size: $font-size-sm;
+    }
+
+    .filter-select {
+      min-width: auto;
+    }
   }
 
   .equipment-grid {
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
     padding-bottom: $spacing-2xl;
   }
 
