@@ -30,6 +30,7 @@ export class AdminRegister {
         firstName: ['', [Validators.required]],
         lastName: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
+        address: ['', [Validators.required]],
         phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
         password: ['', [Validators.required, Validators.minLength(8), this.passwordValidator]],
         confirmPassword: ['', [Validators.required]]
@@ -57,10 +58,12 @@ export class AdminRegister {
     if (this.currentStep === 2) {
       const email = this.registerForm.get('email');
       const phone = this.registerForm.get('phoneNumber');
+      const address = this.registerForm.get('address');
       email?.markAsTouched();
       phone?.markAsTouched();
+      address?.markAsTouched();
       // Check if phone is taken
-      if (email?.invalid || phone?.invalid || this.phoneNumberTaken) {
+      if (email?.invalid || phone?.invalid || address?.invalid || this.phoneNumberTaken) {
         if (this.phoneNumberTaken) {
           this.errorMessage = 'This phone number is already registered';
         }
@@ -104,6 +107,7 @@ export class AdminRegister {
       firstName: this.registerForm.value.firstName,
       lastName: this.registerForm.value.lastName,
       email: this.registerForm.value.email,
+      address: this.registerForm.value.address,
       phoneNumber: this.registerForm.value.phoneNumber,
       password: this.registerForm.value.password,
       role: 'ADMINISTRATOR'
