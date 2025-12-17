@@ -56,6 +56,7 @@ export class AdminDashboard implements OnInit {
   // Mobile responsive properties
   isMobileView: boolean = false;
   sidenavOpen: boolean = false;
+  isCollapsed: boolean = false; // Desktop collapse state
 
   navItems: NavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: 'assets/dashboard.png' },
@@ -83,6 +84,19 @@ export class AdminDashboard implements OnInit {
     if (!this.isMobileView) {
       this.sidenavOpen = false; // Close sidenav when switching to desktop
     }
+  }
+
+  toggleCollapse(): void {
+    // Only allow collapse on desktop
+    if (!this.isMobileView) {
+      // Toggle between expanded and collapsed (icons only) states
+      // Sidebar stays open, just changes width
+      this.isCollapsed = !this.isCollapsed;
+    }
+  }
+
+  get isDesktop(): boolean {
+    return !this.isMobileView;
   }
 
   toggleSidenav(): void {

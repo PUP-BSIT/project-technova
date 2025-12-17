@@ -9,6 +9,7 @@ $border-color: #e0e0e0;
 
 $sidebar-width: 280px;
 $sidebar-width-container: 280px;
+$sidebar-width-collapsed: 80px;
 $mobile-header-height: 60px;
 
 $font-family: 'Roboto', sans-serif;
@@ -131,7 +132,7 @@ $tablet: 1024px;
   left: 0;
   top: 0;
   z-index: 1000;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, width 0.2s ease;
 
   // Mobile styles
   @media (max-width: $tablet - 1px) {
@@ -140,6 +141,43 @@ $tablet: 1024px;
 
     &.open {
       transform: translateX(0);
+    }
+  }
+
+  // Desktop collapsed state
+  @media (min-width: $tablet) {
+    &.collapsed-desktop {
+      width: $sidebar-width-collapsed;
+
+      .logo-section {
+        padding: 12px 8px 6px;
+        gap: 6px;
+        position: relative;
+      }
+
+      .logo-image {
+        width: 36px;
+        height: 36px;
+        margin: 0 auto;
+      }
+
+      .nav-item {
+        justify-content: center;
+        padding: 12px 8px;
+        
+        // Ensure icons are always visible
+        .icon,
+        .icon-2 {
+          margin-right: 0;
+        }
+      }
+
+      .user-profile {
+        flex-direction: column;
+        padding: 16px 8px;
+        gap: 8px;
+        justify-content: center;
+      }
     }
   }
 
@@ -171,30 +209,102 @@ $tablet: 1024px;
   }
 }
 
+.collapse-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  z-index: 10;
+  flex-shrink: 0;
+
+  // Only show on desktop
+  @media (max-width: $tablet - 1px) {
+    display: none;
+  }
+
+  // When expanded, position absolutely in top-right of sidebar
+  @media (min-width: $tablet) {
+    .sidebar:not(.collapsed-desktop) & {
+      position: absolute;
+      top: 16px;
+      right: 12px;
+      width: 30px;
+      height: 30px;
+    }
+
+    .sidebar.collapsed-desktop & {
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
+      margin: 6px auto 0;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 15px;
+    height: 15px;
+
+    @media (min-width: $tablet) {
+      .sidebar.collapsed-desktop & {
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+}
+
 .nav-menu {
   flex: 1;
-  padding: 16px 0;
+  padding: 12px 0;
   overflow-y: auto;
+  min-height: 0; // Allow flex shrinking
+  // Hide scrollbar but keep functionality
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE and Edge
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome, Safari, Opera
+  }
 
   @media (max-width: $tablet - 1px) {
-    padding-top: 8px;
+    padding-top: 4px;
   }
 
   .nav-item {
     @include button-reset;
     width: 100%;
-    padding: 16px 24px;
+    padding: 14px 24px;
     color: white;
     text-align: left;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 400;
     transition: all 0.2s;
     display: flex;
     align-items: center;
 
     @media (max-width: $mobile-l) {
-      padding: 14px 20px;
-      font-size: 16px;
+      padding: 10px 16px;
+      font-size: 14px;
     }
 
     &:hover {
@@ -205,6 +315,17 @@ $tablet: 1024px;
       background: rgba(255, 255, 255, 0.15);
       font-weight: 500;
     }
+
+    span {
+      transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+
+      &.hide-on-collapse {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+        margin: 0;
+      }
+    }
   }
 }
 
@@ -213,6 +334,8 @@ $tablet: 1024px;
   height: 20px;
   margin-right: 12px;
   vertical-align: middle;
+  flex-shrink: 0; // Prevent icons from shrinking
+  display: block; // Ensure icons are always visible
 
   @media (max-width: $mobile-l) {
     width: 18px;
@@ -226,6 +349,8 @@ $tablet: 1024px;
   height: 26px;
   margin-right: 12px;
   vertical-align: middle;
+  flex-shrink: 0; // Prevent icons from shrinking
+  display: block; // Ensure icons are always visible
 
   @media (max-width: $mobile-l) {
     width: 22px;
@@ -235,36 +360,49 @@ $tablet: 1024px;
 }
 
 .logo-section {
-  padding: 24px 16px;
+  padding: 20px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  position: relative;
+  flex-shrink: 0;
 
   @media (max-width: $tablet - 1px) {
-    padding: 20px 16px 16px;
+    padding: 16px 12px;
     margin-top: 8px;
   }
 
   @media (max-width: $mobile-l) {
-    padding: 16px 16px 12px;
-    gap: 12px;
+    padding: 12px 12px 8px;
+    gap: 8px;
+  }
+
+  // Make sidebar a positioning context for absolutely positioned collapse button
+  @media (min-width: $tablet) {
+    .sidebar:not(.collapsed-desktop) & {
+      .collapse-btn {
+        position: absolute;
+        top: 16px;
+        right: 12px;
+      }
+    }
   }
 }
 
 .logo-image {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
 
   @media (max-width: $mobile-l) {
-    width: 80px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
   }
 
   @media (max-width: $mobile-m) {
-    width: 70px;
-    height: 70px;
+    width: 45px;
+    height: 45px;
   }
 
   img {
@@ -275,18 +413,26 @@ $tablet: 1024px;
 }
 
 .logo-text {
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 500;
-  line-height: 0.6;
+  line-height: 1;
   font-family: $font-family;
   text-align: center;
+  transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
 
   @media (max-width: $mobile-l) {
-    font-size: 30px;
+    font-size: 20px;
   }
 
   @media (max-width: $mobile-m) {
-    font-size: 26px;
+    font-size: 18px;
+  }
+
+  &.hide-on-collapse {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    margin: 0;
   }
 }
 
@@ -296,18 +442,35 @@ $tablet: 1024px;
   gap: 12px;
   flex: 1;
   min-width: 0;
+  transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease;
+
+  &.hide-on-collapse {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
 }
 
 .user-profile {
-  padding: 20px 24px;
+  padding: 12px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   justify-content: space-between;
+  flex-shrink: 0; // Keep user-profile always visible at bottom
+  margin-top: auto; // Push to bottom
+  transition: padding 0.2s ease, flex-direction 0.2s ease;
 
   @media (max-width: $mobile-l) {
-    padding: 16px 20px;
+    padding: 12px 16px;
+  }
+
+  @media (min-width: $tablet) {
+    .sidebar.collapsed-desktop & {
+      justify-content: center;
+    }
   }
 }
 
@@ -317,23 +480,25 @@ $tablet: 1024px;
 
   .user-name {
     font-weight: 500;
-    font-size: 16px;
-    margin-bottom: 2px;
+    font-size: 14px;
+    margin-bottom: 1px;
+    line-height: 1.2;
 
     @media (max-width: $mobile-l) {
-      font-size: 15px;
+      font-size: 13px;
     }
   }
 
   .user-email {
-    font-size: 13px;
+    font-size: 11px;
     opacity: 0.8;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
 
     @media (max-width: $mobile-l) {
-      font-size: 12px;
+      font-size: 10px;
     }
   }
 }
@@ -343,14 +508,14 @@ $tablet: 1024px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
-  padding: 8px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
   border-radius: 6px;
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 32px;
+  min-height: 32px;
   flex-shrink: 0;
 
   &:hover {
@@ -364,12 +529,12 @@ $tablet: 1024px;
   }
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 
     @media (max-width: $mobile-l) {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
     }
   }
 }
@@ -381,11 +546,19 @@ $tablet: 1024px;
   padding: 0;
   overflow-y: auto;
   height: 100vh;
+  transition: margin-left 0.2s ease;
 
   @media (max-width: $tablet - 1px) {
     margin-left: 0;
     margin-top: 0;
     height: calc(100vh - #{$mobile-header-height});
+  }
+}
+
+// Adjust main content when sidebar is collapsed
+.app-container.sidebar-collapsed .main-content {
+  @media (min-width: $tablet) {
+    margin-left: $sidebar-width-collapsed;
   }
 }
 
