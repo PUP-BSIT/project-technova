@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,7 +40,8 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
   constructor(
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private titleService: Title
   ) {}
 
   ngOnInit(): void {
@@ -76,6 +78,8 @@ export class StudentDashboard implements OnInit, AfterViewInit {
     } else {
       this.currentView = 'dashboard';
     }
+
+    this.updateTitleForCurrentView();
   }
 
   ngAfterViewInit(): void {
@@ -125,6 +129,8 @@ export class StudentDashboard implements OnInit, AfterViewInit {
     } else if (view === 'dashboard') {
       this.router.navigate(['/student-dashboard']);
     }
+
+    this.updateTitleForCurrentView();
   }
 
   onSidebarViewChange(view: string): void {
@@ -144,6 +150,29 @@ export class StudentDashboard implements OnInit, AfterViewInit {
       setTimeout(() => {
         this.cdr.detectChanges();
       }, 0);
+    }
+  }
+
+  private updateTitleForCurrentView(): void {
+    switch (this.currentView) {
+      case 'dashboard':
+        this.titleService.setTitle('Student Dashboard');
+        break;
+      case 'facilities':
+        this.titleService.setTitle('Student Facilities');
+        break;
+      case 'equipment':
+        this.titleService.setTitle('Student Equipment');
+        break;
+      case 'requests':
+        this.titleService.setTitle('Student My Requests');
+        break;
+      case 'settings':
+        // More specific settings child routes will override this via App title handler
+        this.titleService.setTitle('Student Settings');
+        break;
+      default:
+        this.titleService.setTitle('Student Dashboard');
     }
   }
 }
