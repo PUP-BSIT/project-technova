@@ -1,4 +1,6 @@
-<div class="app-container" [class.mobile-view]="isMobileView">
+<div class="app-container" 
+  [class.mobile-view]="isMobileView"
+  [class.sidebar-collapsed]="isCollapsed && isDesktop">
   @if (isMobileView) {
     <header class="mobile-header">
       <button class="menu-toggle" (click)="toggleSidenav()" aria-label="Toggle menu">
@@ -15,12 +17,31 @@
     <div class="sidenav-overlay" (click)="closeSidenav()"></div>
   }
 
-  <aside class="sidebar" [class.open]="sidenavOpen" [class.mobile]="isMobileView">
+  <aside class="sidebar" 
+    [class.open]="sidenavOpen" 
+    [class.mobile]="isMobileView"
+    [class.collapsed-desktop]="isCollapsed && isDesktop">
     <div class="logo-section">
       <div class="logo-image">
         <img src="assets/logo-white.png" alt="CEFRS Logo" />
       </div>
-      <div class="logo-text">CEFRS</div>
+      @if (isDesktop) {
+        <button class="collapse-btn" (click)="toggleCollapse()" [title]="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          @if (isCollapsed) {
+            <!-- Arrow right icon when collapsed (to expand) -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          } @else {
+            <!-- X icon when expanded (to collapse) -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          }
+        </button>
+      }
+      <div class="logo-text" [class.hide-on-collapse]="isCollapsed && isDesktop">CEFRS</div>
     </div>
 
     <nav class="nav-menu">
@@ -28,19 +49,20 @@
         <button 
           [class.active]="currentView === item.id"
           (click)="setCurrentView(item.id)"
-          class="nav-item">
+          class="nav-item"
+          [title]="isCollapsed && isDesktop ? item.label : ''">
           @if (item.id === 'dashboard') {
             <img [src]="item.icon" [alt]="item.label + ' Icon'" class="icon" />
           } @else {
             <img [src]="item.icon" [alt]="item.label + ' Icon'" class="icon-2" />
           }
-          {{ item.label }}
+          <span [class.hide-on-collapse]="isCollapsed && isDesktop">{{ item.label }}</span>
         </button>
       }
     </nav>
 
     <div class="user-profile">
-      <div class="user-details">
+      <div class="user-details" [class.hide-on-collapse]="isCollapsed && isDesktop">
         @if (user) {
           <div class="user-info">
             <div class="user-name">{{ user.name }}</div>
