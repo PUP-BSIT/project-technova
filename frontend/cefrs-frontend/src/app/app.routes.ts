@@ -34,32 +34,33 @@ import { RoleSelectionComponent } from './components/role-selection/role-selecti
 import { ForgotPassword } from './components/forgot-password/forgot-password';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
-  { path: 'select-role', component: RoleSelectionComponent, canActivate: [LoginRedirectGuard] },
+  { path: '', component: LandingComponent, data: { title: 'Home' } },
+  { path: 'select-role', component: RoleSelectionComponent, canActivate: [LoginRedirectGuard], data: { title: 'Select Role' } },
 
   // Login Routes - Add LoginRedirectGuard to prevent logged-in users from accessing
-  { path: 'login', component: LoginComponent, canActivate: [LoginRedirectGuard] },
-  { path: 'org-login', component: OrgLoginComponent, canActivate: [LoginRedirectGuard] },
-  { path: 'admin-login', component: AdminLogin, canActivate: [LoginRedirectGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [LoginRedirectGuard], data: { title: 'Student Login' } },
+  { path: 'org-login', component: OrgLoginComponent, canActivate: [LoginRedirectGuard], data: { title: 'Organization Login' } },
+  { path: 'admin-login', component: AdminLogin, canActivate: [LoginRedirectGuard], data: { title: 'Admin Login' } },
 
   // Register Routes - Add LoginRedirectGuard to prevent logged-in users from accessing
-  { path: 'register', component: RegisterComponent, canActivate: [LoginRedirectGuard] },
-  { path: 'org-register', component: OrgRegisterComponent, canActivate: [LoginRedirectGuard] },
-  { path: 'admin-register', component: AdminRegister, canActivate: [LoginRedirectGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [LoginRedirectGuard], data: { title: 'Student Registration' } },
+  { path: 'org-register', component: OrgRegisterComponent, canActivate: [LoginRedirectGuard], data: { title: 'Organization Registration' } },
+  { path: 'admin-register', component: AdminRegister, canActivate: [LoginRedirectGuard], data: { title: 'Admin Registration' } },
 
   // Password Reset Routes - Keep these accessible to both logged-in and logged-out users
-  { path: 'forgot-password', component: ForgotPassword },
-  { path: 'reset-password', component: ResetPassword },
+  { path: 'forgot-password', component: ForgotPassword, data: { title: 'Forgot Password' } },
+  { path: 'reset-password', component: ResetPassword, data: { title: 'Reset Password' } },
 
   // Admin Dashboard (Protected)
   {
     path: 'admin-dashboard',
     component: AdminDashboard,
     canActivate: [AuthGuard],
+    data: { title: 'Admin Dashboard' },
     children: [
-      { path: 'calendar', component: CalendarView },
-      { path: 'settings/profile', component: AdminProfileComponent },
-      { path: 'settings/change-password', component: AdminChangePasswordComponent }
+      { path: 'calendar', component: CalendarView, data: { title: 'Admin Calendar' } },
+      { path: 'settings/profile', component: AdminProfileComponent, data: { title: 'Admin Profile' } },
+      { path: 'settings/change-password', component: AdminChangePasswordComponent, data: { title: 'Admin Change Password' } }
     ]
   },
 
@@ -68,9 +69,10 @@ export const routes: Routes = [
     path: 'org-dashboard',
     component: OrgDashboardComponent,
     canActivate: [AuthGuard],
+    data: { title: 'Organization Dashboard' },
     children: [
-      { path: 'settings/profile', component: OrgProfileComponent },
-      { path: 'settings/change-password', component: OrgChangePasswordComponent }
+      { path: 'settings/profile', component: OrgProfileComponent, data: { title: 'Organization Profile' } },
+      { path: 'settings/change-password', component: OrgChangePasswordComponent, data: { title: 'Organization Change Password' } }
     ]
   },
 
@@ -78,7 +80,8 @@ export const routes: Routes = [
   {
     path: 'org-profile',
     component: OrgProfileComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { title: 'Organization Profile' }
   },
 
   // Student Dashboard (Protected)
@@ -86,33 +89,34 @@ export const routes: Routes = [
     path: 'student-dashboard',
     component: StudentDashboard,
     canActivate: [AuthGuard],
+    data: { title: 'Student Dashboard' },
     children: [
-      { path: 'settings/profile', component: StudentProfileComponent },
-      { path: 'settings/change-password', component: StudentChangePasswordComponent }
+      { path: 'settings/profile', component: StudentProfileComponent, data: { title: 'Student Profile' } },
+      { path: 'settings/change-password', component: StudentChangePasswordComponent, data: { title: 'Student Change Password' } }
     ]
   },
 
-  { path: 'profile', component: StudentProfileComponent, canActivate: [AuthGuard] },
-  { path: 'change-password', component: StudentChangePasswordComponent, canActivate: [AuthGuard] },
-  { path: 'student-change-password', component: StudentChangePasswordComponent },
+  { path: 'profile', component: StudentProfileComponent, canActivate: [AuthGuard], data: { title: 'Student Profile' } },
+  { path: 'change-password', component: StudentChangePasswordComponent, canActivate: [AuthGuard], data: { title: 'Student Change Password' } },
+  { path: 'student-change-password', component: StudentChangePasswordComponent, data: { title: 'Student Change Password' } },
   // Legacy direct change-password route for org (optional)
-  { path: 'org-change-password', component: OrgChangePasswordComponent, canActivate: [AuthGuard] },
+  { path: 'org-change-password', component: OrgChangePasswordComponent, canActivate: [AuthGuard], data: { title: 'Organization Change Password' } },
 
   // Student Reservation Routes (Protected)
-  { path: 'student/reservation-request', component: ReservationRequestComponent, canActivate: [AuthGuard] },
-  { path: 'student/my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard] },
-  { path: 'my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard] }, // Legacy route for backward compatibility
+  { path: 'student/reservation-request', component: ReservationRequestComponent, canActivate: [AuthGuard], data: { title: 'Student Reservation Request' } },
+  { path: 'student/my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard], data: { title: 'Student My Reservations' } },
+  { path: 'my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard], data: { title: 'Student My Reservations' } }, // Legacy route for backward compatibility
 
   // Student Equipment Borrowing Routes (Protected)
-  { path: 'student/equipment-borrowing-request', component: EquipmentBorrowingRequestComponent, canActivate: [AuthGuard] },
-  { path: 'student/my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard] },
-  { path: 'my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard] }, // Legacy route for backward compatibility
+  { path: 'student/equipment-borrowing-request', component: EquipmentBorrowingRequestComponent, canActivate: [AuthGuard], data: { title: 'Student Equipment Borrowing Request' } },
+  { path: 'student/my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard], data: { title: 'Student My Borrowings' } },
+  { path: 'my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard], data: { title: 'Student My Borrowings' } }, // Legacy route for backward compatibility
 
   // Organization Reservation Routes (Protected)
-  { path: 'org/reservation-request', component: OrgReservationRequestComponent, canActivate: [AuthGuard] },
-  { path: 'org/my-reservations', component: OrgMyReservationsComponent, canActivate: [AuthGuard] },
+  { path: 'org/reservation-request', component: OrgReservationRequestComponent, canActivate: [AuthGuard], data: { title: 'Organization Reservation Request' } },
+  { path: 'org/my-reservations', component: OrgMyReservationsComponent, canActivate: [AuthGuard], data: { title: 'Organization My Reservations' } },
 
   // Organization Equipment Borrowing Routes (Protected)
-  { path: 'org/equipment-borrowing-request', component: OrgEquipmentBorrowingRequestComponent, canActivate: [AuthGuard] },
-  { path: 'org/my-borrowings', component: OrgMyBorrowingsComponent, canActivate: [AuthGuard] },
+  { path: 'org/equipment-borrowing-request', component: OrgEquipmentBorrowingRequestComponent, canActivate: [AuthGuard], data: { title: 'Organization Equipment Borrowing Request' } },
+  { path: 'org/my-borrowings', component: OrgMyBorrowingsComponent, canActivate: [AuthGuard], data: { title: 'Organization My Borrowings' } },
 ];
