@@ -144,8 +144,7 @@ $transition-base: 0.3s;
     transition: margin-left $transition-fast ease !important;
     box-sizing: border-box;
     overflow-x: hidden !important;
-    // Disable vertical scrolling for all student views
-    overflow-y: hidden !important;
+    overflow-y: auto;
     position: relative;
     
     // Mobile: Full width, no margin

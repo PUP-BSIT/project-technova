@@ -7,42 +7,25 @@ $text: #000;
 $placeholder: #b8b8b8;
 $radius: 20px;
 
-// Match student login global reset to avoid side gaps
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow-x: hidden;
-  background: $main-bg;
-}
-
-html {
-  margin: 0;
-  padding: 0;
-  background: $main-bg;
-}
-
 :host {
   display: block;
-  min-height: 100vh;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
 }
 
 .admin-login-container {
   background: $main-bg;
   min-height: 100vh;
-  min-width: 100vw;
+  height: 100vh;
+  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Roboto', sans-serif;
   margin: 0;
-  padding: 0 1.5rem;
+  padding: 0;
 }
 
 .admin-login-card {
@@ -52,7 +35,7 @@ html {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: left;
   width: 100%;
-  max-width: 500px; // match student login desktop width
+  max-width: 380px;
 
   h1 {
     color: $primary;
@@ -219,27 +202,6 @@ html {
       &:hover {
         text-decoration: underline;
       }
-    }
-  }
-}
-
-@media (max-width: 600px) {
-  .admin-login-container {
-    padding: 1rem;
-    align-items: center;
-  }
-
-  .admin-login-card {
-    padding: 32px 20px;
-    max-width: 100%;
-
-    h1 {
-      font-size: 24px;
-    }
-
-    .subtitle {
-      font-size: 14px;
-      margin-bottom: 24px;
     }
   }
 }
