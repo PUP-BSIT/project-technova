@@ -2,6 +2,7 @@ import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { AuthService } from '../../../services/auth';
 import { ProfileService } from '../../../services/profile.service';
 
@@ -43,6 +44,7 @@ export class AdminDashboard implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+  private titleService = inject(Title);
 
   currentView: string = 'dashboard';
   user: any = null;
@@ -72,6 +74,7 @@ export class AdminDashboard implements OnInit {
   ngOnInit(): void {
     this.loadUserProfile();
     this.checkScreenSize();
+    this.updateTitleForCurrentView();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -140,6 +143,7 @@ export class AdminDashboard implements OnInit {
     if (view === 'settings') {
       this.router.navigate(['/admin-dashboard/settings/profile']);
     }
+    this.updateTitleForCurrentView();
     this.closeSidenav(); // Close sidenav after navigation on mobile
   }
 
@@ -186,6 +190,38 @@ export class AdminDashboard implements OnInit {
       this.showSuccess(event.message);
     } else {
       this.showError(event.message);
+    }
+  }
+
+  private updateTitleForCurrentView(): void {
+    switch (this.currentView) {
+      case 'dashboard':
+        this.titleService.setTitle('Admin Dashboard');
+        break;
+      case 'manage-request':
+        this.titleService.setTitle('Admin Manage Request');
+        break;
+      case 'calendar':
+        this.titleService.setTitle('Admin Calendar');
+        break;
+      case 'facilities':
+        this.titleService.setTitle('Admin Facilities');
+        break;
+      case 'equipment':
+        this.titleService.setTitle('Admin Equipment');
+        break;
+      case 'equipment-inventory':
+        this.titleService.setTitle('Admin Equipment Inventory');
+        break;
+      case 'report-logs':
+        this.titleService.setTitle('Admin Report and Logs');
+        break;
+      case 'settings':
+        // More specific settings child routes will override via App title handler
+        this.titleService.setTitle('Admin Settings');
+        break;
+      default:
+        this.titleService.setTitle('Admin Dashboard');
     }
   }
 }
