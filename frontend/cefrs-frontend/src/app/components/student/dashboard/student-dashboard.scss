@@ -144,7 +144,8 @@ $transition-base: 0.3s;
     transition: margin-left $transition-fast ease !important;
     box-sizing: border-box;
     overflow-x: hidden !important;
-    overflow-y: auto;
+    // Default: prevent vertical scroll on desktop
+    overflow-y: hidden !important;
     position: relative;
     
     // Mobile: Full width, no margin
@@ -304,6 +305,8 @@ $transition-base: 0.3s;
     ::ng-deep .mat-drawer-content {
       width: 100% !important;
       margin-left: 0 !important;
+      // Mobile: allow vertical scrolling in dashboard views
+      overflow-y: auto !important;
     }
     
     // Mobile: Override collapsed container styles

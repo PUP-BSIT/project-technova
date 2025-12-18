@@ -7,19 +7,36 @@ $text: #000;
 $placeholder: #b8b8b8;
 $radius: 20px;
 
-:host {
-  display: block;
-  height: 100vh;
-  width: 100vw;
+// Match student login global reset to avoid side gaps
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+  background: $main-bg;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  background: $main-bg;
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+  width: 100%;
 }
 
 .admin-login-container {
   background: $main-bg;
   min-height: 100vh;
-  height: 100vh;
-  width: 100vw;
+  min-width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,7 +52,7 @@ $radius: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: left;
   width: 100%;
-  max-width: 380px;
+  max-width: 500px; // match student login desktop width
 
   h1 {
     color: $primary;
@@ -369,6 +386,28 @@ $radius: 20px;
 }
 
 // Responsive design for mobile
+@media (max-width: 768px) {
+  .admin-login-container {
+    padding: 1.5rem 1rem;
+    align-items: flex-start;
+  }
+
+  .admin-login-card {
+    padding: 40px 24px;
+    max-width: 100%;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+
+    h1 {
+      font-size: 26px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+  }
+}
+
 @media (max-width: 640px) {
   .remember-forgot-container {
     flex-direction: column;
@@ -379,6 +418,48 @@ $radius: 20px;
   .remember-me-wrapper,
   .forgot-password-link {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-login-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .admin-login-card {
+    padding: 32px 16px;
+    border-radius: 16px;
+
+    h1 {
+      font-size: 22px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+
+      label {
+        font-size: 13px;
+      }
+
+      input {
+        padding: 12px 12px;
+        font-size: 14px;
+      }
+    }
+
+    .btn-login {
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    .signup-link {
+      font-size: 13px;
+    }
   }
 }
 
