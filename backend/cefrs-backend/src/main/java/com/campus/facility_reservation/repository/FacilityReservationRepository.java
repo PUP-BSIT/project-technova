@@ -115,4 +115,10 @@ public interface FacilityReservationRepository extends JpaRepository<FacilityRes
     // Unique users count
     @Query("SELECT COUNT(DISTINCT fr.user.id) FROM FacilityReservation fr")
     Long countUniqueUsers();
+
+    /**
+     * Count distinct facilities that have active (APPROVED) reservations
+     */
+    @Query("SELECT COUNT(DISTINCT fr.facility.id) FROM FacilityReservation fr WHERE fr.status = 'APPROVED'")
+    Long countDistinctOccupiedFacilities();
 }
