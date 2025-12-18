@@ -45,11 +45,21 @@ public class ReportService {
         Long activeReservations = facilityReservationRepository.countActiveReservations();
         Long completedReservations = facilityReservationRepository.countCompletedReservations();
 
-        // Calculate average occupancy (percentage of time facilities are reserved)
+        // Calculate average occupancy properly
+        // Occupancy = (number of occupied facilities / total facilities) * 100
         Long totalFacilities = facilityRepository.count();
-        Double averageOccupancy = totalFacilities > 0
-                ? (activeReservations.doubleValue() / totalFacilities.doubleValue()) * 100
-                : 0.0;
+        Double averageOccupancy = 0.0;
+
+        if (totalFacilities > 0 && activeReservations > 0) {
+            // Count distinct facilities that have active reservations
+            Long occupiedFacilities = facilityReservationRepository.countDistinctOccupiedFacilities();
+
+            // Calculate percentage: (occupied / total) * 100
+            Double rawOccupancy = (occupiedFacilities.doubleValue() / totalFacilities.doubleValue()) * 100.0;
+
+            // Cap at 100% (should not exceed)
+            averageOccupancy = Math.min(rawOccupancy, 100.0);
+        }
 
         return new ReportDTO.FacilityUsageStats(
                 totalReservations,
