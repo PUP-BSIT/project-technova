@@ -26,6 +26,7 @@ import { MyReservationsComponent } from './components/student/my-reservations/my
 import { MyBorrowingsComponent } from './components/student/my-borrowings/my-borrowings';
 import { ReservationRequestComponent } from './components/student/reservation-request/reservation-request';
 import { EquipmentBorrowingRequestComponent } from './components/student/equipment-borrowing-request/equipment-borrowing-request';
+import { StudentContactUs } from './components/student/student-contact-us/student-contact-us';
 // Organization components
 import { OrgMyReservationsComponent } from './components/organization/org-my-reservations/org-my-reservations';
 import { OrgMyBorrowingsComponent } from './components/organization/org-my-borrowings/org-my-borrowings';
@@ -97,6 +98,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { title: 'Student Dashboard' },
     children: [
+      { path: 'contact', component: StudentContactUs, data: { title: 'Contact Us' } }, 
       { path: 'settings/profile', component: StudentProfileComponent, data: { title: 'Student Profile' } },
       { path: 'settings/change-password', component: StudentChangePasswordComponent, data: { title: 'Student Change Password' } }
     ]
