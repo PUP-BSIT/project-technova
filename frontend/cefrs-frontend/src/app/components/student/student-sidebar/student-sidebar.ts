@@ -95,6 +95,9 @@ export class StudentSidebarComponent implements OnInit, OnDestroy, AfterViewInit
 
     if (view === 'settings') {
       this.router.navigate(['/student-dashboard', 'settings', 'profile']);
+    } else if (view === 'contact') {
+      // Navigate to contact us page
+      this.router.navigate(['/student-dashboard', 'contact']);
     }
   }
 
