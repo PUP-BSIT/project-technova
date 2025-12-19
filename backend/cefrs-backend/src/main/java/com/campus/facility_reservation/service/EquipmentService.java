@@ -13,12 +13,16 @@ import com.campus.facility_reservation.annotation.Audited;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import com.campus.facility_reservation.dto.SuggestedEquipmentDTO;
+import com.campus.facility_reservation.repository.EquipmentBorrowingRepository;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class EquipmentService {
 
     private final EquipmentRepository equipmentRepository;
+    private final EquipmentBorrowingRepository borrowingRepository;
 
     public List<EquipmentDTO> getAllEquipment() {
         return equipmentRepository.findAll().stream()
@@ -105,4 +109,37 @@ public class EquipmentService {
                 equipment.getImageUrl(),
                 equipment.getStatus().name());
     }
+
+    /**
+     * Provide suggested equipment alternatives for a given equipment id and date range.
+     * This is a simple heuristic: return other equipment in the same category that have
+     * quantityAvailable > 0 (excluding the original equipment).
+     */
+        public SuggestedEquipmentDTO getSuggestedEquipment(Long id, String borrowDate, String expectedReturnDate) {
+        Equipment equipment = equipmentRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Equipment not found"));
+
+        LocalDate borrow = LocalDate.parse(borrowDate);
+        LocalDate expected = LocalDate.parse(expectedReturnDate);
+
+        List<EquipmentDTO> suggestions = equipmentRepository.findByCategory(equipment.getCategory()).stream()
+            .filter(e -> !e.getId().equals(id))
+            .filter(candidate -> {
+                Integer overlapping = borrowingRepository.getOverlappingBorrowedQuantity(
+                    equipmentRepository.getOne(candidate.getId()), borrow, expected);
+                int reserved = overlapping != null ? overlapping : 0;
+                int availableForRange = candidate.getQuantityTotal() - reserved;
+                return availableForRange > 0;
+            })
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+
+        SuggestedEquipmentDTO dto = new SuggestedEquipmentDTO();
+        dto.setUnavailableEquipment(convertToDTO(equipment));
+        dto.setRequestedBorrowDate(borrowDate);
+        dto.setRequestedReturnDate(expectedReturnDate);
+        dto.setReason("Not enough equipment available for the requested date range");
+        dto.setSuggestedEquipment(suggestions);
+        return dto;
+        }
 }

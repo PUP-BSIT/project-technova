@@ -15,11 +15,6 @@ export class AdminLogin {
   showPassword = false;
   isLoading = false;
   rememberMe = true; // Default to true
-  showForgotPasswordModal = false;
-  forgotPasswordEmail = '';
-  forgotPasswordLoading = false;
-  forgotPasswordSuccess = false;
-  forgotPasswordError = '';
 
   loginForm: FormGroup;
 
@@ -139,52 +134,11 @@ export class AdminLogin {
 
   onForgotPassword(event: Event) {
     event.preventDefault();
-    // Pre-fill email from login form if available
     const currentEmail = this.loginForm.get('email')?.value;
-    if (currentEmail && !this.loginForm.get('email')?.errors?.['email']) {
-      this.forgotPasswordEmail = currentEmail;
-    }
-    this.showForgotPasswordModal = true;
-    this.forgotPasswordSuccess = false;
-    this.forgotPasswordError = '';
+    // Navigate to the shared forgot-password page with admin role context
+    this.router.navigate(['/forgot-password'], { queryParams: { role: 'admin', email: currentEmail || '' } });
   }
 
-  closeForgotPasswordModal() {
-    this.showForgotPasswordModal = false;
-    this.forgotPasswordEmail = '';
-    this.forgotPasswordSuccess = false;
-    this.forgotPasswordError = '';
-    this.forgotPasswordLoading = false;
-  }
-
-  submitForgotPassword() {
-    // Basic email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!this.forgotPasswordEmail || !emailPattern.test(this.forgotPasswordEmail)) {
-      this.forgotPasswordError = 'Please enter a valid email address.';
-      return;
-    }
-
-    this.forgotPasswordLoading = true;
-    this.forgotPasswordError = '';
-
-    this.authService.forgotPassword(this.forgotPasswordEmail).subscribe({
-      next: (response) => {
-        this.forgotPasswordLoading = false;
-        this.forgotPasswordSuccess = true;
-      },
-      error: (error) => {
-        console.error('Forgot password error:', error);
-        this.forgotPasswordLoading = false;
-
-        if (error.error?.message) {
-          this.forgotPasswordError = error.error.message;
-        } else {
-          this.forgotPasswordError = 'Failed to send reset email. Please try again.';
-        }
-      }
-    });
-  }
 
   goToRegister() {
     this.router.navigate(['/admin-register']);

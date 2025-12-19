@@ -245,6 +245,11 @@
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-lg $spacing-xl;
+  box-sizing: border-box;
 }
 
 .suggestions-info {
@@ -309,7 +314,6 @@
     box-shadow: $shadow-md;
   }
 }
-
 .facility-image-small {
   width: 200px;
   height: 150px;
@@ -442,4 +446,18 @@
   .modal-btn-select {
     width: 100%;
   }
+}
+
+/* Center modal overlay content for suggestions specifically */
+.modal-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+}
+
+.suggestions-info {
+  width: 100%;
+  max-width: 820px;
+  text-align: center;
 }
