@@ -16,7 +16,7 @@
           <a (click)="scrollToSection('overview', $event); closeMobileMenu()" class="nav-link" href="#overview">Overview</a>
           <a (click)="scrollToSection('features', $event); closeMobileMenu()" class="nav-link" href="#features">Features</a>
           <a (click)="scrollToSection('policies', $event); closeMobileMenu()" class="nav-link" href="#policies">Policies</a>
-          <a (click)="scrollToSection('contact', $event); closeMobileMenu()" class="nav-link" href="#contact">Contact</a>
+          <a (click)="goToContactUs(); closeMobileMenu()" class="nav-link" href="javascript:void(0)">Contact</a>
         </div>
         <div class="nav-actions">
           <div class="nav-signup-menu" [class.open]="showSignupMenu">
