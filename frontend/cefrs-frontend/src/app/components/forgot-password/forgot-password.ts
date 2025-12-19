@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -42,10 +42,15 @@ export class ForgotPassword implements OnInit {
   confirmationMessage: string = '';
   private confirmationTimeoutId: any = null;
 
-  constructor(private router: Router, private http: HttpClient, private ngZone: NgZone, private cd: ChangeDetectorRef) {}
+  constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient, private ngZone: NgZone, private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    // Initialize component
+    // If an email query param is provided (e.g. from admin login), prefill the email
+    const prefillEmail = this.route.snapshot.queryParams['email'] || '';
+    if (prefillEmail && typeof prefillEmail === 'string') {
+      this.contactMethod = 'email';
+      this.emailOrPhone = prefillEmail;
+    }
   }
 
   ngOnDestroy(): void {
@@ -294,7 +299,9 @@ export class ForgotPassword implements OnInit {
     }
     this.showConfirmationModal = false;
     this.cd.detectChanges();
-    this.router.navigate(['/login'], { queryParams: { passwordReset: 'success' } });
+    const role = this.route.snapshot.queryParams['role'] || '';
+    const target = role === 'admin' ? '/admin-login' : '/login';
+    this.router.navigate([target], { queryParams: { passwordReset: 'success' } });
   }
 
   // Navigation Methods
