@@ -95,6 +95,27 @@
         {{ success }}
       </div>
 
+      <!-- No-availability actions (moved below purpose/error) -->
+      <div *ngIf="availableForRange !== null && availableForRange <= 0" class="alert alert-error">
+        <div>No items available for the selected dates.</div>
+        <div style="margin-top:0.75rem; display:flex; gap:0.5rem;">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="loadSuggestions()"
+            [disabled]="suggestionsLoading">
+            <span *ngIf="suggestionsLoading">Loading alternatives...</span>
+            <span *ngIf="!suggestionsLoading">See Alternatives</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="goBack()">
+            Change Dates
+          </button>
+        </div>
+      </div>
+
       <!-- Submit Button -->
       <div *ngIf="bookings?.length" class="bookings-list">
         <h4>Existing bookings in selected range</h4>
@@ -105,9 +126,6 @@
         </ul>
       </div>
 
-      <div *ngIf="availableForRange !== null && availableForRange <= 0" class="alert alert-error">
-        No items available for the selected dates.
-      </div>
 
       <div class="form-actions">
         <button

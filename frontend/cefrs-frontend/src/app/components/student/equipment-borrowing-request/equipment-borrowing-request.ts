@@ -157,9 +157,10 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
         const msg = this.parseServerError(err) || 'Failed to submit borrowing request';
         this.error = msg;
         console.error('Error creating borrowing:', err);
-        if (/already reserved|conflict|Not enough|not available|unavailable/i.test(msg)) {
-          this.loadSuggestions();
-        }
+        // Ensure the UI shows the no-availability alert block so the user can click "See Alternatives"
+        this.availableForRange = 0;
+        this.loadSuggestions();
+    
       }
     });
   }
