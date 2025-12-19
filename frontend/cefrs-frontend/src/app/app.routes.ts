@@ -14,6 +14,8 @@ import { LoginRedirectGuard } from './guards/login-redirect-guard'; // ← ADD T
 import { AdminProfileComponent } from './components/admin/admin-profile/admin-profile';
 import { AdminChangePasswordComponent } from './components/admin/admin-change-password/admin-change-password';
 import { CalendarView } from './components/admin/admin-dashboard/calendar/calendar-view/calendar-view';
+import { ForgotPassword } from './components/forgot-password/forgot-password';
+import { ContactUs } from './components/contact-us/contact-us';
 
 import { StudentProfileComponent } from './components/student/profile/profile';
 import { OrgProfileComponent } from './components/organization/org-profile/org-profile';
@@ -31,7 +33,6 @@ import { OrgReservationRequestComponent } from './components/organization/org-re
 import { OrgEquipmentBorrowingRequestComponent } from './components/organization/org-equipment-borrowing-request/org-equipment-borrowing-request';
 import { ResetPassword } from './components/admin/reset-password/reset-password';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
-import { ForgotPassword } from './components/forgot-password/forgot-password';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent, data: { title: 'Home' } },
@@ -50,6 +51,9 @@ export const routes: Routes = [
   // Password Reset Routes - Keep these accessible to both logged-in and logged-out users
   { path: 'forgot-password', component: ForgotPassword, data: { title: 'Forgot Password' } },
   { path: 'reset-password', component: ResetPassword, data: { title: 'Reset Password' } },
+
+  // Contact Us Route
+  { path: 'contact-us', component: ContactUs, data: { title: 'Contact Us' } },
 
   // Admin Dashboard (Protected)
   {
