@@ -128,3 +128,48 @@
   </div>
 </div>
 
+<!-- Suggestions Modal -->
+<div *ngIf="showSuggestionsModal && suggestedEquipment" class="modal-overlay" (click)="showSuggestionsModal = false">
+  <div class="modal-container suggestions-modal" (click)="$event.stopPropagation()">
+    <h2>Alternative Equipment Available</h2>
+
+    <div class="suggestions-info">
+      <p><strong>Requested item:</strong> {{ suggestedEquipment.unavailableEquipment.name }}</p>
+      <p><strong>Category:</strong> {{ suggestedEquipment.unavailableEquipment.category }}</p>
+      <p><strong>Requested dates:</strong> {{ suggestedEquipment.requestedBorrowDate }} → {{ suggestedEquipment.requestedReturnDate }}</p>
+      <p class="unavailable-reason"><strong>Reason:</strong> {{ suggestedEquipment.reason }}</p>
+    </div>
+
+    <div *ngIf="suggestionsLoading" class="loading-message">Loading alternatives...</div>
+
+    <div *ngIf="!suggestionsLoading && suggestedEquipment.suggestedEquipment.length === 0" class="no-suggestions-message">
+      <p>No alternative equipment available for the selected dates.</p>
+      <p>Please try a different date range.</p>
+    </div>
+
+    <div *ngIf="!suggestionsLoading && suggestedEquipment.suggestedEquipment.length > 0" class="suggestions-list">
+      <h3 class="suggestions-title">Available alternatives:</h3>
+      <div class="suggested-equipment-list">
+        <div *ngFor="let eq of suggestedEquipment.suggestedEquipment" class="suggested-equipment-card">
+          <div class="equipment-info-left">
+            <img [src]="eq.imageUrl" alt="{{ eq.name }}" class="equipment-thumb" />
+          </div>
+          <div class="equipment-info-center">
+            <h4>{{ eq.name }}</h4>
+            <p class="equipment-category">{{ eq.category }}</p>
+            <p class="equipment-qty">Available: {{ eq.quantityAvailable }} / {{ eq.quantityTotal }}</p>
+            <p class="equipment-desc">{{ eq.description }}</p>
+          </div>
+          <div class="equipment-info-right">
+            <button type="button" class="btn btn-primary" (click)="selectSuggestedEquipment(eq.id)">Use This Equipment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="showSuggestionsModal = false">Close</button>
+    </div>
+  </div>
+</div>
+
