@@ -172,16 +172,51 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
 
     this.equipmentService.getSuggestedEquipment(this.selectedEquipmentId, this.borrowDate, this.expectedReturnDate)
       .subscribe({
-        next: (response) => {
+        next: (resp: any) => {
           this.suggestionsLoading = false;
-          this.suggestedEquipment = response;
-          if (this.suggestedEquipment) {
-            this.showSuggestionsModal = true;
+          if (resp && resp.success && resp.data) {
+            this.suggestedEquipment = resp.data;
+          } else {
+            // Build an empty suggestions payload with reason message so modal can show helpful text
+            this.suggestedEquipment = {
+              unavailableEquipment: {
+                id: this.selectedEquipmentId!,
+                name: resp?.data?.unavailableEquipment?.name || 'Requested equipment',
+                category: resp?.data?.unavailableEquipment?.category || '',
+                quantityTotal: resp?.data?.unavailableEquipment?.quantityTotal || 0,
+                quantityAvailable: resp?.data?.unavailableEquipment?.quantityAvailable || 0,
+                description: resp?.data?.unavailableEquipment?.description || '',
+                imageUrl: resp?.data?.unavailableEquipment?.imageUrl || '',
+                status: resp?.data?.unavailableEquipment?.status || ''
+              },
+              requestedBorrowDate: this.borrowDate,
+              requestedReturnDate: this.expectedReturnDate,
+              reason: resp?.message || 'No alternatives found for the selected dates',
+              suggestedEquipment: []
+            };
           }
+          this.showSuggestionsModal = true;
         },
         error: (err) => {
           this.suggestionsLoading = false;
           console.error('Error loading equipment suggestions:', err);
+          this.suggestedEquipment = {
+            unavailableEquipment: {
+              id: this.selectedEquipmentId!,
+              name: 'Requested equipment',
+              category: '',
+              quantityTotal: 0,
+              quantityAvailable: 0,
+              description: '',
+              imageUrl: '',
+              status: ''
+            },
+            requestedBorrowDate: this.borrowDate,
+            requestedReturnDate: this.expectedReturnDate,
+            reason: 'Failed to load alternatives. Please try again later.',
+            suggestedEquipment: []
+          };
+          this.showSuggestionsModal = true;
         }
       });
   }

@@ -123,6 +123,6 @@ export class EquipmentService {
     return this.http.get<ApiResponse<SuggestedEquipmentResponse>>(
       `${this.apiUrl}/suggestions?equipmentId=${equipmentId}&borrowDate=${borrowDate}&expectedReturnDate=${expectedReturnDate}`,
       { headers: this.getHeaders() }
-    ).pipe(map(response => response.data));
+    );
   }
 }
