@@ -16,7 +16,9 @@
           (ngModelChange)="clearError('email')"
           required
         />
-        <div class="field-error" *ngIf="errors.email">{{ errors.email }}</div>
+        @if (errors.email) {
+          <div class="field-error">{{ errors.email }}</div>
+        }
       </div>
 
       <div class="form-group">
@@ -40,7 +42,9 @@
             </svg>
           </button>
         </div>
-        <div class="field-error" *ngIf="errors.password">{{ errors.password }}</div>
+        @if (errors.password) {
+          <div class="field-error">{{ errors.password }}</div>
+        }
       </div>
 
       <!-- Remember Me and Forgot Password Row -->
@@ -64,8 +68,11 @@
       </div>
 
       <button type="submit" class="btn-login" [disabled]="isLoading">
-        <ng-container *ngIf="isLoading; else loginText">Logging in...</ng-container>
-        <ng-template #loginText>Login</ng-template>
+        @if (isLoading) {
+          Logging in...
+        } @else {
+          Login
+        }
       </button>
 
       <div class="signup-link">
