@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EquipmentBorrowingService, BorrowingRequest } from '../../../services/equipment-borrowing.service';
-import { EquipmentDTO, EquipmentService } from '../../../services/equipment.service';
+import { EquipmentDTO, EquipmentService, SuggestedEquipmentResponse } from '../../../services/equipment.service';
 
 interface Equipment {
   id: number;
@@ -37,6 +37,11 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
   // Bookings for the selected equipment within the selected range
   bookings: any[] = [];
   availableForRange: number | null = null;
+
+  // Suggestions state
+  showSuggestionsModal = false;
+  suggestedEquipment: SuggestedEquipmentResponse | null = null;
+  suggestionsLoading = false;
 
   constructor(
     private borrowingService: EquipmentBorrowingService,
@@ -72,7 +77,14 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
       .subscribe({
         next: (list) => {
           this.bookings = list || [];
-          const reserved = this.bookings.reduce((sum: number, b: any) => sum + (b.quantity || 0), 0);
+          // Only count approved borrowings against availability
+          const reserved = this.bookings.reduce((sum: number, b: any) => {
+            const status = (b.status || '').toString().toUpperCase();
+            if (status === 'APPROVED') {
+              return sum + (b.quantity || 0);
+            }
+            return sum;
+          }, 0);
           const selected = this.getSelectedEquipment();
           if (selected) {
             this.availableForRange = selected.quantityTotal - reserved;
@@ -112,6 +124,8 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
     // If availability for the selected date range is known and insufficient, block submit
     if (this.availableForRange !== null && this.quantity > this.availableForRange) {
       this.error = `Only ${this.availableForRange} items available for the selected dates`;
+      // Load suggestions for alternative equipment
+      this.loadSuggestions();
       return;
     }
 
@@ -140,10 +154,96 @@ export class EquipmentBorrowingRequestComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = this.parseServerError(err) || 'Failed to submit borrowing request';
+        const msg = this.parseServerError(err) || 'Failed to submit borrowing request';
+        this.error = msg;
         console.error('Error creating borrowing:', err);
+        // Ensure the UI shows the no-availability alert block so the user can click "See Alternatives"
+        this.availableForRange = 0;
+        this.loadSuggestions();
+    
       }
     });
+  }
+
+  loadSuggestions(): void {
+    if (!this.selectedEquipmentId || !this.borrowDate || !this.expectedReturnDate) return;
+
+    this.suggestionsLoading = true;
+    this.suggestedEquipment = null;
+
+    this.equipmentService.getSuggestedEquipment(this.selectedEquipmentId, this.borrowDate, this.expectedReturnDate)
+      .subscribe({
+        next: (resp: any) => {
+          this.suggestionsLoading = false;
+          if (resp && resp.success && resp.data) {
+            this.suggestedEquipment = resp.data;
+          } else {
+            // Build an empty suggestions payload with reason message so modal can show helpful text
+            this.suggestedEquipment = {
+              unavailableEquipment: {
+                id: this.selectedEquipmentId!,
+                name: resp?.data?.unavailableEquipment?.name || 'Requested equipment',
+                category: resp?.data?.unavailableEquipment?.category || '',
+                quantityTotal: resp?.data?.unavailableEquipment?.quantityTotal || 0,
+                quantityAvailable: resp?.data?.unavailableEquipment?.quantityAvailable || 0,
+                description: resp?.data?.unavailableEquipment?.description || '',
+                imageUrl: resp?.data?.unavailableEquipment?.imageUrl || '',
+                status: resp?.data?.unavailableEquipment?.status || ''
+              },
+              requestedBorrowDate: this.borrowDate,
+              requestedReturnDate: this.expectedReturnDate,
+              reason: resp?.message || 'No alternatives found for the selected dates',
+              suggestedEquipment: []
+            };
+          }
+          this.showSuggestionsModal = true;
+        },
+        error: (err) => {
+          this.suggestionsLoading = false;
+          console.error('Error loading equipment suggestions:', err);
+          this.suggestedEquipment = {
+            unavailableEquipment: {
+              id: this.selectedEquipmentId!,
+              name: 'Requested equipment',
+              category: '',
+              quantityTotal: 0,
+              quantityAvailable: 0,
+              description: '',
+              imageUrl: '',
+              status: ''
+            },
+            requestedBorrowDate: this.borrowDate,
+            requestedReturnDate: this.expectedReturnDate,
+            reason: 'Failed to load alternatives. Please try again later.',
+            suggestedEquipment: []
+          };
+          this.showSuggestionsModal = true;
+        }
+      });
+  }
+
+  selectSuggestedEquipment(equipmentId: number): void {
+    // Try to find the equipment in the loaded list
+    const found = this.equipment.find(eq => eq.id === equipmentId);
+    if (!found && this.suggestedEquipment) {
+      const suggested = this.suggestedEquipment.suggestedEquipment.find(s => s.id === equipmentId);
+      if (suggested) {
+        // Add to equipment list temporarily so form can use it
+        this.equipment.unshift(suggested as any);
+      }
+    }
+
+    // Preserve previously-entered details; fallback to suggestion payload if empty
+    if (this.suggestedEquipment) {
+      if (!this.borrowDate) this.borrowDate = this.suggestedEquipment.requestedBorrowDate || '';
+      if (!this.expectedReturnDate) this.expectedReturnDate = this.suggestedEquipment.requestedReturnDate || '';
+      if (!this.purpose) this.purpose = this.suggestedEquipment.reason || '';
+    }
+
+    this.selectedEquipmentId = equipmentId;
+    this.showSuggestionsModal = false;
+    // Refresh bookings/availability for the newly selected equipment
+    setTimeout(() => this.onSelectionChange(), 50);
   }
 
   // Parse server error response to extract a useful message

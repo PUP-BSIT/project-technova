@@ -196,8 +196,37 @@ export class Facilities implements OnInit {
   }
 
   selectSuggestedFacility(facilityId: number): void {
-    const facility = this.facilities.find(f => f.id === facilityId);
+    // Try to find the facility in the loaded facilities list first
+    let facility = this.facilities.find(f => f.id === facilityId);
+
+    // If not present in the main list, try to use the suggestedFacilities payload
+    if (!facility && this.suggestedFacilities) {
+      const suggested = this.suggestedFacilities.suggestedFacilities.find(s => s.id === facilityId);
+      if (suggested) {
+        facility = {
+          id: suggested.id,
+          name: suggested.name,
+          type: suggested.type,
+          building: suggested.building,
+          floor: suggested.floor,
+          capacity: suggested.capacity,
+          description: suggested.description,
+          imageUrl: suggested.imageUrl,
+          status: suggested.status
+        };
+      }
+    }
+
     if (facility) {
+      // Preserve the previously-entered reservation details. If any field is empty,
+      // fall back to the data returned with the suggestions (requestedDate/start/end and reason).
+      if (this.suggestedFacilities) {
+        if (!this.reservationForm.reservationDate) this.reservationForm.reservationDate = this.suggestedFacilities.requestedDate || '';
+        if (!this.reservationForm.startTime) this.reservationForm.startTime = this.suggestedFacilities.requestedStartTime || '';
+        if (!this.reservationForm.endTime) this.reservationForm.endTime = this.suggestedFacilities.requestedEndTime || '';
+        if (!this.reservationForm.purpose) this.reservationForm.purpose = this.suggestedFacilities.reason || '';
+      }
+
       this.closeSuggestionsModal();
       this.selectedFacility = facility;
       this.reservationForm.facilityId = facilityId;

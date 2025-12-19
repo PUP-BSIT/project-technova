@@ -31,8 +31,7 @@
     font-size: $font-size-5xl;
     font-weight: $font-weight-medium;
     margin-bottom: $spacing-xs;
-    font-family: $font-family; // Roboto
-  }
+}
   
   .page-subtitle {
     color: $text-secondary;
@@ -40,12 +39,17 @@
     margin-top: $spacing-sm;
     font-family: $font-family; // Roboto
   }
-}
 
-.search-controls {
-  padding: $spacing-xs $spacing-3xl $spacing-sm;
-  margin-bottom: $spacing-sm;
-  width: 100%;
+.suggestions-modal {
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-lg $spacing-xl;
+  box-sizing: border-box;
+}
   box-sizing: border-box;
   display: flex;
   gap: $spacing-lg;
@@ -248,4 +252,284 @@
     padding-left: $spacing-md;
     padding-right: $spacing-md;
   }
+}
+
+/* Suggestions modal styles (shared) */
+/* Suggestions modal styles (shared) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 11, 26, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 2rem; /* breathing room on small screens */
+}
+
+.suggestions-modal {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+
+
+.suggestions-info {
+  background: $gray-lighter;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-xl;
+
+  p {
+    margin-bottom: $spacing-sm;
+    font-family: $font-family;
+    font-size: $font-size-base;
+    color: $text-primary;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      font-weight: $font-weight-medium;
+      color: $text-primary;
+    }
+  }
+
+  .unavailable-equipment {
+    font-size: $font-size-lg;
+  }
+
+  .unavailable-reason {
+    color: $text-error;
+  }
+}
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.suggestions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.suggestions-title {
+.btn-suggestion-use {
+  padding: $spacing-sm $spacing-xl;
+  background: $primary-color;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: darken($primary-color, 10%);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-suggestion-details {
+  background: $secondary-color;
+  color: $white;
+  border: none;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: darken($secondary-color, 10%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.suggestions-info {
+  text-align: left;
+  margin-bottom: 0.75rem;
+.no-suggestions-message, .loading-message {
+  text-align: center;
+  padding: $spacing-3xl;
+  color: $text-secondary;
+  font-family: $font-family;
+  font-size: $font-size-base;
+
+  p {
+    margin-bottom: $spacing-sm;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+  color: $text-secondary;
+}
+
+.suggested-equipment-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.suggested-equipment-card {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: $spacing-lg;
+  padding: $spacing-lg;
+  background: $white;
+  border: 2px solid $border-light;
+  border-radius: $radius-md;
+  align-items: center;
+  transition: all $transition-fast;
+}
+
+.suggested-equipment-card:hover {
+  border-color: $primary-color;
+  box-shadow: $shadow-md;
+}
+
+.equipment-thumb {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.suggested-equipment-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.suggested-equipment-name {
+  font-weight: 600;
+  color: #0f172a; /* slate-900 */
+}
+
+.suggested-equipment-desc {
+  font-size: 0.95rem;
+  color: #475569; /* slate-600 */
+}
+
+.suggested-equipment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.btn-suggestion-use {
+  background: #10b981; /* emerald-500 */
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 110px;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.18);
+}
+
+.btn-suggestion-details {
+  background: transparent;
+  color: #334155; /* slate-700 */
+  border: 1px solid rgba(99, 102, 241, 0.08);
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.no-suggestions-message, .loading-message {
+  text-align: center;
+  padding: $spacing-3xl;
+  color: $text-secondary;
+  font-family: $font-family;
+  font-size: $font-size-base;
+}
+
+/* match facilities info container width */
+.suggestions-info {
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .suggested-equipment-list {
+    grid-template-columns: 1fr 1fr; /* two-column grid on wide screens */
+    gap: 1rem;
+  }
+
+  .suggestions-header {
+    align-items: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .suggestions-modal {
+    padding: 1rem;
+  }
+
+  .suggested-equipment-card {
+    grid-template-columns: 72px 1fr;
+    gap: 0.75rem;
+  }
+
+  .suggested-equipment-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .btn-suggestion-use {
+    min-width: 88px;
+    padding: 0.45rem 0.7rem;
+  }
+}
+
+/* Style the 'Use This Equipment' button inside the suggestions modal to match facilities */
+.suggestions-modal .btn.btn-primary {
+  padding: $spacing-sm $spacing-xl;
+  background: $primary-color;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all $transition-fast;
+}
+
+.suggestions-modal .btn.btn-primary:hover {
+  background: darken($primary-color, 10%);
+  transform: translateY(-2px);
+}
+
+.suggestions-modal .btn.btn-primary:active {
+  transform: translateY(0);
 }

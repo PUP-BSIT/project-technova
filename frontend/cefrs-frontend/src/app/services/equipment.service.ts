@@ -23,6 +23,14 @@ export interface EquipmentRequestDTO {
   status?: string;
 }
 
+export interface SuggestedEquipmentResponse {
+  unavailableEquipment: EquipmentDTO;
+  requestedBorrowDate: string;
+  requestedReturnDate: string;
+  reason: string;
+  suggestedEquipment: EquipmentDTO[];
+}
+
 interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -108,5 +116,14 @@ export class EquipmentService {
     return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/${id}/bookings?start=${start}&end=${end}`, {
       headers: this.getHeaders()
     }).pipe(map(response => response.data));
+  }
+
+  // Get suggested equipment in the same category available for the requested date range
+  getSuggestedEquipment(equipmentId: number, borrowDate: string, expectedReturnDate: string) {
+    // Backend expects the equipment id as a path parameter (e.g. /api/equipment/{id}/suggestions)
+    return this.http.get<ApiResponse<SuggestedEquipmentResponse>>(
+      `${this.apiUrl}/${equipmentId}/suggestions?borrowDate=${borrowDate}&expectedReturnDate=${expectedReturnDate}`,
+      { headers: this.getHeaders() }
+    );
   }
 }

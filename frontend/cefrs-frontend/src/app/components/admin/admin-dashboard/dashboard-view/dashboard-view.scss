@@ -381,6 +381,106 @@ $tablet: 1024px;
   }
 }
 
+/* Modal styles copied/adapted from manage-request for consistent appearance */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-container {
+  background: $card-background;
+  padding: 28px;
+  border-radius: 8px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: $text-primary;
+}
+
+.modal-info {
+  background: white;
+  padding: 14px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+}
+
+.modal-info .info-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.modal-info .info-label {
+  font-weight: 500;
+  color: $text-secondary;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.modal-info .info-value {
+  color: $text-primary;
+  font-size: 14px;
+}
+
+.modal-form-group { margin-bottom: 16px; }
+
+.modal-label { display:block; font-weight:600; margin-bottom:8px; color:$text-primary; }
+
+.modal-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-family: $font-family;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #69040C;
+    box-shadow: 0 0 0 3px rgba(105, 4, 12, 0.06);
+  }
+
+  &::placeholder { color: #999999; }
+}
+
+.modal-checkbox { display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+
+.modal-actions { display:flex; gap:12px; justify-content:flex-start; }
+
+.modal-button { @include button-reset; padding:10px 20px; border-radius:6px; font-weight:600; }
+.modal-button.modal-button-confirm {
+  background:#69040C; color:white;
+  &:hover:not(:disabled) { background:#5a030a; }
+  &:disabled { background: #999999; cursor: not-allowed; opacity: 0.6; }
+}
+.modal-button.modal-button-cancel {
+  background:white; border:1px solid #e0e0e0; color:$text-primary;
+  &:hover:not(:disabled) { background:#f5f5f5; }
+}
+
+@media (max-width: $mobile-l) {
+  .modal-container { padding:20px; }
+  .modal-title { font-size:18px; }
+}
+
 .decline-button {
   @include button-reset;
   padding: 8px 24px;

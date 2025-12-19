@@ -98,4 +98,16 @@ public class EquipmentController {
         equipmentService.deleteEquipment(id);
         return ResponseEntity.ok(ApiResponse.success("Equipment deleted successfully", null));
     }
+
+    // GET /api/equipment/{id}/suggestions?borrowDate=YYYY-MM-DD&expectedReturnDate=YYYY-MM-DD
+    @GetMapping("/{id}/suggestions")
+    public ResponseEntity<ApiResponse<com.campus.facility_reservation.dto.SuggestedEquipmentDTO>> getSuggestedEquipment(
+            @PathVariable Long id,
+            @RequestParam String borrowDate,
+            @RequestParam String expectedReturnDate) {
+        com.campus.facility_reservation.dto.SuggestedEquipmentDTO suggestions =
+                equipmentService.getSuggestedEquipment(id, borrowDate, expectedReturnDate);
+        return ResponseEntity.ok(ApiResponse.success("Suggested equipment retrieved", suggestions));
+    }
+
 }
