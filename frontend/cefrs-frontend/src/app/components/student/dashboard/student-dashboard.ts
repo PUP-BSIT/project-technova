@@ -31,7 +31,7 @@ import { MyRequests } from './my-requests/my-requests';
 export class StudentDashboard implements OnInit, AfterViewInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
-  currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' = 'dashboard';
+  currentView: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' | 'contact' = 'dashboard';
   isSidebarOpen = true;
   isMobileView = false;
   isSidebarCollapsed = false;
@@ -67,6 +67,8 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
     if (url.includes('/student-dashboard/settings')) {
       this.currentView = 'settings';
+    } else if (url.includes('/org-dashboard/contact')) {
+      this.currentView = 'contact';
     } else if (url.includes('/student-dashboard/facilities')) {
       this.currentView = 'facilities';
     } else if (url.includes('/student-dashboard/equipment')) {
@@ -117,18 +119,20 @@ export class StudentDashboard implements OnInit, AfterViewInit {
     }
   }
 
-  setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings'): void {
+  setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' | 'contact'): void {
     this.currentView = view;
 
     if (view === 'settings') {
       this.router.navigate(['/student-dashboard/settings/profile']);
+    } else if (view === 'contact') {
+      this.router.navigate(['/org-dashboard', 'contact']);
     } else if (view === 'dashboard') {
       this.router.navigate(['/student-dashboard']);
     }
   }
 
   onSidebarViewChange(view: string): void {
-    this.setView(view as 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings');
+    this.setView(view as 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings' | 'contact');
     
     // Close sidebar on mobile after navigation
     if (this.isMobileView && this.sidenav) {

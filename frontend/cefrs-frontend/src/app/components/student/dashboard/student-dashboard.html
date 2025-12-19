@@ -42,8 +42,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="main-content">
-
-    @if (currentView === 'settings') {
+    @if (currentView === 'settings' || currentView === 'contact') {
       <router-outlet></router-outlet>
     }
 
