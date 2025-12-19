@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { ReportService } from '../../../../services/report.service';
 import { CalendarService } from '../../../../services/calendar.service';
@@ -27,7 +28,7 @@ interface DashboardStats {
   templateUrl: './dashboard-view.html',
   styleUrls: ['./dashboard-view.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, FormsModule]
 })
 export class DashboardView implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -44,6 +45,13 @@ export class DashboardView implements OnInit, OnDestroy {
 
   isLoading = false;
   adminId: number = 0;
+  showApproveModal: boolean = false;
+  showDeclineModal: boolean = false;
+  selectedRequest: PendingRequest | null = null;
+  approvalNotes: string = '';
+  declineReason: string = '';
+  sendNotification: boolean = true;
+  actionLoading: boolean = false;
 
   constructor(
     private reportService: ReportService,
@@ -122,82 +130,109 @@ export class DashboardView implements OnInit, OnDestroy {
   }
 
   approveRequest(request: PendingRequest): void {
-    if (!this.adminId) {
-      alert('Admin ID not loaded. Please refresh the page.');
-      return;
-    }
+    if ((request.status || '').toUpperCase() !== 'PENDING') return;
+    this.selectedRequest = request;
+    this.approvalNotes = '';
+    this.sendNotification = true;
+    this.showApproveModal = true;
+  }
 
-    const notes = prompt('Enter approval notes (optional):') || 'Approved';
+  declineRequest(request: PendingRequest): void {
+    if ((request.status || '').toUpperCase() !== 'PENDING') return;
+    this.selectedRequest = request;
+    this.declineReason = '';
+    this.sendNotification = true;
+    this.showDeclineModal = true;
+  }
 
-    if (request.type === 'facility') {
-      this.calendarService.approveFacilityReservation(request.id, this.adminId, notes)
+  confirmApproval(): void {
+    if (!this.selectedRequest || !this.adminId) return;
+    this.actionLoading = true;
+
+    const notes = this.approvalNotes || 'Approved';
+    if (this.selectedRequest.type === 'facility') {
+      this.calendarService.approveFacilityReservation(this.selectedRequest.id, this.adminId, notes)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            alert('Facility reservation approved!');
-            this.loadDashboardData(); // Reload data
+            this.actionLoading = false;
+            this.closeApproveModal();
+            this.loadDashboardData();
           },
-          error: (error) => {
-            console.error('Error approving facility reservation:', error);
+          error: (err) => {
+            this.actionLoading = false;
+            console.error('Error approving facility reservation:', err);
             alert('Failed to approve reservation');
           }
         });
-    } else if (request.type === 'equipment') {
-      this.calendarService.approveEquipmentBorrowing(request.id, this.adminId, notes)
+    } else {
+      this.calendarService.approveEquipmentBorrowing(this.selectedRequest.id, this.adminId, notes)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            alert('Equipment borrowing approved!');
-            this.loadDashboardData(); // Reload data
+            this.actionLoading = false;
+            this.closeApproveModal();
+            this.loadDashboardData();
           },
-          error: (error) => {
-            console.error('Error approving equipment borrowing:', error);
+          error: (err) => {
+            this.actionLoading = false;
+            console.error('Error approving equipment borrowing:', err);
             alert('Failed to approve borrowing');
           }
         });
     }
   }
 
-  declineRequest(request: PendingRequest): void {
-    if (!this.adminId) {
-      alert('Admin ID not loaded. Please refresh the page.');
-      return;
-    }
+  confirmDecline(): void {
+    if (!this.selectedRequest || !this.declineReason.trim() || !this.adminId) return;
+    this.actionLoading = true;
 
-    const notes = prompt('Enter rejection reason:');
-
-    if (!notes) {
-      alert('Rejection reason is required');
-      return;
-    }
-
-    if (request.type === 'facility') {
-      this.calendarService.rejectFacilityReservation(request.id, this.adminId, notes)
+    const reason = this.declineReason;
+    if (this.selectedRequest.type === 'facility') {
+      this.calendarService.rejectFacilityReservation(this.selectedRequest.id, this.adminId, reason)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            alert('Facility reservation declined!');
-            this.loadDashboardData(); // Reload data
+            this.actionLoading = false;
+            this.closeDeclineModal();
+            this.loadDashboardData();
           },
-          error: (error) => {
-            console.error('Error declining facility reservation:', error);
+          error: (err) => {
+            this.actionLoading = false;
+            console.error('Error declining facility reservation:', err);
             alert('Failed to decline reservation');
           }
         });
-    } else if (request.type === 'equipment') {
-      this.calendarService.rejectEquipmentBorrowing(request.id, this.adminId, notes)
+    } else {
+      this.calendarService.rejectEquipmentBorrowing(this.selectedRequest.id, this.adminId, reason)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            alert('Equipment borrowing declined!');
-            this.loadDashboardData(); // Reload data
+            this.actionLoading = false;
+            this.closeDeclineModal();
+            this.loadDashboardData();
           },
-          error: (error) => {
-            console.error('Error declining equipment borrowing:', error);
+          error: (err) => {
+            this.actionLoading = false;
+            console.error('Error declining equipment borrowing:', err);
             alert('Failed to decline borrowing');
           }
         });
     }
+  }
+
+  closeApproveModal(): void {
+    this.showApproveModal = false;
+    this.selectedRequest = null;
+    this.approvalNotes = '';
+    this.actionLoading = false;
+  }
+
+  closeDeclineModal(): void {
+    this.showDeclineModal = false;
+    this.selectedRequest = null;
+    this.declineReason = '';
+    this.actionLoading = false;
   }
 
   viewAllRequests(): void {

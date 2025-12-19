@@ -57,3 +57,85 @@
     </div>
   </div>
 </div>
+
+@if (showApproveModal) {
+  <div class="modal-overlay" (click)="closeApproveModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Approve Request</h2>
+      
+      <div class="modal-info">
+        <div class="info-row">
+          <span class="info-label">Request ID:</span>
+          <span class="info-value">{{ selectedRequest ? ('REQ-' + selectedRequest.id) : '' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Type:</span>
+          <span class="info-value">{{ selectedRequest?.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Name:</span>
+          <span class="info-value">{{ selectedRequest?.name }}</span>
+        </div>
+      </div>
+
+      <div class="modal-form-group">
+        <label class="modal-label">Approval Notes (Optional)</label>
+        <textarea 
+          class="modal-textarea" 
+          [(ngModel)]="approvalNotes"
+          placeholder="Add any notes for the requester...">
+        </textarea>
+      </div>
+
+      <div class="modal-checkbox">
+        <input type="checkbox" id="approveNotify" [(ngModel)]="sendNotification">
+        <label for="approveNotify">Send notification to requester</label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-button modal-button-confirm" (click)="confirmApproval()" [disabled]="actionLoading">
+          {{ actionLoading ? 'Processing...' : 'Confirm' }}
+        </button>
+        <button class="modal-button modal-button-cancel" (click)="closeApproveModal()" [disabled]="actionLoading">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showDeclineModal) {
+  <div class="modal-overlay" (click)="closeDeclineModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Decline Request</h2>
+
+      <div class="modal-info">
+        <div class="info-row">
+          <span class="info-label">Request ID:</span>
+          <span class="info-value">{{ selectedRequest ? ('REQ-' + selectedRequest.id) : '' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Type:</span>
+          <span class="info-value">{{ selectedRequest?.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Name:</span>
+          <span class="info-value">{{ selectedRequest?.name }}</span>
+        </div>
+      </div>
+
+      <div class="modal-form-group">
+        <label class="modal-label">Reason for Decline (Required)</label>
+        <textarea class="modal-textarea" [(ngModel)]="declineReason" placeholder="Please provide a reason for declining this request..."></textarea>
+      </div>
+
+      <div class="modal-checkbox">
+        <input type="checkbox" id="declineNotify" [(ngModel)]="sendNotification">
+        <label for="declineNotify">Send notification to requester</label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-button modal-button-confirm" (click)="confirmDecline()" [disabled]="!declineReason.trim() || actionLoading">{{ actionLoading ? 'Processing...' : 'Confirm' }}</button>
+        <button class="modal-button modal-button-cancel" (click)="closeDeclineModal()" [disabled]="actionLoading">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
