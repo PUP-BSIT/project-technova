@@ -179,4 +179,9 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
+
+  goToContactUs() {
+    this.router.navigate(['/contact-us']);
+    this.closeMenus();
+  }
 }
