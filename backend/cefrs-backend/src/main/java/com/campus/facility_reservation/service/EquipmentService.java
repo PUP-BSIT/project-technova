@@ -13,6 +13,7 @@ import com.campus.facility_reservation.annotation.Audited;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import com.campus.facility_reservation.dto.SuggestedEquipmentDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -104,5 +105,28 @@ public class EquipmentService {
                 equipment.getDescription(),
                 equipment.getImageUrl(),
                 equipment.getStatus().name());
+    }
+
+    /**
+     * Provide suggested equipment alternatives for a given equipment id and date range.
+     * This is a simple heuristic: return other equipment in the same category that have
+     * quantityAvailable > 0 (excluding the original equipment).
+     */
+    public SuggestedEquipmentDTO getSuggestedEquipment(Long id, String borrowDate, String expectedReturnDate) {
+        Equipment equipment = equipmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Equipment not found"));
+
+        List<EquipmentDTO> suggestions = equipmentRepository.findByCategory(equipment.getCategory()).stream()
+                .filter(e -> !e.getId().equals(id) && e.getQuantityAvailable() != null && e.getQuantityAvailable() > 0)
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        SuggestedEquipmentDTO dto = new SuggestedEquipmentDTO();
+        dto.setUnavailableEquipment(convertToDTO(equipment));
+        dto.setRequestedBorrowDate(borrowDate);
+        dto.setRequestedReturnDate(expectedReturnDate);
+        dto.setReason("Not enough equipment available for the requested date range");
+        dto.setSuggestedEquipment(suggestions);
+        return dto;
     }
 }
