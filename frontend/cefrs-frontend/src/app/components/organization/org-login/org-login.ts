@@ -97,7 +97,7 @@ export class OrgLoginComponent {
 
   onForgotPassword(event: Event): void {
     event.preventDefault();
-    this.errorMessage = 'Forgot password feature coming soon!';
+    this.router.navigate(['/forgot-password']);
   }
 
   goToRegister(): void {
