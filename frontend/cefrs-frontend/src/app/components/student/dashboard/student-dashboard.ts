@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,7 +40,8 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
   constructor(
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private titleService: Title
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +49,7 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
     // Make sure the correct view is active when navigating directly via URL
     this.syncViewWithUrl(this.router.url);
+    this.updateTitle();
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -76,6 +79,19 @@ export class StudentDashboard implements OnInit, AfterViewInit {
     } else {
       this.currentView = 'dashboard';
     }
+    
+    this.updateTitle();
+  }
+
+  private updateTitle(): void {
+    const titleMap: { [key: string]: string } = {
+      'dashboard': 'Student Dashboard',
+      'facilities': 'Facilities - Student Dashboard',
+      'equipment': 'Equipment - Student Dashboard',
+      'requests': 'My Requests - Student Dashboard',
+      'settings': 'Settings - Student Dashboard'
+    };
+    this.titleService.setTitle(titleMap[this.currentView] || 'Student Dashboard');
   }
 
   ngAfterViewInit(): void {
@@ -119,6 +135,7 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
   setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings'): void {
     this.currentView = view;
+    this.updateTitle();
 
     if (view === 'settings') {
       this.router.navigate(['/student-dashboard/settings/profile']);
