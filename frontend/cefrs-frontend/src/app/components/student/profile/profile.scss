@@ -139,7 +139,7 @@
 .profile-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0;
+  padding: 50px 20px 20px 20px;
   background-color: transparent;
   height: 100%;
   font-family: 'Roboto', sans-serif;
@@ -159,7 +159,6 @@
     }
     
     @media (max-width: 768px) {
-      padding-left: 80px; // Avoid hamburger button
       margin-bottom: 1rem;
       
       .page-title {

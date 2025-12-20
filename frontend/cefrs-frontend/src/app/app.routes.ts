@@ -10,10 +10,12 @@ import { StudentDashboard } from './components/student/dashboard/student-dashboa
 import { OrgDashboardComponent } from './components/organization/org-dashboard/org-dashboard';
 import { AdminDashboard } from './components/admin/admin-dashboard/admin-dashboard';
 import { AuthGuard } from './guards/auth-guard';
-import { LoginRedirectGuard } from './guards/login-redirect-guard'; // ← ADD THIS IMPORT
+import { LoginRedirectGuard } from './guards/login-redirect-guard';
 import { AdminProfileComponent } from './components/admin/admin-profile/admin-profile';
 import { AdminChangePasswordComponent } from './components/admin/admin-change-password/admin-change-password';
 import { CalendarView } from './components/admin/admin-dashboard/calendar/calendar-view/calendar-view';
+import { ForgotPassword } from './components/forgot-password/forgot-password';
+import { ContactUs } from './components/contact-us/contact-us';
 
 import { StudentProfileComponent } from './components/student/profile/profile';
 import { OrgProfileComponent } from './components/organization/org-profile/org-profile';
@@ -24,6 +26,7 @@ import { MyReservationsComponent } from './components/student/my-reservations/my
 import { MyBorrowingsComponent } from './components/student/my-borrowings/my-borrowings';
 import { ReservationRequestComponent } from './components/student/reservation-request/reservation-request';
 import { EquipmentBorrowingRequestComponent } from './components/student/equipment-borrowing-request/equipment-borrowing-request';
+import { StudentContactUs } from './components/student/student-contact-us/student-contact-us';
 // Organization components
 import { OrgMyReservationsComponent } from './components/organization/org-my-reservations/org-my-reservations';
 import { OrgMyBorrowingsComponent } from './components/organization/org-my-borrowings/org-my-borrowings';
@@ -31,7 +34,7 @@ import { OrgReservationRequestComponent } from './components/organization/org-re
 import { OrgEquipmentBorrowingRequestComponent } from './components/organization/org-equipment-borrowing-request/org-equipment-borrowing-request';
 import { ResetPassword } from './components/admin/reset-password/reset-password';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
-import { ForgotPassword } from './components/forgot-password/forgot-password';
+import { OrgContactUs } from './components/organization/org-contact-us/org-contact-us';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent, data: { title: 'Home' } },
@@ -50,6 +53,9 @@ export const routes: Routes = [
   // Password Reset Routes - Keep these accessible to both logged-in and logged-out users
   { path: 'forgot-password', component: ForgotPassword, data: { title: 'Forgot Password' } },
   { path: 'reset-password', component: ResetPassword, data: { title: 'Reset Password' } },
+
+  // Contact Us Route
+  { path: 'contact-us', component: ContactUs, data: { title: 'Contact Us' } },
 
   // Admin Dashboard (Protected)
   {
@@ -71,6 +77,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { title: 'Organization Dashboard' },
     children: [
+      { path: 'contact', component: OrgContactUs, data: { title: 'Contact Us' } }, 
       { path: 'settings/profile', component: OrgProfileComponent, data: { title: 'Organization Profile' } },
       { path: 'settings/change-password', component: OrgChangePasswordComponent, data: { title: 'Organization Change Password' } }
     ]
@@ -91,6 +98,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { title: 'Student Dashboard' },
     children: [
+      { path: 'contact', component: StudentContactUs, data: { title: 'Contact Us' } }, 
       { path: 'settings/profile', component: StudentProfileComponent, data: { title: 'Student Profile' } },
       { path: 'settings/change-password', component: StudentChangePasswordComponent, data: { title: 'Student Change Password' } }
     ]
@@ -105,12 +113,12 @@ export const routes: Routes = [
   // Student Reservation Routes (Protected)
   { path: 'student/reservation-request', component: ReservationRequestComponent, canActivate: [AuthGuard], data: { title: 'Student Reservation Request' } },
   { path: 'student/my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard], data: { title: 'Student My Reservations' } },
-  { path: 'my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard], data: { title: 'Student My Reservations' } }, // Legacy route for backward compatibility
+  { path: 'my-reservations', component: MyReservationsComponent, canActivate: [AuthGuard], data: { title: 'Student My Reservations' } },
 
   // Student Equipment Borrowing Routes (Protected)
   { path: 'student/equipment-borrowing-request', component: EquipmentBorrowingRequestComponent, canActivate: [AuthGuard], data: { title: 'Student Equipment Borrowing Request' } },
   { path: 'student/my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard], data: { title: 'Student My Borrowings' } },
-  { path: 'my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard], data: { title: 'Student My Borrowings' } }, // Legacy route for backward compatibility
+  { path: 'my-borrowings', component: MyBorrowingsComponent, canActivate: [AuthGuard], data: { title: 'Student My Borrowings' } },
 
   // Organization Reservation Routes (Protected)
   { path: 'org/reservation-request', component: OrgReservationRequestComponent, canActivate: [AuthGuard], data: { title: 'Organization Reservation Request' } },

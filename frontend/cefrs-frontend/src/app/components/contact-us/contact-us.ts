@@ -1,20 +1,33 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-landing',
+  selector: 'app-contact-us',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './landing.html',
-  styleUrls: ['./landing.scss']
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  templateUrl: './contact-us.html',
+  styleUrls: ['./contact-us.scss']
 })
-export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ContactUs implements OnInit, AfterViewInit, OnDestroy {
+  contactForm: FormGroup;
+  successMessage: string = '';
+  errorMessage: string = '';
   showLoginMenu = false;
   showSignupMenu = false;
   showMobileMenu = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router
+  ) {
+    this.contactForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      message: ['', Validators.required]
+    });
+  }
 
   ngOnDestroy(): void {
     // Cleanup: restore body scroll
@@ -22,11 +35,10 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Initialize scroll animations
+    // Initialize component
   }
 
   ngAfterViewInit(): void {
-    this.initScrollAnimations();
     this.initNavbarScroll();
   }
 
@@ -45,32 +57,6 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       
       lastScroll = currentScroll;
-    });
-  }
-
-  initScrollAnimations(): void {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-in');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    // Observe all sections and cards
-    const animatedElements = document.querySelectorAll(
-      '.hero-content, .overview-card, .feature-card, .policy-item, .contact-card, .section-title, .section-subtitle'
-    );
-
-    animatedElements.forEach(el => {
-      el.classList.add('scroll-animate');
-      observer.observe(el);
     });
   }
 
@@ -166,22 +152,38 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.closeMenus();
   }
 
-  scrollToFeatures() {
-    this.scrollToSection('features');
-  }
-
-  scrollToSection(sectionId: string, event?: Event) {
+  goToLanding(sectionId?: string, event?: Event) {
     if (event) {
       event.preventDefault();
     }
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (sectionId) {
+      this.router.navigate(['/'], { fragment: sectionId });
+    } else {
+      this.router.navigate(['/']);
     }
+    this.closeMenus();
   }
 
   goToContactUs() {
-    this.router.navigate(['/contact-us']);
+    // Already on contact page, just close menu
     this.closeMenus();
+  }
+
+  onSubmit(): void {
+    if (this.contactForm.valid) {
+      // Handle form submission
+      console.log('Form submitted:', this.contactForm.value);
+      this.successMessage = 'Message sent successfully!';
+      this.errorMessage = '';
+      this.contactForm.reset();
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
+    } else {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      this.successMessage = '';
+    }
   }
 }

@@ -52,7 +52,13 @@
       <img src="assets/requests.png" alt="Requests Icon" class="icon-2" />
       <span [class.hide-on-collapse]="isCollapsed && isDesktop">My Request</span>
     </button>
-    <!-- <button class="nav-item" [class.active]="currentView === 'transactions'" (click)="navigateTo('transactions')">Transactions</button> -->
+    <button class="nav-item" 
+      [class.active]="currentView === 'contact'" 
+      (click)="navigateTo('contact')"
+      [title]="isCollapsed && isDesktop ? 'Contact Us' : ''">
+      <img src="assets/contact.png" alt="Contact Us Icon" class="icon-2" />
+      <span [class.hide-on-collapse]="isCollapsed && isDesktop">Contact Us</span>
+    </button>
     <button class="nav-item" 
       [class.active]="currentView === 'settings'" 
       (click)="navigateTo('settings')"
@@ -104,4 +110,3 @@
     </div>
   }
 </aside>
-
