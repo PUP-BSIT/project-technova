@@ -129,6 +129,12 @@ export class OrgDashboardComponent implements OnInit, AfterViewInit {
       this.router.navigate(['/org-dashboard', 'contact']);
     } else if (view === 'dashboard') {
       this.router.navigate(['/org-dashboard']);
+    } else if (view === 'facilities') {
+      this.router.navigate(['/org-dashboard/facilities']);
+    } else if (view === 'equipment') {
+      this.router.navigate(['/org-dashboard/equipment']);
+    } else if (view === 'requests') {
+      this.router.navigate(['/org-dashboard/requests']);
     }
   }
 
