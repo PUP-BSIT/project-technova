@@ -125,9 +125,15 @@ export class StudentDashboard implements OnInit, AfterViewInit {
     if (view === 'settings') {
       this.router.navigate(['/student-dashboard/settings/profile']);
     } else if (view === 'contact') {
-      this.router.navigate(['/org-dashboard', 'contact']);
+      this.router.navigate(['/student-dashboard', 'contact']);
     } else if (view === 'dashboard') {
       this.router.navigate(['/student-dashboard']);
+    } else if (view === 'facilities') {
+      this.router.navigate(['/student-dashboard/facilities']);
+    } else if (view === 'equipment') {
+      this.router.navigate(['/student-dashboard/equipment']);
+    } else if (view === 'requests') {
+      this.router.navigate(['/student-dashboard/requests']);
     }
   }
 

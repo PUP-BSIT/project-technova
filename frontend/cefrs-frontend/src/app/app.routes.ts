@@ -35,6 +35,14 @@ import { OrgEquipmentBorrowingRequestComponent } from './components/organization
 import { ResetPassword } from './components/admin/reset-password/reset-password';
 import { RoleSelectionComponent } from './components/role-selection/role-selection';
 import { OrgContactUs } from './components/organization/org-contact-us/org-contact-us';
+// Student dashboard child components
+import { Facilities } from './components/student/dashboard/facilities/facilities';
+import { Equipment } from './components/student/dashboard/equipment/equipment';
+import { MyRequests } from './components/student/dashboard/my-requests/my-requests';
+// Organization dashboard child components
+import { OrgFacilitiesComponent } from './components/organization/org-dashboard/facilities/facilities';
+import { OrgEquipmentComponent } from './components/organization/org-dashboard/equipment/equipment';
+import { OrgMyRequestComponent } from './components/organization/org-dashboard/my-request/my-request';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent, data: { title: 'Home' } },
@@ -77,6 +85,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { title: 'Organization Dashboard' },
     children: [
+      { path: 'facilities', component: OrgFacilitiesComponent, data: { title: 'Organization Facilities' } },
+      { path: 'equipment', component: OrgEquipmentComponent, data: { title: 'Organization Equipment' } },
+      { path: 'requests', component: OrgMyRequestComponent, data: { title: 'Organization My Requests' } },
       { path: 'contact', component: OrgContactUs, data: { title: 'Contact Us' } }, 
       { path: 'settings/profile', component: OrgProfileComponent, data: { title: 'Organization Profile' } },
       { path: 'settings/change-password', component: OrgChangePasswordComponent, data: { title: 'Organization Change Password' } }
@@ -98,6 +109,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { title: 'Student Dashboard' },
     children: [
+      { path: 'facilities', component: Facilities, data: { title: 'Student Facilities' } },
+      { path: 'equipment', component: Equipment, data: { title: 'Student Equipment' } },
+      { path: 'requests', component: MyRequests, data: { title: 'Student My Requests' } },
       { path: 'contact', component: StudentContactUs, data: { title: 'Contact Us' } }, 
       { path: 'settings/profile', component: StudentProfileComponent, data: { title: 'Student Profile' } },
       { path: 'settings/change-password', component: StudentChangePasswordComponent, data: { title: 'Student Change Password' } }
