@@ -694,87 +694,450 @@ $spacing-3xl: 6rem;
     }
   }
 
-// Responsive adjustments
-@media (max-width: 1024px) {
-  .navbar .nav-content {
-    padding: 0 $spacing-md;
-
-    .logo {
-      img {
-        height: 60px;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .navbar {
-    padding: $spacing-sm 0;
-
-    .nav-content {
-      padding: 0 $spacing-md;
-      position: relative;
-
-      .logo {
-        img {
-          height: 50px;
-        }
-
-        h2 {
-          font-size: 1.25rem;
-          letter-spacing: 1px;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar .nav-content {
-    padding: 0 $spacing-sm;
-
-    .logo {
-      gap: $spacing-sm;
-
-      img {
-        height: 40px;
-      }
-
-      h2 {
-        font-size: 1.1rem;
-        letter-spacing: 0.5px;
-      }
-    }
-
-    .nav-actions {
-      .btn-nav-secondary,
-      .btn-nav-login {
-        font-size: 0.875rem;
-        padding: $spacing-sm $spacing-md;
-      }
-    }
-  }
-}
-
-@media (max-width: 425px) {
+/* Mobile S */
+@media (max-width: 320px) {
   .contact-container {
-    padding: 0.5rem;
+    .nav-header {
+      padding: 40px 0 0 20px;
+      margin-bottom: 1rem;
 
-    .contact-form-card {
-      padding: 1rem;
+      .page-title {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .contact-content {
+    padding: 0.5rem;
+    gap: 1rem;
+  }
+
+  .contact-form-card {
+    padding: 16px;
+
+    .section-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
     }
 
-    .contact-info-section .info-card {
+    form {
+      gap: 1rem;
+    }
+
+    .form-row {
+      gap: 1rem;
+    }
+
+    .form-group {
+      label {
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+      }
+
+      input,
+      textarea {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.9rem;
+      }
+
+      textarea {
+        min-height: 100px;
+      }
+    }
+
+    .submit-btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .contact-info-section {
+    gap: 0.75rem;
+
+    .info-card {
       padding: 1rem;
-      flex-direction: column;
-      text-align: center;
+      gap: 0.75rem;
 
       .icon-wrapper {
-        margin: 0 auto;
+        width: 40px;
+        height: 40px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .info-content {
+        .info-title {
+          font-size: 1rem;
+          margin-bottom: 0.3rem;
+        }
+
+        .info-subtitle,
+        .info-description {
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+}
+
+/* Mobile M */
+@media (min-width: 321px) and (max-width: 375px) {
+  .contact-container {
+    .nav-header {
+      padding: 45px 0 0 20px;
+      margin-bottom: 1.2rem;
+
+      .page-title {
+        font-size: 1.3rem;
+      }
+    }
+  }
+
+  .contact-content {
+    padding: 0.75rem;
+    gap: 1.25rem;
+  }
+
+  .contact-form-card {
+    padding: 18px;
+
+    .section-title {
+      font-size: 1.15rem;
+      margin-bottom: 1.2rem;
+    }
+
+    form {
+      gap: 1.1rem;
+    }
+
+    .form-row {
+      gap: 1.1rem;
+    }
+
+    .form-group {
+      label {
+        margin-bottom: 0.35rem;
+        font-size: 0.92rem;
+      }
+
+      input,
+      textarea {
+        padding: 0.55rem 0.7rem;
+        font-size: 0.92rem;
+      }
+
+      textarea {
+        min-height: 110px;
+      }
+    }
+
+    .submit-btn {
+      padding: 0.65rem 1.2rem;
+      font-size: 0.95rem;
+    }
+  }
+
+  .contact-info-section {
+    gap: 0.9rem;
+
+    .info-card {
+      padding: 1.2rem;
+      gap: 0.9rem;
+
+      .icon-wrapper {
+        width: 45px;
+        height: 45px;
+
+        svg {
+          width: 22px;
+          height: 22px;
+        }
+      }
+
+      .info-content {
+        .info-title {
+          font-size: 1.05rem;
+          margin-bottom: 0.4rem;
+        }
+
+        .info-subtitle,
+        .info-description {
+          font-size: 0.88rem;
+        }
+      }
+    }
+  }
+}
+
+/* Mobile L */
+@media (min-width: 376px) and (max-width: 425px) {
+  .contact-container {
+    .nav-header {
+      padding: 50px 0 0 20px;
+      margin-bottom: 1.3rem;
+
+      .page-title {
+        font-size: 1.4rem;
+      }
+    }
+  }
+
+  .contact-content {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .contact-form-card {
+    padding: 20px;
+
+    .section-title {
+      font-size: 1.2rem;
+      margin-bottom: 1.3rem;
+    }
+
+    form {
+      gap: 1.2rem;
+    }
+
+    .form-row {
+      gap: 1.2rem;
+    }
+
+    .form-group {
+      label {
+        margin-bottom: 0.4rem;
+        font-size: 0.94rem;
+      }
+
+      input,
+      textarea {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.94rem;
+      }
+
+      textarea {
+        min-height: 115px;
+      }
+    }
+
+    .submit-btn {
+      padding: 0.7rem 1.3rem;
+      font-size: 0.97rem;
+    }
+  }
+
+  .contact-info-section {
+    gap: 1rem;
+
+    .info-card {
+      padding: 1.3rem;
+      gap: 1rem;
+
+      .icon-wrapper {
+        width: 48px;
+        height: 48px;
+
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .info-content {
+        .info-title {
+          font-size: 1.08rem;
+          margin-bottom: 0.4rem;
+        }
+
+        .info-subtitle,
+        .info-description {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}
+
+/* Tablet */
+@media (min-width: 426px) and (max-width: 768px) {
+  .contact-container {
+    .nav-header {
+      padding: 50px 0 0 20px;
+      margin-bottom: 1.5rem;
+
+      .page-title {
+        font-size: 1.6rem;
+      }
+    }
+  }
+
+  .contact-content {
+    padding: 1.5rem;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form-card {
+    padding: 28px;
+
+    .section-title {
+      font-size: 1.4rem;
+      margin-bottom: 1.8rem;
+    }
+
+    form {
+      gap: 1.5rem;
+    }
+
+    .form-row {
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+
+    .form-group {
+      label {
+        margin-bottom: 0.5rem;
+        font-size: 0.98rem;
+      }
+
+      input,
+      textarea {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.98rem;
+      }
+
+      textarea {
+        min-height: 130px;
+      }
+    }
+
+    .submit-btn {
+      padding: 0.8rem 1.8rem;
+      font-size: 1rem;
+    }
+  }
+
+  .contact-info-section {
+    gap: 1.3rem;
+
+    .info-card {
+      padding: 1.6rem;
+      gap: 1.2rem;
+
+      .icon-wrapper {
+        width: 52px;
+        height: 52px;
+
+        svg {
+          width: 26px;
+          height: 26px;
+        }
+      }
+
+      .info-content {
+        .info-title {
+          font-size: 1.15rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .info-subtitle,
+        .info-description {
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+}
+
+/* Laptop */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .contact-container {
+    .nav-header {
+      padding: 50px 0 0 30px;
+      margin-bottom: 1.8rem;
+
+      .page-title {
+        font-size: 1.75rem;
+      }
+    }
+  }
+
+  .contact-content {
+    padding: 2rem;
+    gap: 2.5rem;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .contact-form-card {
+    padding: 32px;
+
+    .section-title {
+      font-size: 1.45rem;
+      margin-bottom: 2rem;
+    }
+
+    form {
+      gap: 1.6rem;
+    }
+
+    .form-row {
+      gap: 1.6rem;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .form-group {
+      label {
+        margin-bottom: 0.5rem;
+        font-size: 0.99rem;
+      }
+
+      input,
+      textarea {
+        padding: 0.75rem 1rem;
+        font-size: 0.99rem;
+      }
+
+      textarea {
+        min-height: 140px;
+      }
+    }
+
+    .submit-btn {
+      padding: 0.85rem 2rem;
+      font-size: 1.01rem;
+    }
+  }
+
+  .contact-info-section {
+    gap: 1.5rem;
+
+    .info-card {
+      padding: 1.8rem;
+      gap: 1.3rem;
+
+      .icon-wrapper {
+        width: 56px;
+        height: 56px;
+
+        svg {
+          width: 28px;
+          height: 28px;
+        }
+      }
+
+      .info-content {
+        .info-title {
+          font-size: 1.2rem;
+          margin-bottom: 0.6rem;
+        }
+
+        .info-subtitle,
+        .info-description {
+          font-size: 0.97rem;
+        }
       }
     }
   }
