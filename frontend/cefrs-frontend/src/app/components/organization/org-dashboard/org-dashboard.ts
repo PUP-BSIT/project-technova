@@ -2,6 +2,7 @@ import { Component, ViewChild, AfterViewInit, OnInit, ChangeDetectorRef, HostLis
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -41,13 +42,18 @@ export class OrgDashboardComponent implements OnInit, AfterViewInit {
   isSidebarCollapsed = false;
   private readonly DESKTOP_BREAKPOINT = 1024;
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private router: Router, 
+    private cdr: ChangeDetectorRef,
+    private titleService: Title
+  ) {}
 
   ngOnInit(): void {
     this.checkScreenSize();
 
     // Ensure correct view when navigating directly to a child settings route
     this.syncViewWithUrl(this.router.url);
+    this.updateTitle();
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -116,10 +122,24 @@ export class OrgDashboardComponent implements OnInit, AfterViewInit {
     } else {
       this.currentView = 'dashboard';
     }
+    
+    this.updateTitle();
+  }
+
+  private updateTitle(): void {
+    const titleMap: { [key: string]: string } = {
+      'dashboard': 'Organization Dashboard',
+      'facilities': 'Facilities - Organization Dashboard',
+      'equipment': 'Equipment - Organization Dashboard',
+      'requests': 'My Requests - Organization Dashboard',
+      'settings': 'Settings - Organization Dashboard'
+    };
+    this.titleService.setTitle(titleMap[this.currentView] || 'Organization Dashboard');
   }
 
   setView(view: 'dashboard' | 'facilities' | 'equipment' | 'requests' | 'transactions' | 'settings'): void {
     this.currentView = view;
+    this.updateTitle();
 
     if (view === 'settings') {
       this.router.navigate(['/org-dashboard', 'settings', 'profile']);
