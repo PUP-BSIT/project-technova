@@ -123,6 +123,8 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
+  max-height: 28vh;
+  overflow-y: auto;
 }
 
 .request-item {
