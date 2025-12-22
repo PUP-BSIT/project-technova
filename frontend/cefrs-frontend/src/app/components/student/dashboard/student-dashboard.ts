@@ -67,7 +67,7 @@ export class StudentDashboard implements OnInit, AfterViewInit {
 
     if (url.includes('/student-dashboard/settings')) {
       this.currentView = 'settings';
-    } else if (url.includes('/org-dashboard/contact')) {
+    } else if (url.includes('/student-dashboard/contact')) {
       this.currentView = 'contact';
     } else if (url.includes('/student-dashboard/facilities')) {
       this.currentView = 'facilities';
