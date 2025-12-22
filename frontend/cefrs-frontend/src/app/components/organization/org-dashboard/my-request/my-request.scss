@@ -64,6 +64,8 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-lg;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .request-detail-card {
@@ -182,41 +184,70 @@
 }
 
 @media (max-width: 768px) {
-  .search-controls {
-    padding: $spacing-xs $spacing-lg $spacing-xs;
-    margin-bottom: $spacing-xs;
-    flex-direction: column;
-    gap: $spacing-xs;
-
-    .search-input,
-    .filter-select {
-      width: 100%;
-      padding: $spacing-xs $spacing-sm;
-      font-size: $font-size-sm;
+  .page-header {
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg; // Compact padding, avoid hamburger button
+    padding-left: 80px !important; // Avoid hamburger button - ensure it's applied
+    
+    h1 {
+      font-size: $font-size-2xl; // Smaller title on mobile
+      font-weight: $font-weight-medium; // Bold
+      margin-bottom: $spacing-xs;
+      font-family: $font-family; // Roboto
     }
-
-    .filter-select {
-      min-width: auto;
+    
+    .page-subtitle {
+      font-size: $font-size-sm; // Smaller subtitle on mobile
+      margin-top: 0;
+      font-family: $font-family; // Roboto
     }
   }
-
+  
+  .search-controls {
+    padding: $spacing-xs $spacing-lg $spacing-xs; // Very compact on mobile
+    margin-bottom: $spacing-xs; // Reduced margin
+    flex-direction: column; // Stack vertically on mobile
+    gap: $spacing-xs; // Smaller gap between controls
+    
+    .search-input {
+      width: 100%;
+      padding: $spacing-xs $spacing-sm; // Very small padding
+      font-size: $font-size-sm;
+    }
+    
+    .filter-select {
+      width: 100%;
+      padding: $spacing-xs $spacing-sm; // Very small padding
+      font-size: $font-size-sm;
+      min-width: auto; // Remove min-width on mobile
+    }
+  }
+  
   .requests-detail-list {
     padding-left: $spacing-lg;
     padding-right: $spacing-lg;
     padding-bottom: $spacing-2xl;
     gap: $spacing-md;
   }
-
+  
+  // Make request cards mobile responsive
   .request-detail-card {
-    flex-direction: column;
-    padding: $spacing-lg;
+    flex-direction: column; // Stack image and body vertically on mobile
     gap: $spacing-md;
+    padding: $spacing-lg; // Reduce padding on mobile
+    
+    .request-image {
+      width: 100%;
+      height: 200px; // Smaller height on mobile
+      flex: 0 0 auto;
+    }
+    
+    .request-body {
+      width: 100%;
+    }
   }
-
-  .request-image {
-    width: 100%;
-    height: 200px;
-    flex: 0 0 auto;
+  
+  .requests-panel {
+    padding: $spacing-md; // Reduce padding on mobile
   }
 
   .requests-container {
