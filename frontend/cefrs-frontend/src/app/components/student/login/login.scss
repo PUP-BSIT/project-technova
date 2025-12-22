@@ -72,7 +72,7 @@ html {
   min-width: 100vw;
   background: $background-gray;
   font-family: 'Roboto', sans-serif;
-  padding: $spacing-lg;
+  padding: 5rem $spacing-lg $spacing-lg; // add top space so back button won't overlap card
   margin: 0;
   position: relative;
 }
@@ -127,7 +127,7 @@ html {
 
 @media (max-width: 600px) {
   .login-container {
-    padding: $spacing-md;
+    padding: 4rem $spacing-md $spacing-md;
   }
 
   .back-home-btn {
