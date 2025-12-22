@@ -19,6 +19,31 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.page-header {
+  padding: $spacing-md $spacing-3xl $spacing-xs;
+  margin-bottom: 0;
+
+  h1 {
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-xs;
+    font-family: $font-family;
+  }
+
+  .page-subtitle {
+    color: $text-secondary;
+    font-size: $font-size-lg;
+    margin-top: 0;
+    font-family: $font-family;
+  }
+}
+
+.search-bar {
+  padding: $spacing-xs $spacing-3xl $spacing-sm;
+  margin-bottom: $spacing-sm;
+  box-sizing: border-box;
+}
+
 // Scrollable content area (facilities grid, loading, no-data messages)
 .scrollable-content {
   flex: 1;
@@ -29,10 +54,13 @@
 }
 
 .facilities-grid {
-  padding: 0 $spacing-4xl $spacing-4xl;
+  // Align main content vertical position with Equipment page
+  padding: 0 $spacing-3xl $spacing-3xl;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: $spacing-2xl;
+  gap: $spacing-xl;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .facility-card {
@@ -44,7 +72,7 @@
 
 .facility-image {
   position: relative;
-  height: 200px;
+  height: 260px;
   overflow: hidden;
 
   img {
@@ -133,38 +161,60 @@
 
 @media (max-width: 768px) {
   .page-header {
-    padding: $spacing-sm 80px $spacing-xs $spacing-lg;
-    padding-left: 80px !important;
-
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg; // Compact padding, avoid hamburger button
+    padding-left: 80px !important; // Avoid hamburger button - ensure it's applied
+    
     h1 {
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-medium;
-      font-family: $font-family;
+      font-size: $font-size-2xl; // Smaller title on mobile
+      font-weight: $font-weight-medium; // Bold
+      margin-bottom: $spacing-xs;
+      font-family: $font-family; // Roboto
     }
-
+    
     .page-subtitle {
-      font-size: $font-size-sm;
+      font-size: $font-size-sm; // Smaller subtitle on mobile
       margin-top: 0;
-      font-family: $font-family;
+      font-family: $font-family; // Roboto
     }
   }
-
+  
   .search-bar {
-    padding: $spacing-xs $spacing-lg $spacing-sm;
+    padding: $spacing-xs $spacing-lg $spacing-sm; // More compact on mobile
+    margin-bottom: $spacing-sm;
   }
-
-  .search-input {
-    padding: $spacing-sm $spacing-md;
-    font-size: $font-size-sm;
-  }
-
+  
   .facilities-grid {
     padding-left: $spacing-lg;
     padding-right: $spacing-lg;
+    padding-bottom: $spacing-2xl;
+  }
+
+  .facility-image {
+    height: 220px;
+  }
+
+  .search-input {
+    padding: $spacing-sm $spacing-md; // Smaller padding on mobile
+    font-size: $font-size-sm;
   }
 
   .facilities-container {
     height: calc(100vh - 80px); // Account for hamburger button on mobile
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: $spacing-md $spacing-lg $spacing-xs;
+  }
+
+  .search-bar {
+    padding: $spacing-xs $spacing-lg;
+  }
+
+  .facilities-grid {
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
   }
 }
 
