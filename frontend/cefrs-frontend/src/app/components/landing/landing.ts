@@ -65,7 +65,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Observe all sections and cards
     const animatedElements = document.querySelectorAll(
-      '.hero-content, .overview-card, .feature-card, .policy-item, .contact-card, .section-title, .section-subtitle'
+      '.hero-content, .overview-card, .feature-card, .policy-item, .section-title, .section-subtitle'
     );
 
     animatedElements.forEach(el => {
