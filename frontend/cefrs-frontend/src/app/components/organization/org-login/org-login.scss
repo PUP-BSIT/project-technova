@@ -42,7 +42,7 @@ html {
   align-items: center;
   font-family: 'Roboto', sans-serif;
   margin: 0;
-  padding: 1.5rem;
+  padding: 5rem 1.5rem 1.5rem; // add top space so back button does not overlap card
   position: relative;
   overflow: hidden;
 }
@@ -274,6 +274,7 @@ html {
   position: absolute;
   top: 1.5rem;
   left: 1.5rem;
+  display: inline-flex;
   border: 1px solid rgba($primary, 0.4);
   background: rgba($primary, 0.08);
   color: $primary;
@@ -294,7 +295,7 @@ html {
 // Responsive design
 @media (max-width: 768px) {
   .org-login-container {
-    padding: 1.5rem 1rem;
+    padding: 4rem 1rem 1.5rem;
     align-items: flex-start;
   }
 
@@ -329,7 +330,7 @@ html {
 
 @media (max-width: 480px) {
   .org-login-container {
-    padding: 1rem 0.75rem;
+    padding: 3.5rem 0.75rem 1rem;
   }
 
   .org-login-card {
