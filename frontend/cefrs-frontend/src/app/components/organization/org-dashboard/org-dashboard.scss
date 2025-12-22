@@ -288,10 +288,28 @@ $transition-base: 0.3s;
 }
 
 @media (max-width: 1024px) {
+  .dashboard-container {
+    // Mobile: Ensure content uses full width regardless of sidebar state
+    ::ng-deep .mat-drawer-content {
+      width: 100% !important;
+      margin-left: 0 !important;
+      // Mobile: allow vertical scrolling in dashboard views
+      overflow-y: auto !important;
+    }
+    
+    // Mobile: Override collapsed container styles
+    &.sidebar-collapsed-container {
+      ::ng-deep .mat-drawer-content {
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+    }
+  }
+  
   .main-content {
+    padding-top: 0;
     width: 100% !important;
     margin-left: 0 !important;
-    padding-top: 60px; // leave space for floating hamburger
   }
 }
 

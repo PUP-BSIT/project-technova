@@ -30,7 +30,7 @@
                 class="request-btn" 
                 [disabled]="facility.status !== 'AVAILABLE'"
                 (click)="requestFacility(facility.id)">
-                @if (facility.status !== 'AVAILABLE') { Not Available } @else { Request Facility }
+                @if (facility.status !== 'AVAILABLE') { Not Available } @else { Reserve Facility }
               </button>
             </div>
           </div>

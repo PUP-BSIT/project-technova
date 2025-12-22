@@ -19,6 +19,33 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.page-header {
+  padding: $spacing-md $spacing-3xl $spacing-xs;
+  margin-bottom: 0;
+
+  h1 {
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-xs;
+    font-family: $font-family;
+  }
+
+  .page-subtitle {
+    color: $text-secondary;
+    font-size: $font-size-lg;
+    margin-top: 0;
+    font-family: $font-family;
+  }
+}
+
+.search-controls {
+  padding: $spacing-xs $spacing-3xl $spacing-sm;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  gap: $spacing-lg;
+  box-sizing: border-box;
+}
+
 // Scrollable content area (equipment grid, loading, no-data messages)
 .scrollable-content {
   flex: 1;
@@ -29,10 +56,12 @@
 }
 
 .equipment-grid {
-  padding: 0 $spacing-4xl $spacing-3xl;
+  padding: 0 $spacing-3xl $spacing-3xl;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: $spacing-2xl;
+  gap: $spacing-xl;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .equipment-card {
@@ -44,7 +73,7 @@
 
 .equipment-image {
   position: relative;
-  height: 200px;
+  height: 260px;
   overflow: hidden;
   background: $gray-lighter;
 
@@ -150,46 +179,68 @@
 
 @media (max-width: 768px) {
   .page-header {
-    padding: $spacing-sm 80px $spacing-xs $spacing-lg;
-    padding-left: 80px !important;
-
+    padding: $spacing-sm 80px $spacing-xs $spacing-lg; // Compact padding, avoid hamburger button
+    padding-left: 80px !important; // Avoid hamburger button - ensure it's applied
+    
     h1 {
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-medium;
-      font-family: $font-family;
+      font-size: $font-size-2xl; // Smaller title on mobile
+      font-weight: $font-weight-medium; // Bold
+      margin-bottom: $spacing-xs;
+      font-family: $font-family; // Roboto
     }
-
+    
     .page-subtitle {
-      font-size: $font-size-sm;
+      font-size: $font-size-sm; // Smaller subtitle on mobile
       margin-top: 0;
+      font-family: $font-family; // Roboto
     }
   }
-
+  
   .search-controls {
-    padding: $spacing-xs $spacing-lg $spacing-sm;
+    padding: $spacing-xs $spacing-lg $spacing-sm; // More compact on mobile
     margin-bottom: $spacing-sm;
-    flex-direction: column;
+    flex-direction: column; // Stack vertically on mobile
     gap: $spacing-sm;
-
+    
     .search-input,
     .filter-select {
       width: 100%;
-      padding: $spacing-sm $spacing-md;
+      padding: $spacing-sm $spacing-md; // Smaller padding on mobile
       font-size: $font-size-sm;
     }
-
+    
     .filter-select {
-      min-width: auto;
+      min-width: auto; // Remove min-width on mobile
     }
   }
-
+  
   .equipment-grid {
     padding-left: $spacing-lg;
     padding-right: $spacing-lg;
     padding-bottom: $spacing-2xl;
+    gap: $spacing-lg;
+  }
+
+  .equipment-image {
+    height: 220px;
   }
 
   .equipment-container {
     height: calc(100vh - 80px); // Account for hamburger button on mobile
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: $spacing-md $spacing-lg $spacing-xs;
+  }
+
+  .search-controls {
+    padding: $spacing-xs $spacing-lg;
+  }
+
+  .equipment-grid {
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
   }
 }
