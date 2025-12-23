@@ -38,6 +38,10 @@ export class MyRequests implements OnInit {
   selectedStatus = 'All Status';
   selectedType = 'All Types';
 
+  clearSearch(): void {
+    this.searchQuery = '';
+  }
+
   ngOnInit(): void {
     this.fetchMyRequests();
   }

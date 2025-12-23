@@ -25,6 +25,10 @@ export class OrgFacilitiesComponent implements OnInit {
   isLoadingFacilities = false;
   facilities: FacilityDTO[] = [];
 
+  clearSearch(): void {
+    this.searchQuery = '';
+  }
+
   // Modal state
   showReservationModal = false;
   showSuccessModal = false;

@@ -46,6 +46,38 @@
   box-sizing: border-box;
 }
 
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.clear-button {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #333;
+  }
+  
+  .clear-icon {
+    font-size: 14px;
+    line-height: 1;
+  }
+}
+
 // Scrollable content area (equipment grid, loading, no-data messages)
 .scrollable-content {
   flex: 1;

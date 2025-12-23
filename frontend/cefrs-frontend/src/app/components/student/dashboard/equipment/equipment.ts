@@ -31,6 +31,10 @@ export class Equipment implements OnInit {
   searchQuery = '';
   selectedCategory = 'All Categories';
 
+  clearSearch(): void {
+    this.searchQuery = '';
+  }
+
   // Modal state
   showEquipmentModal = false;
   showEquipmentSuccessModal = false;

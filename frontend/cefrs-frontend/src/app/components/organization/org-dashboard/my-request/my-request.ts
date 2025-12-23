@@ -32,6 +32,10 @@ export class OrgMyRequestComponent implements OnInit {
   searchQuery = '';
   selectedStatus = 'All Status';
   selectedType = 'All Types';
+
+  clearSearch(): void {
+    this.searchQuery = '';
+  }
   private reservationService = inject(ReservationService);
   private borrowingService = inject(EquipmentBorrowingService);
   private facilityService = inject(FacilityService);
