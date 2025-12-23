@@ -6,7 +6,14 @@
         <p class="page-subtitle">Track your equipment and facility requests</p>
       </div>
       <div class="search-controls">
-        <input type="text" placeholder="Search your request" [(ngModel)]="searchQuery" class="search-input">
+        <div class="search-input-wrapper">
+          <input type="text" placeholder="Search your request" [(ngModel)]="searchQuery" class="search-input">
+          @if (searchQuery) {
+            <button class="clear-button" (click)="clearSearch()" type="button" aria-label="Clear search">
+              <span class="clear-icon">✕</span>
+            </button>
+          }
+        </div>
         <select [(ngModel)]="selectedStatus" class="filter-select">
           <option>All Status</option>
           <option>Pending</option>
