@@ -36,6 +36,10 @@ export class OrgEquipmentComponent implements OnInit {
   selectedCategory = 'All Categories';
   isLoadingEquipment = false;
 
+  clearSearch(): void {
+    this.searchQuery = '';
+  }
+
   equipment: Equipment[] = [];
 
   // Modal state
