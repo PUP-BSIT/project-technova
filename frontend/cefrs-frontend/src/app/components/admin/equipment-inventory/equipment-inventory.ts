@@ -449,30 +449,179 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   exportToCSV(): void {
     const headers = ['Code', 'Product', 'Category', 'Location', 'Stock', 'Available', 'Borrowed', 'Reorder Point', 'Supplier', 'Last Audit', 'Status'];
     const rows = this.filteredEquipment.map(item => [
-      item.code,
-      `"${item.name}"`,
-      item.category,
-      item.location || 'N/A',
+      this.escapeCSV(item.code),
+      this.escapeCSV(item.name),
+      this.escapeCSV(item.category),
+      this.escapeCSV(item.location || 'N/A'),
       item.quantityTotal,
       item.quantityAvailable,
       item.quantityBorrowed,
       item.reorderPoint || 0,
-      item.supplier || 'N/A',
+      this.escapeCSV(item.supplier || 'N/A'),
       item.lastAuditDate?.toLocaleDateString() || 'Never',
-      item.condition
+      this.escapeCSV(item.condition)
     ]);
 
-    let csvContent = headers.join(',') + '\n';
+    // Add padding to columns for better readability
+    let csvContent = headers.join(',    ') + '\n';
     rows.forEach(row => {
-      csvContent += row.join(',') + '\n';
+      csvContent += row.join(',    ') + '\n';
     });
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `equipment-inventory-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
+    window.URL.revokeObjectURL(url);
+
+    this.displayMessage('success', 'Inventory exported to CSV successfully');
+  }
+
+  exportToPDF(): void {
+    // Create a printable HTML content
+    const printContent = this.generatePrintableInventory();
+
+    // Open print dialog
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+
+      // Wait for content to load then print
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  }
+
+  private generatePrintableInventory(): string {
+    const today = new Date().toLocaleDateString();
+    const rows = this.filteredEquipment.map(item => `
+      <tr>
+        <td>${item.code}</td>
+        <td>${item.name}</td>
+        <td>${item.category}</td>
+        <td>${item.location || 'N/A'}</td>
+        <td style="text-align: center;">${item.quantityTotal}</td>
+        <td style="text-align: center;">${item.quantityAvailable}</td>
+        <td style="text-align: center;">${item.quantityBorrowed}</td>
+        <td style="text-align: center;">${item.reorderPoint || 0}</td>
+        <td>${item.supplier || 'N/A'}</td>
+        <td>${item.lastAuditDate?.toLocaleDateString() || 'Never'}</td>
+        <td>${item.condition}</td>
+      </tr>
+    `).join('');
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Equipment Inventory Report - ${today}</title>
+        <style>
+          @page {
+            size: A4 landscape;
+            margin: 15mm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #69040C;
+            padding-bottom: 15px;
+          }
+          .header h1 {
+            margin: 0;
+            color: #69040C;
+            font-size: 24px;
+          }
+          .header p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 11px;
+          }
+          th {
+            background-color: #69040C;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #ddd;
+          }
+          td {
+            padding: 10px 8px;
+            border: 1px solid #ddd;
+          }
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+          tr:hover {
+            background-color: #f5f5f5;
+          }
+          .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+            .no-print {
+              display: none;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Equipment Inventory Report</h1>
+          <p>Generated on ${today} | Total Items: ${this.filteredEquipment.length}</p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Stock</th>
+              <th>Available</th>
+              <th>Borrowed</th>
+              <th>Reorder Point</th>
+              <th>Supplier</th>
+              <th>Last Audit</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+
+        <div class="footer">
+          <p>CEFRS - Equipment Inventory Management System</p>
+          <p>This report contains ${this.filteredEquipment.length} item(s)</p>
+        </div>
+      </body>
+      </html>
+    `;
   }
 
   exportReorderList(): void {
@@ -482,28 +631,182 @@ export class EquipmentInventory implements OnInit, OnDestroy {
 
     const headers = ['Code', 'Product', 'Category', 'Current Stock', 'Reorder Point', 'Suggested Order Qty', 'Supplier'];
     const rows = needsReorder.map(item => [
-      item.code,
-      `"${item.name}"`,
-      item.category,
+      this.escapeCSV(item.code),
+      this.escapeCSV(item.name),
+      this.escapeCSV(item.category),
       item.quantityTotal,
       item.reorderPoint || 0,
       Math.max((item.reorderPoint || 0) * 2 - item.quantityTotal, 0),
-      item.supplier || 'N/A'
+      this.escapeCSV(item.supplier || 'N/A')
     ]);
 
-    let csvContent = headers.join(',') + '\n';
+    // Add padding to columns for better readability
+    let csvContent = headers.join(',    ') + '\n';
     rows.forEach(row => {
-      csvContent += row.join(',') + '\n';
+      csvContent += row.join(',    ') + '\n';
     });
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `reorder-list-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
+    window.URL.revokeObjectURL(url);
 
     this.displayMessage('success', 'Reorder list exported successfully');
+  }
+
+  exportReorderListPDF(): void {
+    const needsReorder = this.equipment.filter(item =>
+      item.quantityAvailable <= (item.reorderPoint || 0)
+    );
+
+    if (needsReorder.length === 0) {
+      this.displayMessage('error', 'No items need reordering');
+      return;
+    }
+
+    const today = new Date().toLocaleDateString();
+    const rows = needsReorder.map(item => `
+      <tr>
+        <td>${item.code}</td>
+        <td>${item.name}</td>
+        <td>${item.category}</td>
+        <td style="text-align: center;">${item.quantityTotal}</td>
+        <td style="text-align: center;">${item.reorderPoint || 0}</td>
+        <td style="text-align: center; font-weight: bold; color: #4CAF50;">${Math.max((item.reorderPoint || 0) * 2 - item.quantityTotal, 0)}</td>
+        <td>${item.supplier || 'N/A'}</td>
+      </tr>
+    `).join('');
+
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Reorder List - ${today}</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #ffc107;
+            padding-bottom: 15px;
+          }
+          .header h1 {
+            margin: 0;
+            color: #ffc107;
+            font-size: 24px;
+          }
+          .header p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+          }
+          .alert {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #856404;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+          }
+          th {
+            background-color: #ffc107;
+            color: #333;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #ddd;
+          }
+          td {
+            padding: 10px 8px;
+            border: 1px solid #ddd;
+          }
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+          .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>⚠️ Equipment Reorder List</h1>
+          <p>Generated on ${today}</p>
+        </div>
+
+        <div class="alert">
+          ${needsReorder.length} item(s) need to be reordered
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Current Stock</th>
+              <th>Reorder Point</th>
+              <th>Suggested Order</th>
+              <th>Supplier</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+
+        <div class="footer">
+          <p>CEFRS - Equipment Inventory Management System</p>
+          <p>Please process these orders as soon as possible</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  }
+
+  private escapeCSV(value: string): string {
+    if (value == null) return '';
+    const stringValue = String(value);
+    // Escape quotes and wrap in quotes if contains comma, quote, or newline
+    if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return stringValue;
   }
 
   // Utility methods
