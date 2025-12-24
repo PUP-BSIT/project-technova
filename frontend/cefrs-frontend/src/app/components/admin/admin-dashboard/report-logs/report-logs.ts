@@ -177,7 +177,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             };
           }
 
-          
+
         },
         error: (error) => {
           console.error('Error loading dashboard stats:', error);
@@ -417,11 +417,9 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  /* Get paginated audit logs */
+  /* Get paginated audit logs - FIXED: Backend already returns paginated data */
   get paginatedAuditLogs(): AuditLog[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    return this.auditLogs.slice(startIndex, endIndex);
+    return this.auditLogs; // Backend already handles pagination
   }
 
   /* Get total pages */
@@ -742,8 +740,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
 
   /* Refresh data for the current tab */
   refreshData(): void {
-    
-
     this.loadDashboardStats();
 
     switch (this.activeTab) {
@@ -765,6 +761,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
       case 'audit':
         this.auditDataLoaded = false;
         this.auditLogs = [];
+        this.currentPage = 1; // Reset to first page on refresh
         this.loadAuditData();
         break;
     }
