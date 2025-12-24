@@ -27,8 +27,8 @@ interface UserProfile {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
-  private userApiUrl = 'http://localhost:8080/api/user';
+  private apiUrl = '/api/auth';
+  private userApiUrl = '/api/user';
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
