@@ -541,6 +541,10 @@ $spacing-3xl: 6rem;
         font-weight: 500;
         margin-bottom: 0.4rem;
         color: #333;
+
+        .required {
+          color: $primary-color; 
+        }
       }
 
       input,

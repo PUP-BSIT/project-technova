@@ -75,6 +75,10 @@
         font-weight: 500;
         margin-bottom: 0.4rem;
         color: #333;
+        
+        .required {
+          color:#581c1c; 
+        }
       }
 
       input,
