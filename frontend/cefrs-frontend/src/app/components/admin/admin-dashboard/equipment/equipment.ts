@@ -66,6 +66,11 @@ export class Equipment implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  /* Format equipment ID as EQP-0001 */
+  formatEquipmentId(id: number): string {
+    return `EQP-${id.toString().padStart(4, '0')}`;
+  }
+
   private displayMessage(type: 'success' | 'error', message: string): void {
     this.messageType = type;
     this.messageText = message;
@@ -93,7 +98,7 @@ export class Equipment implements OnInit, OnDestroy {
             status: e.status
           }));
           this.isLoading = false;
-          
+
         },
         error: (error) => {
           console.error('Error loading equipment:', error);
@@ -229,7 +234,7 @@ export class Equipment implements OnInit, OnDestroy {
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
         this.photoPreview = compressedBase64;
 
-        
+
       };
       img.src = e.target?.result as string;
     };
@@ -337,7 +342,8 @@ export class Equipment implements OnInit, OnDestroy {
       const query = this.searchText.toLowerCase();
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(query) ||
-        item.id.toString().toLowerCase().includes(query)
+        item.id.toString().toLowerCase().includes(query) ||
+        this.formatEquipmentId(item.id).toLowerCase().includes(query)
       );
     }
 

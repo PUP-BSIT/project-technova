@@ -37,7 +37,7 @@
           <div class="item-card">
             <div class="item-card-header">
               <div>
-                <span class="item-id">{{ facility.id }}</span>
+                <span class="item-id">{{ formatFacilityId(facility.id) }}</span>
                 <span [class]="'status-badge status-' + facility.status">{{ getStatusText(facility.status) }}</span>
               </div>
               <div class="item-actions">

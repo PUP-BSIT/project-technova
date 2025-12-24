@@ -55,7 +55,7 @@
           <div class="item-card">
             <div class="item-card-header">
               <div>
-                <span class="item-id">E{{ item.id }}</span>
+                <span class="item-id">{{ formatEquipmentId(item.id) }}</span>
               </div>
               <div class="item-actions">
                 <button class="edit-button" (click)="editEquipment(item)">Edit</button>
