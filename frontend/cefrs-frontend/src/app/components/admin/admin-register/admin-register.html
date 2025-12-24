@@ -102,7 +102,7 @@
       <div class="form-step" *ngIf="currentStep === 3">
         <h2 class="section-title">ACCOUNT SECURITY</h2>
         <div class="form-group">
-          <label class="form-label">Password</label>
+          <label class="form-label">Password <span class="required">*</span></label>
           <p class="form-hint">Password must be at least 8 characters with uppercase, lowercase, number, and special character.</p>
           <div class="input-with-icon">
             <input [type]="showPassword ? 'text' : 'password'" class="form-input" placeholder="Enter your password" formControlName="password" [class.error]="isFieldInvalid('password')" />
@@ -111,7 +111,7 @@
           <span class="error-message" *ngIf="isFieldInvalid('password')">{{ getFieldError('password') }}</span>
         </div>
         <div class="form-group">
-          <label class="form-label">Confirm Password</label>
+          <label class="form-label">Confirm Password <span class="required">*</span></label>
           <div class="input-with-icon">
             <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-input" placeholder="Confirm password" formControlName="confirmPassword" [class.error]="isFieldInvalid('confirmPassword') || registerForm.errors?.['passwordMismatch']" />
             <button type="button" class="toggle-password" (click)="toggleConfirmPasswordVisibility()">👁</button>
