@@ -83,7 +83,7 @@ export class Facilities implements OnInit, OnDestroy {
             imageUrl: f.imageUrl
           }));
           this.isLoading = false;
-          
+
         },
         error: (error) => {
           console.error('Error loading facilities:', error);
@@ -91,6 +91,11 @@ export class Facilities implements OnInit, OnDestroy {
           this.displayMessage('error', 'Failed to load facilities');
         }
       });
+  }
+
+  /* Format facility ID as FAC-0001 */
+  formatFacilityId(id: number): string {
+    return `FAC-${id.toString().padStart(4, '0')}`;
   }
 
   private displayMessage(type: 'success' | 'error', message: string): void {
@@ -209,7 +214,7 @@ export class Facilities implements OnInit, OnDestroy {
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
         this.photoPreview = compressedBase64;
 
-        
+
       };
       img.src = e.target?.result as string;
     };
@@ -321,7 +326,8 @@ export class Facilities implements OnInit, OnDestroy {
       filtered = filtered.filter(facility =>
         facility.name.toLowerCase().includes(query) ||
         facility.building.toLowerCase().includes(query) ||
-        facility.id.toString().toLowerCase().includes(query)
+        facility.id.toString().toLowerCase().includes(query) ||
+        this.formatFacilityId(facility.id).toLowerCase().includes(query)
       );
     }
 
