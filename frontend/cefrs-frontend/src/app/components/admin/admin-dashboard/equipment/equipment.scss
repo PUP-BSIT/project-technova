@@ -57,7 +57,7 @@ $tablet: 1024px;
 // Filter Section
 .filter-section {
   display: flex;
-  gap: 16px;
+  gap: 32px;
   margin-bottom: 32px;
   flex-wrap: wrap;
   align-items: center;
@@ -115,11 +115,14 @@ $tablet: 1024px;
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+    align-items: center;
+    margin-left: 0;
 
     @media (max-width: $mobile-l) {
       width: 100%;
       order: 3;
       gap: 8px;
+      margin-left: 0;
     }
   }
 
@@ -136,6 +139,7 @@ $tablet: 1024px;
       flex: 1;
       padding: 10px 12px;
       font-size: 14px;
+      margin-right: 0;
     }
 
     @media (max-width: $mobile-m) {
