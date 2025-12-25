@@ -63,6 +63,10 @@ export class ManageRequest implements OnInit {
     private route: ActivatedRoute
   ) {}
 
+  clearSearch(): void {
+    this.searchText = '';
+  }
+
   ngOnInit(): void {
     this.loadAllRequests();
     

@@ -156,6 +156,42 @@ $font-family: 'Roboto', sans-serif;
         }
       }
     }
+
+    .clear-button {
+      @include button-reset;
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      transition: color 0.2s ease;
+      z-index: 1;
+
+      @include respond-to('mobile-all') {
+        right: 8px;
+      }
+
+      &:hover {
+        color: #333;
+      }
+
+      .clear-icon {
+        font-size: 18px;
+        line-height: 1;
+        font-weight: 500;
+
+        @include respond-to('s') {
+          font-size: 16px;
+        }
+      }
+    }
   }
 
   .filter-dropdowns {
