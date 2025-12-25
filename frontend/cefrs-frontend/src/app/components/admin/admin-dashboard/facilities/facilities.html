@@ -12,12 +12,14 @@
         </svg>
       </button>
     </div>
-    <select class="filter-dropdown" [(ngModel)]="selectedStatus">
-      <option>All Status</option>
-      <option>Available</option>
-      <option>Reserved</option>
-      <option>Unavailable</option>
-    </select>
+    <div class="filter-dropdowns">
+      <select class="filter-dropdown" [(ngModel)]="selectedStatus">
+        <option>All Status</option>
+        <option>Available</option>
+        <option>Reserved</option>
+        <option>Unavailable</option>
+      </select>
+    </div>
   </div>
 
   @if (isLoading) {
