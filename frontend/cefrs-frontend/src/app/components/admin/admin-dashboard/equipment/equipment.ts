@@ -57,6 +57,10 @@ export class Equipment implements OnInit, OnDestroy {
 
   constructor(private equipmentService: EquipmentService) { }
 
+  clearSearch(): void {
+    this.searchText = '';
+  }
+
   ngOnInit(): void {
     this.loadEquipment();
   }

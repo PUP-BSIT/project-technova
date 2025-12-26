@@ -56,6 +56,10 @@ export class Facilities implements OnInit, OnDestroy {
 
   constructor(private facilityService: FacilityService) { }
 
+  clearSearch(): void {
+    this.searchText = '';
+  }
+
   ngOnInit(): void {
     this.loadFacilities();
   }
