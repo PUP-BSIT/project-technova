@@ -27,7 +27,7 @@ public interface EquipmentBorrowingRepository extends JpaRepository<EquipmentBor
                      "AND eb.actualReturnDate IS NULL")
        List<EquipmentBorrowing> findActiveBorrowings();
 
-       @Query("SELECT eb FROM EquipmentBorrowing eb WHERE eb.status = 'BORROWED' " +
+       @Query("SELECT eb FROM EquipmentBorrowing eb WHERE eb.status IN ('BORROWED','APPROVED') " +
                      "AND eb.expectedReturnDate < :currentDate " +
                      "AND eb.actualReturnDate IS NULL")
        List<EquipmentBorrowing> findOverdueBorrowings(@Param("currentDate") LocalDate currentDate);
@@ -87,7 +87,7 @@ public interface EquipmentBorrowingRepository extends JpaRepository<EquipmentBor
 
        // Overdue items count
        @Query("SELECT COUNT(eb) FROM EquipmentBorrowing eb " +
-                     "WHERE eb.status = 'BORROWED' AND eb.expectedReturnDate < :today")
+                     "WHERE eb.status IN ('BORROWED','APPROVED') AND eb.expectedReturnDate < :today AND eb.actualReturnDate IS NULL")
        Long countOverdueItems(@Param("today") LocalDate today);
 
        // Average borrowing duration in days
