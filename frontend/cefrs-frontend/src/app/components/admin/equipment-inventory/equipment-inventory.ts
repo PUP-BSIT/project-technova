@@ -205,10 +205,10 @@ export class EquipmentInventory implements OnInit, OnDestroy {
             lastModified: new Date(),
             selected: false,
             editing: false,
-            location: this.getRandomLocation(),
+            location: (e as any).location || 'Not Assigned',
+            supplier: (e as any).supplier || 'Not Assigned',
             reorderPoint: Math.floor(e.quantityTotal * 0.3),
-            supplier: this.getRandomSupplier(),
-            lastAuditDate: this.getRandomDate(),
+            lastAuditDate: new Date(),
             needsAttention: e.quantityAvailable <= Math.floor(e.quantityTotal * 0.3)
           }));
           this.applyFilters();
@@ -329,7 +329,9 @@ export class EquipmentInventory implements OnInit, OnDestroy {
           quantityTotal: count,
           quantityAvailable: newAvailable,
           description: item.description,
-          status: item.status
+          status: item.status,
+          location: item.location,
+          supplier: item.supplier
         };
 
         // Only include imageUrl if it's NOT a base64 data URI
@@ -426,7 +428,9 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       quantityTotal: newQuantity,
       quantityAvailable: newAvailable,
       description: this.selectedEquipment.description,
-      status: this.selectedEquipment.status
+      status: this.selectedEquipment.status,
+      location: this.selectedEquipment.location,
+      supplier: this.selectedEquipment.supplier
     };
 
     // Only include imageUrl if it's NOT a base64 data URI
@@ -500,18 +504,43 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       return;
     }
 
+    const updatePromises: Promise<any>[] = [];
+
     this.selectedItems.forEach(id => {
       const item = this.equipment.find(e => e.id === id);
       if (item) {
+        // 1. Update local UI
         item.location = this.newLocation;
+
+        // 2. Prepare API Request
+        const requestData: any = {
+          name: item.name,
+          category: item.category,
+          quantityTotal: item.quantityTotal,
+          quantityAvailable: item.quantityAvailable,
+          description: item.description,
+          status: item.status,
+          location: this.newLocation,
+          supplier: item.supplier
+        };
+
+        // 3. Add to execution queue
+        updatePromises.push(
+          this.equipmentService.updateEquipment(id, requestData).toPromise()
+        );
       }
     });
 
-    this.displayMessage('success', `Location updated for ${this.selectedItems.size} items`);
-    this.closeLocationModal();
-    this.selectedItems.clear();
-    this.selectAll = false;
-    this.applyFilters();
+    // Execute all updates
+    Promise.all(updatePromises)
+      .then(() => {
+        this.displayMessage('success', `Location updated for ${this.selectedItems.size} items`);
+        this.closeLocationModal();
+        this.selectedItems.clear();
+        this.selectAll = false;
+        this.loadEquipment(); // Refresh data from server
+      })
+      .catch(() => this.displayMessage('error', 'Failed to update some items'));
   }
 
   // Export functions

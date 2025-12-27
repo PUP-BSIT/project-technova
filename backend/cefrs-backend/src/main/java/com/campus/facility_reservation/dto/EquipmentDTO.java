@@ -16,5 +16,7 @@ public class EquipmentDTO {
     private String description;
     private String imageUrl;
     private String status;
+    private String location;
+    private String supplier;
 }
 // For Response

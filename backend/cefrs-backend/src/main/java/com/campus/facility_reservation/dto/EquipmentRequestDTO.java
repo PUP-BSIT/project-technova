@@ -11,9 +11,12 @@ public class EquipmentRequestDTO {
     private String name;
     private String category;
     private Integer quantityTotal;
+    private Integer quantityAvailable;
     private String description;
     private String imageUrl;
     private String status;
+    private String location;
+    private String supplier;
 }
 
 // For requests

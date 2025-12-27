@@ -19,6 +19,12 @@ public class Equipment {
     
     @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(length = 100)
+    private String location;
+
+    @Column(length = 100)
+    private String supplier;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
