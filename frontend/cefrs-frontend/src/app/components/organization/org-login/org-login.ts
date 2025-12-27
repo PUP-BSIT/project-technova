@@ -109,6 +109,6 @@ export class OrgLoginComponent {
   }
 
   goToPreviousPage(): void {
-    window.history.back();
+    this.router.navigate(['/']);
   }
 }
