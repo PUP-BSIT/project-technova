@@ -171,6 +171,6 @@ export class LoginComponent implements OnInit {
   }
 
   goToPreviousPage(): void {
-    window.history.back();
+    this.router.navigate(['/']);
   }
 }

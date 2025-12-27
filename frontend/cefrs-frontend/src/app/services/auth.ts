@@ -51,7 +51,8 @@ export class AuthService {
         } else {
           // Token removed in another tab - logout this tab too
           this.isAuthenticatedSubject.next(false);
-          this.router.navigate(['/login']);
+          const loginRoute = this.getRoleBasedLoginRoute();
+          this.router.navigate([loginRoute], { replaceUrl: true });
         }
       }
     });
@@ -88,6 +89,14 @@ export class AuthService {
   }
 
   logout(): void {
+    // Store the current role before clearing for redirect purposes
+    const currentRole = this.getUserRole();
+    if (currentRole) {
+      // Store in both storages for cross-tab consistency
+      localStorage.setItem('lastKnownRole', currentRole);
+      sessionStorage.setItem('lastKnownRole', currentRole);
+    }
+    
     // Clear from both localStorage and sessionStorage
     ['accessToken', 'refreshToken', 'userId', 'role'].forEach(key => {
       localStorage.removeItem(key);
@@ -127,6 +136,8 @@ export class AuthService {
     storage.setItem('refreshToken', response.refreshToken);
     storage.setItem('userId', response.userId.toString());
     storage.setItem('role', response.role);
+    // Update lastKnownRole on successful login
+    storage.setItem('lastKnownRole', response.role);
   }
 
   private hasToken(): boolean {
@@ -140,6 +151,26 @@ export class AuthService {
 
   getUserRole(): string | null {
     return localStorage.getItem('role') || sessionStorage.getItem('role');
+  }
+
+  getLastKnownRole(): string | null {
+    return localStorage.getItem('lastKnownRole') || sessionStorage.getItem('lastKnownRole');
+  }
+
+  getRoleBasedLoginRoute(): string {
+    // First try to get current role, then fall back to last known role
+    const role = this.getUserRole() || this.getLastKnownRole();
+    
+    if (role === 'ADMIN' || role === 'ADMINISTRATOR' || role === 'SUPER_ADMIN') {
+      return '/admin-login';
+    } else if (role === 'CAMPUS_ORGANIZATION') {
+      return '/org-login';
+    } else if (role === 'STUDENT') {
+      return '/login';
+    } else {
+      // Default to role selection page if no role is known
+      return '/select-role';
+    }
   }
 
   getUserId(): string | null {
