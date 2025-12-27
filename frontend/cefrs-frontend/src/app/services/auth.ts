@@ -193,6 +193,18 @@ export class AuthService {
     );
   }
 
+  checkStudentIdAvailability(studentId: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/check-student-id?studentId=${encodeURIComponent(studentId)}`).pipe(
+      tap((isAvailable) => {
+        console.log('Student ID availability:', isAvailable);
+      }),
+      catchError((error) => {
+        console.error('Error checking Student ID availability:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   changePassword(payload: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<any> {
     return this.http.patch(`${this.userApiUrl}/change-password`, payload, { responseType: 'text' });
   }
