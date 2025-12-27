@@ -41,6 +41,13 @@ public class AuthService {
                         throw new RuntimeException("Email already registered");
                 }
 
+                // Check if Student ID already exists (only for students)
+                if (request.getStudentId() != null && !request.getStudentId().trim().isEmpty()) {
+                        if (userRepository.existsByStudentId(request.getStudentId().trim())) {
+                                throw new RuntimeException("Student ID already exists");
+                        }
+                }
+
                 // 1. Retrieve and Clean the Role String
                 String roleString = request.getRole();
 
