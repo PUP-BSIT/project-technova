@@ -28,7 +28,7 @@ public class OverdueDetectorService {
     private final NotificationService notificationService;
     private final UserRepository userRepository;
 
-    // Run every 10 minutes by default, configurable with property `app.overdue.check-ms`
+    // Run every hour by default, configurable with property `app.overdue.check-ms`
     @Scheduled(fixedRateString = "${app.overdue.check-ms:3600000}")
     @Transactional
     public void checkOverdueItems() {
