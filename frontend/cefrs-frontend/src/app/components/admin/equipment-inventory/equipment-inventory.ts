@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -96,6 +96,10 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   confirmMessage: string = '';
   confirmCallback: (() => void) | null = null;
 
+  // Dropdown states
+  showExportDropdown: boolean = false;
+  showReorderDropdown: boolean = false;
+
   // Predefined reasons
   adjustmentReasons = [
     { value: 'stock_count', label: 'Stock Count/Audit' },
@@ -122,6 +126,33 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.export-dropdown')) {
+      this.showExportDropdown = false;
+      this.showReorderDropdown = false;
+    }
+  }
+
+  toggleExportDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showExportDropdown = !this.showExportDropdown;
+    this.showReorderDropdown = false;
+  }
+
+  toggleReorderDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showReorderDropdown = !this.showReorderDropdown;
+    this.showExportDropdown = false;
+  }
+
+  closeDropdowns(): void {
+    this.showExportDropdown = false;
+    this.showReorderDropdown = false;
   }
 
   private displayMessage(type: 'success' | 'error', message: string): void {
@@ -447,6 +478,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
 
   // Export functions
   exportToCSV(): void {
+    this.closeDropdowns();
     const headers = ['Code', 'Product', 'Category', 'Location', 'Stock', 'Available', 'Borrowed', 'Reorder Point', 'Supplier', 'Last Audit', 'Status'];
     const rows = this.filteredEquipment.map(item => [
       this.escapeCSV(item.code),
@@ -462,7 +494,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       this.escapeCSV(item.condition)
     ]);
 
-    // Add padding to columns for better readability
     let csvContent = headers.join(',    ') + '\n';
     rows.forEach(row => {
       csvContent += row.join(',    ') + '\n';
@@ -480,17 +511,15 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   }
 
   exportToPDF(): void {
-    // Create a printable HTML content
+    this.closeDropdowns();
     const printContent = this.generatePrintableInventory();
 
-    // Open print dialog
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.focus();
 
-      // Wait for content to load then print
       setTimeout(() => {
         printWindow.print();
       }, 250);
@@ -625,6 +654,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   }
 
   exportReorderList(): void {
+    this.closeDropdowns();
     const needsReorder = this.equipment.filter(item =>
       item.quantityAvailable <= (item.reorderPoint || 0)
     );
@@ -640,7 +670,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       this.escapeCSV(item.supplier || 'N/A')
     ]);
 
-    // Add padding to columns for better readability
     let csvContent = headers.join(',    ') + '\n';
     rows.forEach(row => {
       csvContent += row.join(',    ') + '\n';
@@ -658,6 +687,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   }
 
   exportReorderListPDF(): void {
+    this.closeDropdowns();
     const needsReorder = this.equipment.filter(item =>
       item.quantityAvailable <= (item.reorderPoint || 0)
     );
@@ -802,14 +832,12 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   private escapeCSV(value: string): string {
     if (value == null) return '';
     const stringValue = String(value);
-    // Escape quotes and wrap in quotes if contains comma, quote, or newline
     if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
       return `"${stringValue.replace(/"/g, '""')}"`;
     }
     return stringValue;
   }
 
-  // Utility methods
   getCategoryBadgeClass(category: string): string {
     const colorMap: Record<string, string> = {
       'AUDIO': 'badge-audio',
