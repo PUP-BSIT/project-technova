@@ -146,9 +146,29 @@
           class="form-input"
           placeholder="Enter Student ID"
           [(ngModel)]="formData.studentId"
-          [class.error]="showStudentIdError"
+          (input)="onStudentIdInput()"
+          [class.error]="showStudentIdError || studentIdTaken"
         />
-        <span class="error-message" *ngIf="showStudentIdError">Please enter your student ID</span>
+
+        <!-- Checking message -->
+        <span class="validation-message checking" *ngIf="checkingStudentId">
+          Checking availability...
+        </span>
+
+        <!-- Student ID taken error -->
+        <span class="error-message" *ngIf="studentIdTaken && !checkingStudentId">
+          This Student ID is already registered. Please use a different Student ID.
+        </span>
+
+        <!-- Available success -->
+        <span class="success-message" *ngIf="!studentIdTaken && !checkingStudentId && formData.studentId && formData.studentId.trim()">
+          ✓ Student ID is available
+        </span>
+
+        <!-- Regular validation error -->
+        <span class="error-message" *ngIf="showStudentIdError && !studentIdTaken && !checkingStudentId && !studentIdErrorMessage">
+          Please enter your student ID
+        </span>
       </div>
 
       <div class="form-actions single-action">

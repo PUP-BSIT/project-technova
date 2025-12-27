@@ -75,6 +75,12 @@ public class AuthController {
         return ResponseEntity.ok(isAvailable);
     }
 
+    @GetMapping("/check-student-id")
+    public ResponseEntity<Boolean> checkStudentIdAvailability(@RequestParam String studentId) {
+        boolean isAvailable = !userRepository.existsByStudentId(studentId.trim());
+        return ResponseEntity.ok(isAvailable);
+    }
+
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         try {
