@@ -320,16 +320,42 @@ export class EquipmentInventory implements OnInit, OnDestroy {
     this.auditItems.forEach((count, id) => {
       const item = this.equipment.find(e => e.id === id);
       if (item && count !== item.quantityTotal) {
-        const requestData = {
+        const difference = count - item.quantityTotal;
+        const newAvailable = Math.max(0, item.quantityAvailable + difference);
+
+        const requestData: any = {
           name: item.name,
           category: item.category,
           quantityTotal: count,
+          quantityAvailable: newAvailable,
           description: item.description,
-          imageUrl: item.imageUrl || '',
           status: item.status
         };
+
+        // Only include imageUrl if it's NOT a base64 data URI
+        if (item.imageUrl && !item.imageUrl.startsWith('data:image')) {
+          requestData.imageUrl = item.imageUrl;
+        } else {
+          requestData.imageUrl = ''; // Send empty string for base64 images
+        }
+
+        console.log(`Updating item ${id}:`, requestData);
+
         adjustments.push(
-          this.equipmentService.updateEquipment(id, requestData).toPromise()
+          new Promise((resolve, reject) => {
+            this.equipmentService.updateEquipment(id, requestData)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe({
+                next: (response) => {
+                  console.log(`✅ Successfully updated item ${id}`);
+                  resolve(response);
+                },
+                error: (error) => {
+                  console.error(`❌ Failed to update item ${id}:`, error);
+                  resolve(null);
+                }
+              });
+          })
         );
       }
     });
@@ -350,7 +376,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       })
       .catch(error => {
         console.error('Audit completion error:', error);
-        this.displayMessage('error', 'Some adjustments failed. Please try again.');
+        this.displayMessage('error', 'Some adjustments failed. Please check console for details.');
       });
   }
 
@@ -391,14 +417,26 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       return;
     }
 
-    const requestData = {
+    const difference = newQuantity - this.selectedEquipment.quantityTotal;
+    const newAvailable = Math.max(0, this.selectedEquipment.quantityAvailable + difference);
+
+    const requestData: any = {
       name: this.selectedEquipment.name,
       category: this.selectedEquipment.category,
       quantityTotal: newQuantity,
+      quantityAvailable: newAvailable,
       description: this.selectedEquipment.description,
-      imageUrl: this.selectedEquipment.imageUrl || '',
       status: this.selectedEquipment.status
     };
+
+    // Only include imageUrl if it's NOT a base64 data URI
+    if (this.selectedEquipment.imageUrl && !this.selectedEquipment.imageUrl.startsWith('data:image')) {
+      requestData.imageUrl = this.selectedEquipment.imageUrl;
+    } else {
+      requestData.imageUrl = '';
+    }
+
+    console.log('Submitting adjustment:', requestData);
 
     this.equipmentService.updateEquipment(this.selectedEquipment.id, requestData)
       .pipe(takeUntil(this.destroy$))

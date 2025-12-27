@@ -193,9 +193,17 @@
             <td class="col-product">
               <div class="product-info">
                 <div class="product-image">
-                  <img [src]="item.imageUrl || 'assets/placeholder.png'"
+                  <img *ngIf="item.imageUrl"
+                      [src]="item.imageUrl"
                       [alt]="item.name"
-                      onerror="this.src='assets/placeholder.png'">
+                      onerror="this.style.display='none'">
+                  <div *ngIf="!item.imageUrl" class="placeholder-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
                 </div>
                 <div class="product-details">
                   <div class="product-name">{{ item.name }}</div>
@@ -354,9 +362,17 @@
           <div class="reorder-card">
             <div class="reorder-card-left">
               <div class="product-image-small">
-                <img [src]="item.imageUrl || 'assets/placeholder.png'"
+                <img *ngIf="item.imageUrl"
+                    [src]="item.imageUrl"
                     [alt]="item.name"
-                    onerror="this.src='assets/placeholder.png'">
+                    onerror="this.style.display='none'">
+                <div *ngIf="!item.imageUrl" class="placeholder-icon-small">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                </div>
               </div>
               <div class="reorder-info">
                 <h3>{{ item.name }}</h3>
