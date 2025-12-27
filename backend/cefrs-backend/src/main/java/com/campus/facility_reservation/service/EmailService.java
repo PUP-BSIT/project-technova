@@ -30,6 +30,9 @@ public class EmailService {
     @Value("${app.mail.from-name:CEFRS System}")
     private String mailFromName;
 
+    @Value("${app.client.url:https://cefrs.site}")
+    private String clientUrl;
+
     /**
      * Send approval notification for facility reservation
      */
@@ -581,7 +584,7 @@ public class EmailService {
                 "<div class='detail-row'><span class='detail-label'>Requested By:</span><span>" + reservation.getUser().getFirstName() + " " + reservation.getUser().getLastName() + "</span></div>" +
                 "</div>" +
                 "<p style='margin-top:16px;color:#444;'>Please review the reservation and take any necessary actions, such as marking it returned or contacting the requester.</p>" +
-                "<div style='text-align:center;margin-top:18px;'><a href='https://cefrs.site/admin/reservations/" + reservation.getId() + "' style='display:inline-block;padding:10px 20px;background:#f97316;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View Reservation</a></div>" +
+                "<div style='text-align:center;margin-top:18px;'><a href='" + clientUrl + getRoleLoginPath(admin) + "' style='display:inline-block;padding:10px 20px;background:#f97316;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View Reservation</a></div>" +
                 "<div class='footer'><p>This is an automated alert for administrators.</p></div>" +
                 "</div></body></html>";
     }
@@ -607,8 +610,25 @@ public class EmailService {
                 "<div class='detail-row'><span class='detail-label'>Borrower:</span><span>" + borrowing.getUser().getFirstName() + " " + borrowing.getUser().getLastName() + "</span></div>" +
                 "</div>" +
                 "<p style='margin-top:16px;color:#444;'>Please follow up with the borrower and update the record when the item is returned.</p>" +
-                "<div style='text-align:center;margin-top:18px;'><a href='https://cefrs.site/admin/borrowings/" + borrowing.getId() + "' style='display:inline-block;padding:10px 20px;background:#ef4444;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View Borrowing</a></div>" +
+                "<div style='text-align:center;margin-top:18px;'><a href='" + clientUrl + getRoleLoginPath(admin) + "' style='display:inline-block;padding:10px 20px;background:#ef4444;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View Borrowing</a></div>" +
                 "<div class='footer'><p>This is an automated alert for administrators.</p></div>" +
                 "</div></body></html>";
+    }
+
+    private String getRoleLoginPath(User admin) {
+        if (admin == null || admin.getRole() == null || admin.getRole().getName() == null) {
+            return "/login";
+        }
+        switch (admin.getRole().getName()) {
+            case ADMINISTRATOR:
+            case SUPER_ADMIN:
+                return "/admin-login";
+            case STUDENT:
+                return "/login?role=STUDENT";
+            case CAMPUS_ORGANIZATION:
+                return "/login?role=ORGANIZATION";
+            default:
+                return "/login";
+        }
     }
 }
