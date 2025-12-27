@@ -27,12 +27,18 @@ export class RegisterComponent implements OnInit {
   showEmailError = false;
   showPhoneError = false;
   showStudentIdError = false;
+  studentIdErrorMessage = '';
   showAddressError = false;
 
   // Phone number availability checking
   phoneNumberTaken = false;
   checkingPhoneNumber = false;
   phoneNumberCheckTimeout: any;
+
+  // Student ID availability checking
+  studentIdTaken = false;
+  checkingStudentId = false;
+  studentIdCheckTimeout: any;
 
   formData = {
     firstName: '',
@@ -191,6 +197,15 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
+    // Check if Student ID is taken
+    if (this.studentIdTaken) {
+      this.errorMessage = 'This Student ID is already registered. Please use a different Student ID.';
+      this.showStudentIdError = true;
+      this.studentIdErrorMessage = 'This Student ID is already registered. Please use a different Student ID.';
+      this.currentStep = 1;
+      return;
+    }
+
     // check if passwords match
     if (this.formData.password !== this.formData.confirmPassword) {
       this.passwordMismatch = true;
@@ -215,6 +230,8 @@ export class RegisterComponent implements OnInit {
     this.errorMessage = '';
     this.passwordMismatch = false;
     this.hasPasswordError = false;
+    // Clear Student ID error on new submission attempt
+    this.studentIdErrorMessage = '';
 
     const registerData = {
       firstName: this.formData.firstName,
@@ -239,9 +256,66 @@ export class RegisterComponent implements OnInit {
       error: (error) => {
         console.error('Registration error:', error);
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Registration failed. Please try again.';
+        const errorMsg = error.error?.message || 'Registration failed. Please try again.';
+        this.errorMessage = errorMsg;
+        
+        // Check if it's a Student ID duplicate error
+        if (errorMsg.toLowerCase().includes('student id already exists')) {
+          this.showStudentIdError = true;
+          this.studentIdErrorMessage = 'This Student ID is already registered. Please use a different Student ID.';
+          // Navigate back to step 1 to show the error on Student ID field
+          this.currentStep = 1;
+        } else {
+          this.studentIdErrorMessage = '';
+        }
       }
     });
+  }
+
+  onStudentIdInput(): void {
+    // Check Student ID availability in real-time
+    this.checkStudentIdAvailability(this.formData.studentId);
+  }
+
+  checkStudentIdAvailability(studentId: string): void {
+    // Clear previous timeout
+    if (this.studentIdCheckTimeout) {
+      clearTimeout(this.studentIdCheckTimeout);
+    }
+
+    // Reset validation state
+    this.studentIdTaken = false;
+
+    // Only check if Student ID is not empty
+    if (studentId && studentId.trim()) {
+      this.checkingStudentId = true;
+
+      // Debounce: wait 500ms after user stops typing
+      this.studentIdCheckTimeout = setTimeout(() => {
+        this.authService.checkStudentIdAvailability(studentId.trim()).subscribe({
+          next: (isAvailable) => {
+            this.studentIdTaken = !isAvailable;
+            this.checkingStudentId = false;
+            if (!isAvailable) {
+              this.showStudentIdError = true;
+              this.studentIdErrorMessage = 'This Student ID is already registered. Please use a different Student ID.';
+            } else {
+              this.showStudentIdError = false;
+              this.studentIdErrorMessage = '';
+            }
+          },
+          error: (err) => {
+            console.error('Error checking Student ID:', err);
+            this.checkingStudentId = false;
+          }
+        });
+      }, 500);
+    } else {
+      this.checkingStudentId = false;
+      this.studentIdTaken = false;
+      this.showStudentIdError = false;
+      this.studentIdErrorMessage = '';
+    }
   }
 
   isValidPassword(password: string): boolean {
