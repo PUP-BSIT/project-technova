@@ -33,8 +33,7 @@ export class Equipment implements OnInit, OnDestroy {
   messageText: string = '';
   isEditMode: boolean = false;
   selectedEquipment: EquipmentItem | null = null;
-  selectedFile: File | null = null;
-  photoPreview: string | null = null;
+  imageLoadError: boolean = false;
   isLoading: boolean = false;
 
   // Form fields
@@ -102,7 +101,6 @@ export class Equipment implements OnInit, OnDestroy {
             status: e.status
           }));
           this.isLoading = false;
-
         },
         error: (error) => {
           console.error('Error loading equipment:', error);
@@ -122,7 +120,6 @@ export class Equipment implements OnInit, OnDestroy {
   }
 
   getAvailabilityText(item: EquipmentItem): string {
-    // Show based on actual database status
     if (item.status === 'BORROWED') {
       if (item.quantityAvailable === 0) {
         return 'All Borrowed';
@@ -154,8 +151,7 @@ export class Equipment implements OnInit, OnDestroy {
       imageUrl: '',
       status: 'AVAILABLE'
     };
-    this.selectedFile = null;
-    this.photoPreview = null;
+    this.imageLoadError = false;
     this.showAddEditModal = true;
   }
 
@@ -171,8 +167,7 @@ export class Equipment implements OnInit, OnDestroy {
       imageUrl: item.imageUrl || '',
       status: item.status
     };
-    this.selectedFile = null;
-    this.photoPreview = item.imageUrl || null;
+    this.imageLoadError = false;
     this.showAddEditModal = true;
   }
 
@@ -181,88 +176,31 @@ export class Equipment implements OnInit, OnDestroy {
     this.showDeleteModal = true;
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        this.displayMessage('error', 'Please select an image file');
-        return;
-      }
-
-      // Validate file size (max 5MB before compression)
-      if (file.size > 5 * 1024 * 1024) {
-        this.displayMessage('error', 'File size must be less than 5MB.');
-        return;
-      }
-
-      this.selectedFile = file;
-
-      // Compress and create preview
-      this.compressImage(file);
+  isValidUrl(url: string): boolean {
+    if (!url || url.trim() === '') return false;
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
     }
   }
 
-  compressImage(file: File): void {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 600;
-
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-        this.photoPreview = compressedBase64;
-
-
-      };
-      img.src = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+  onImageError(): void {
+    this.imageLoadError = true;
   }
 
-  removePhoto(): void {
-    this.selectedFile = null;
-    this.photoPreview = null;
-    this.equipmentForm.imageUrl = '';
+  onImageLoad(): void {
+    this.imageLoadError = false;
   }
 
   saveAddEdit(): void {
-    // Use preview URL if file was selected
-    if (this.photoPreview && !this.equipmentForm.imageUrl) {
-      this.equipmentForm.imageUrl = this.photoPreview;
-    }
-
     const requestData: EquipmentRequestDTO = {
       name: this.equipmentForm.name,
       category: this.equipmentForm.category,
       quantityTotal: this.equipmentForm.quantityTotal,
       description: this.equipmentForm.description,
-      imageUrl: this.equipmentForm.imageUrl,
+      imageUrl: this.equipmentForm.imageUrl.trim(),
       status: this.equipmentForm.status
     };
 
@@ -321,8 +259,7 @@ export class Equipment implements OnInit, OnDestroy {
     this.showAddEditModal = false;
     this.selectedEquipment = null;
     this.isEditMode = false;
-    this.selectedFile = null;
-    this.photoPreview = null;
+    this.imageLoadError = false;
   }
 
   closeDeleteModal(): void {
@@ -338,7 +275,6 @@ export class Equipment implements OnInit, OnDestroy {
   }
 
   get filteredEquipment(): EquipmentItem[] {
-    // Create a new array to avoid reference issues
     let filtered = [...this.equipment];
 
     // Filter by search text
@@ -358,7 +294,7 @@ export class Equipment implements OnInit, OnDestroy {
       );
     }
 
-    // Filter by condition (based on quantity available)
+    // Filter by condition
     if (this.selectedCondition !== 'All Conditions') {
       filtered = filtered.filter(item => {
         const condition = this.getConditionFromQuantity(item);
@@ -375,7 +311,6 @@ export class Equipment implements OnInit, OnDestroy {
       }
     }
 
-    // Remove any duplicates (just in case)
     return filtered.filter((item, index, self) =>
       index === self.findIndex(t => t.id === item.id)
     );
