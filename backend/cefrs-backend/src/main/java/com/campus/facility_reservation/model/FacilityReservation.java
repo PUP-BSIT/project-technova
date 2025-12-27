@@ -83,6 +83,7 @@ public class FacilityReservation {
         REJECTED,
         CANCELLED,
         COMPLETED,
+        OVERDUE,
         WAITLISTED
     }
 }
