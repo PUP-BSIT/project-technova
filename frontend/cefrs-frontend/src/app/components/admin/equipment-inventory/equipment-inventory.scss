@@ -54,6 +54,10 @@
       .chevron {
         margin-left: 4px;
         transition: transform 0.2s;
+
+        &.rotated {
+          transform: rotate(180deg);
+        }
       }
     }
 
@@ -92,14 +96,15 @@
       min-width: 180px;
       z-index: 100;
       overflow: hidden;
-    }
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
 
-    &:hover .dropdown-menu {
-      display: block;
-    }
-
-    &:hover .dropdown-toggle .chevron {
-      transform: rotate(180deg);
+      &.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .dropdown-item {
