@@ -538,6 +538,27 @@ public class EmailService {
         }
     }
 
+    @Transactional
+    public void sendFacilityOverdueToRequester(User requester, FacilityReservation reservation) {
+        if (requester == null || requester.getEmail() == null) return;
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            String subject = "Your Reservation Is Overdue: #RES" + reservation.getId();
+            String htmlContent = buildFacilityOverdueHtmlForRequester(requester, reservation);
+
+            helper.setFrom(mailFrom, mailFromName);
+            helper.setTo(requester.getEmail());
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("Facility overdue notification sent to requester {} for reservation {}", requester.getEmail(), reservation.getId());
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            log.error("Failed to send facility overdue notification to {}: {}", requester.getEmail(), e.getMessage());
+        }
+    }
+
     /**
      * Send overdue alert about equipment borrowing to an admin
      */
@@ -559,6 +580,27 @@ public class EmailService {
             log.info("Equipment overdue alert sent to {} for borrowing {}", admin.getEmail(), borrowing.getId());
         } catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Failed to send equipment overdue alert to {}: {}", admin.getEmail(), e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void sendEquipmentOverdueToRequester(User requester, EquipmentBorrowing borrowing) {
+        if (requester == null || requester.getEmail() == null) return;
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            String subject = "Your Borrowing Is Overdue: #BOR" + borrowing.getId();
+            String htmlContent = buildEquipmentOverdueHtmlForRequester(requester, borrowing);
+
+            helper.setFrom(mailFrom, mailFromName);
+            helper.setTo(requester.getEmail());
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("Equipment overdue notification sent to requester {} for borrowing {}", requester.getEmail(), borrowing.getId());
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            log.error("Failed to send equipment overdue notification to {}: {}", requester.getEmail(), e.getMessage());
         }
     }
 
@@ -589,6 +631,34 @@ public class EmailService {
                 "</div></body></html>";
     }
 
+            private String buildFacilityOverdueHtmlForRequester(User requester, FacilityReservation reservation) {
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+            String reservationDateTime = reservation.getReservationDate().format(dateFormatter) + " | " +
+                reservation.getStartTime().format(timeFormatter) + " - " + reservation.getEndTime().format(timeFormatter);
+
+            String link = clientUrl;
+
+            return "<!DOCTYPE html>" +
+                "<html lang='en'>" +
+                "<head>" +
+                "<meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                "<title>Overdue Reservation Notice</title>" +
+                "<style>body{font-family:Segoe UI,Segoe,Arial,sans-serif;background:#f5f5f5;} .container{max-width:600px;margin:20px auto;background:#fff;padding:24px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);} .header{background:linear-gradient(135deg,#f59e0b 0%,#f97316 100%);color:#fff;padding:20px;border-radius:6px;text-align:center;} .header h1{margin:0;font-size:20px;} .details{margin-top:18px;background:#fff;border-left:4px solid #f97316;padding:16px;border-radius:6px;} .detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3f3f3;} .detail-label{color:#555;font-weight:600;} .footer{margin-top:20px;font-size:13px;color:#666;text-align:center;}</style>" +
+                "</head><body>" +
+                "<div class='container'>" +
+                "<div class='header'><h1>⚠️ Overdue Reservation</h1><p>Your reservation has passed its scheduled end time</p></div>" +
+                "<div class='details'>" +
+                "<div class='detail-row'><span class='detail-label'>Facility:</span><span>" + reservation.getFacility().getName() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Reservation ID:</span><span>#RES" + reservation.getId() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Date & Time:</span><span>" + reservationDateTime + "</span></div>" +
+                "</div>" +
+                "<p style='margin-top:16px;color:#444;'>Please make arrangements to return the facility or contact the administration if you need assistance. If you have already vacated, please update the reservation status.</p>" +
+                "<div style='text-align:center;margin-top:18px;'><a href='" + link + "' style='display:inline-block;padding:10px 20px;background:#f97316;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View My Reservations</a></div>" +
+                "<div class='footer'><p>This is an automated notification.</p></div>" +
+                "</div></body></html>";
+            }
+
     private String buildEquipmentOverdueHtml(User admin, EquipmentBorrowing borrowing) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
         String expected = borrowing.getExpectedReturnDate().format(formatter);
@@ -612,6 +682,33 @@ public class EmailService {
                 "<p style='margin-top:16px;color:#444;'>Please follow up with the borrower and update the record when the item is returned.</p>" +
                 "<div style='text-align:center;margin-top:18px;'><a href='" + clientUrl + getRoleLoginPath(admin) + "' style='display:inline-block;padding:10px 20px;background:#ef4444;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View Borrowing</a></div>" +
                 "<div class='footer'><p>This is an automated alert for administrators.</p></div>" +
+                "</div></body></html>";
+    }
+
+    private String buildEquipmentOverdueHtmlForRequester(User requester, EquipmentBorrowing borrowing) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+        String expected = borrowing.getExpectedReturnDate().format(formatter);
+
+        String link = clientUrl + "/dashboard";
+
+        return "<!DOCTYPE html>" +
+                "<html lang='en'>" +
+                "<head>" +
+                "<meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                "<title>Overdue Borrowing Notice</title>" +
+                "<style>body{font-family:Segoe UI,Segoe,Arial,sans-serif;background:#f5f5f5;} .container{max-width:600px;margin:20px auto;background:#fff;padding:24px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);} .header{background:linear-gradient(135deg,#f43f5e 0%,#ef4444 100%);color:#fff;padding:20px;border-radius:6px;text-align:center;} .header h1{margin:0;font-size:20px;} .details{margin-top:18px;background:#fff;border-left:4px solid #ef4444;padding:16px;border-radius:6px;} .detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3f3f3;} .detail-label{color:#555;font-weight:600;} .footer{margin-top:20px;font-size:13px;color:#666;text-align:center;}</style>" +
+                "</head><body>" +
+                "<div class='container'>" +
+                "<div class='header'><h1>🔔 Overdue Equipment Return</h1><p>Your borrowing has exceeded its expected return date</p></div>" +
+                "<div class='details'>" +
+                "<div class='detail-row'><span class='detail-label'>Equipment:</span><span>" + borrowing.getEquipment().getName() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Borrowing ID:</span><span>#BOR" + borrowing.getId() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Quantity:</span><span>" + borrowing.getQuantity() + "</span></div>" +
+                "<div class='detail-row'><span class='detail-label'>Expected Return:</span><span>" + expected + "</span></div>" +
+                "</div>" +
+                "<p style='margin-top:16px;color:#444;'>Please return the item(s) as soon as possible to avoid penalties. If you have already returned them, please update the record or contact the administration.</p>" +
+                "<div style='text-align:center;margin-top:18px;'><a href='" + link + "' style='display:inline-block;padding:10px 20px;background:#ef4444;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View My Borrowings</a></div>" +
+                "<div class='footer'><p>This is an automated notification.</p></div>" +
                 "</div></body></html>";
     }
 

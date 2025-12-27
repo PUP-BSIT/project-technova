@@ -44,10 +44,26 @@ public class OverdueDetectorService {
 
                     User admin = eb.getApprovedBy();
                     if (admin != null && admin.getEmail() != null) {
-                        emailService.sendEquipmentOverdueAlert(admin, eb);
+                        try {
+                            emailService.sendEquipmentOverdueAlert(admin, eb);
+                        } catch (Exception ex) {
+                            log.error("Failed to notify admin for borrowing {}: {}", eb.getId(), ex.getMessage());
+                        }
                     } else {
                         List<User> admins = userRepository.findByRole_Name("ADMINISTRATOR");
-                        admins.forEach(a -> emailService.sendEquipmentOverdueAlert(a, eb));
+                        admins.forEach(a -> {
+                            try {
+                                emailService.sendEquipmentOverdueAlert(a, eb);
+                            } catch (Exception ex) {
+                                log.error("Failed to notify admin {} for borrowing {}: {}", a.getEmail(), eb.getId(), ex.getMessage());
+                            }
+                        });
+                    }
+                    // notify requester (sent once regardless of admin notification path)
+                    try {
+                        emailService.sendEquipmentOverdueToRequester(eb.getUser(), eb);
+                    } catch (Exception ex) {
+                        log.error("Failed to notify requester for borrowing {}: {}", eb.getId(), ex.getMessage());
                     }
 
                     notificationService.createBorrowingStatusNotification(eb.getUser(), eb);
@@ -74,14 +90,30 @@ public class OverdueDetectorService {
 
                         User admin = fr.getApprovedBy();
                         if (admin != null && admin.getEmail() != null) {
-                            emailService.sendFacilityOverdueAlert(admin, fr);
+                            try {
+                                emailService.sendFacilityOverdueAlert(admin, fr);
+                            } catch (Exception ex) {
+                                log.error("Failed to notify admin for reservation {}: {}", fr.getId(), ex.getMessage());
+                            }
                         } else {
                             List<User> admins = userRepository.findByRole_Name("ADMINISTRATOR");
-                            admins.forEach(a -> emailService.sendFacilityOverdueAlert(a, fr));
+                            admins.forEach(a -> {
+                                try {
+                                    emailService.sendFacilityOverdueAlert(a, fr);
+                                } catch (Exception ex) {
+                                    log.error("Failed to notify admin {} for reservation {}: {}", a.getEmail(), fr.getId(), ex.getMessage());
+                                }
+                            });
+                        }
+                        // notify requester once
+                        try {
+                            emailService.sendFacilityOverdueToRequester(fr.getUser(), fr);
+                        } catch (Exception ex) {
+                            log.error("Failed to notify requester for reservation {}: {}", fr.getId(), ex.getMessage());
                         }
 
                         notificationService.createReservationStatusNotification(fr.getUser(), fr);
-                        log.info("Marked reservation {} as COMPLETED and notified admin(s)", fr.getId());
+                        log.info("Marked reservation {} as OVERDUE and notified admin(s)", fr.getId());
                     } catch (Exception e) {
                         log.error("Error handling completed reservation id={}: {}", fr.getId(), e.getMessage());
                     }
