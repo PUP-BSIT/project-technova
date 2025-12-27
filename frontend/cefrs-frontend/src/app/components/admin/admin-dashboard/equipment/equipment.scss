@@ -1013,3 +1013,40 @@ $tablet: 1024px;
     font-size: 14px;
   }
 }
+
+// Image URL Input Help Text
+.input-help-text {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+// URL Image Preview
+.url-image-preview {
+  margin-top: 16px;
+
+  img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    display: block;
+    border: 1px solid $border-color;
+
+    @media (max-width: $mobile-l) {
+      max-height: 200px;
+    }
+
+    @media (max-width: $mobile-m) {
+      max-height: 150px;
+    }
+  }
+
+  .error-text {
+    margin-top: 8px;
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
