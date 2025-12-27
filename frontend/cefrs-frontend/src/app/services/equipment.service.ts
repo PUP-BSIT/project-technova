@@ -12,15 +12,20 @@ export interface EquipmentDTO {
   description: string;
   imageUrl: string;
   status: string;
+  location?: string;
+  supplier?: string;
 }
 
 export interface EquipmentRequestDTO {
   name: string;
   category: string;
   quantityTotal: number;
+  quantityAvailable?: number;
   description: string;
   imageUrl: string;
   status?: string;
+  location?: string;
+  supplier?: string;
 }
 
 export interface SuggestedEquipmentResponse {

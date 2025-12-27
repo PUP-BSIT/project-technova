@@ -58,6 +58,8 @@ public class EquipmentService {
         equipment.setQuantityAvailable(request.getQuantityTotal());
         equipment.setDescription(request.getDescription());
         equipment.setImageUrl(request.getImageUrl());
+        equipment.setLocation(request.getLocation());
+        equipment.setSupplier(request.getSupplier());
 
         // Allow status to be set, default to AVAILABLE
         if (request.getStatus() != null) {
@@ -81,6 +83,13 @@ public class EquipmentService {
         equipment.setQuantityTotal(request.getQuantityTotal());
         equipment.setDescription(request.getDescription());
         equipment.setImageUrl(request.getImageUrl());
+        equipment.setLocation(request.getLocation());
+        equipment.setSupplier(request.getSupplier());
+
+        // IMPORTANT: Ensure you handle quantityAvailable if passed in request
+        if (request.getQuantityAvailable() != null) {
+            equipment.setQuantityAvailable(request.getQuantityAvailable());
+        }
 
         // IMPORTANT: Set status from request, don't calculate it
         if (request.getStatus() != null && !request.getStatus().isEmpty()) {
@@ -107,7 +116,9 @@ public class EquipmentService {
                 equipment.getQuantityAvailable(),
                 equipment.getDescription(),
                 equipment.getImageUrl(),
-                equipment.getStatus().name());
+                equipment.getStatus().name(),
+                equipment.getLocation(),
+                equipment.getSupplier());
     }
 
     /**
