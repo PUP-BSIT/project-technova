@@ -25,7 +25,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         // Unauthorized - token might be expired or invalid
         console.error('Unauthorized request - token expired or invalid');
         authService.logout();
-        router.navigate(['/login']);
+        const loginRoute = authService.getRoleBasedLoginRoute();
+        router.navigate([loginRoute], { replaceUrl: true });
       } else if (error.status === 403) {
         // Forbidden - user doesn't have permission
         console.error('Forbidden - insufficient permissions');
