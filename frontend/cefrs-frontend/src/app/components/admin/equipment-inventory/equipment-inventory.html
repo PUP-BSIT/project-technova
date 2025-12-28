@@ -142,6 +142,11 @@
           placeholder="Search equipment..."
           [(ngModel)]="searchQuery"
           (input)="applyFilters()">
+        @if (searchQuery) {
+          <button class="clear-button" (click)="clearSearch()" type="button" aria-label="Clear search">
+            <span class="clear-icon">✕</span>
+          </button>
+        }
       </div>
     </div>
 
