@@ -45,6 +45,11 @@ interface StockAdjustment {
 export class EquipmentInventory implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
+  clearSearch(): void {
+  this.searchQuery = '';
+  this.applyFilters();
+  }
+
   // Data
   equipment: EquipmentInventoryItem[] = [];
   filteredEquipment: EquipmentInventoryItem[] = [];
