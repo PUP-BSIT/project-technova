@@ -291,6 +291,37 @@
       font-size: 14px;
     }
   }
+  .clear-button {
+    position: relative;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: color 0.2s ease;
+    z-index: 1;
+    font-family: inherit;
+
+    &:hover {
+      color: #333;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    .clear-icon {
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 500;
+    }
+  }
 }
 
 // Loading
