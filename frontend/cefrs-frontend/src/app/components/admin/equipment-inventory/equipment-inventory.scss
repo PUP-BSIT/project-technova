@@ -1147,13 +1147,13 @@
     margin: 0;
     font-size: 20px;
     font-weight: 600;
-    color: #333;
+    color: #ffffff;
   }
 
   .close-btn {
     background: transparent;
     border: none;
-    color: #6c757d;
+    color: #ffffff;
     font-size: 28px;
     cursor: pointer;
     padding: 0;
@@ -1297,6 +1297,7 @@
   justify-content: flex-end;
   gap: 12px;
   border-top: 1px solid #e9ecef;
+  background: white;
 
   button {
     padding: 10px 24px;
@@ -1413,11 +1414,12 @@
   width: 90%;
 
   .modal-header {
-    background: #f8f9fa;
+    background: #10b981;
   }
 
   .modal-body {
     padding: 32px 24px;
+    background: white;
 
     p {
       margin: 0;
