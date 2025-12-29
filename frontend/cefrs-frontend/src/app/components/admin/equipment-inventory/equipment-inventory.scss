@@ -683,6 +683,24 @@
   .audit-actions {
     display: flex;
     gap: 12px;
+
+    .btn-cancel {
+      padding: 8px 24px;
+      background: #aa0816;
+      color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      padding: 8px 24px;
+      background: #4CAF50;
+      color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   }
 }
 
