@@ -253,6 +253,15 @@
     display: flex;
     gap: 12px;
     align-items: center;
+
+    .btn-secondary {
+      padding: 8px 24px;
+      background: #4CAF50;
+      color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   }
 
   .filter-select {
