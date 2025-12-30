@@ -15,29 +15,31 @@
           <span class="dropdown-arrow">▼</span>
         </button>
 
-        <div class="export-dropdown" *ngIf="showExportDropdown">
-          <button class="export-option" (click)="exportReport('excel')">
-            <span class="option-icon">📗</span>
-            <div class="option-details">
-              <span class="option-title">Export to Excel</span>
-              <span class="option-desc">Download as .xlsx file</span>
-            </div>
-          </button>
-          <button class="export-option" (click)="exportReport('csv')">
-            <span class="option-icon">📄</span>
-            <div class="option-details">
-              <span class="option-title">Export to CSV</span>
-              <span class="option-desc">Download as .csv file</span>
-            </div>
-          </button>
-          <button class="export-option" (click)="exportReport('pdf')">
-            <span class="option-icon">📕</span>
-            <div class="option-details">
-              <span class="option-title">Export to PDF</span>
-              <span class="option-desc">Download as .pdf file</span>
-            </div>
-          </button>
-        </div>
+        @if (showExportDropdown) {
+          <div class="export-dropdown">
+            <button class="export-option" (click)="exportReport('excel')">
+              <span class="option-icon">📗</span>
+              <div class="option-details">
+                <span class="option-title">Export to Excel</span>
+                <span class="option-desc">Download as .xlsx file</span>
+              </div>
+            </button>
+            <button class="export-option" (click)="exportReport('csv')">
+              <span class="option-icon">📄</span>
+              <div class="option-details">
+                <span class="option-title">Export to CSV</span>
+                <span class="option-desc">Download as .csv file</span>
+              </div>
+            </button>
+            <button class="export-option" (click)="exportReport('pdf')">
+              <span class="option-icon">📕</span>
+              <div class="option-details">
+                <span class="option-title">Export to PDF</span>
+                <span class="option-desc">Download as .pdf file</span>
+              </div>
+            </button>
+          </div>
+        }
       </div>
     </div>
   </div>
@@ -71,275 +73,326 @@
   </div>
 
   <!-- Loading Spinner -->
-  <div class="loading-container" *ngIf="isLoading()">
-    <div class="spinner"></div>
-    <p>Loading data...</p>
-  </div>
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading data...</p>
+    </div>
+  }
 
   <!-- Facility Usage Tab -->
-  <div class="tab-content" *ngIf="activeTab === 'facility' && !isLoadingFacility">
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card" *ngFor="let stat of facilityStats">
-        <div class="stat-label">{{ stat.label }}</div>
-        <div class="stat-value">{{ stat.value }}</div>
+  @if (activeTab === 'facility' && !isLoadingFacility) {
+    <div class="tab-content">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        @for (stat of facilityStats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        }
       </div>
-    </div>
 
-    <!-- Booking Trends Chart -->
-    <div class="chart-container" *ngIf="bookingTrendsData.labels.length > 0">
-      <h3 class="chart-title">Booking Trends Over Time</h3>
-      <div class="chart-wrapper">
-        <canvas #bookingTrendsCanvas></canvas>
-      </div>
-    </div>
+      <!-- Booking Trends Chart -->
+      @if (bookingTrendsData.labels.length > 0) {
+        <div class="chart-container">
+          <h3 class="chart-title">Booking Trends Over Time</h3>
+          <div class="chart-wrapper">
+            <canvas #bookingTrendsCanvas></canvas>
+          </div>
+        </div>
+      }
 
-    <!-- Top 3 Most Booked Facilities -->
-    <div class="table-container" *ngIf="topFacilities.length > 0">
-      <h3 class="table-title">Top 3 Most Booked Facilities</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Facility Name</th>
-            <th>Total Bookings</th>
-            <th>Occupancy Rate</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let facility of topFacilities">
-            <td>
-              <span class="rank-badge">{{ facility.rank }}</span>
-            </td>
-            <td>{{ facility.name }}</td>
-            <td>{{ facility.totalBookings }}</td>
-            <td>
-              <div class="progress-cell">
-                <div class="progress-bar">
-                  <div class="progress-fill" [style.width.%]="facility.occupancyRate"></div>
-                </div>
-                <span class="progress-text">{{ facility.occupancyRate }}%</span>
-              </div>
-            </td>
-            <td>
-              <span [class]="'status-badge status-' + facility.status">
-                {{ facility.status === 'high-demand' ? 'High Demand' : 'Available' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <!-- Top 3 Most Booked Facilities -->
+      @if (topFacilities.length > 0) {
+        <div class="table-container">
+          <h3 class="table-title">Top 3 Most Booked Facilities</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Facility Name</th>
+                <th>Total Bookings</th>
+                <th>Occupancy Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (facility of topFacilities; track facility.rank) {
+                <tr>
+                  <td>
+                    <span class="rank-badge">{{ facility.rank }}</span>
+                  </td>
+                  <td>{{ facility.name }}</td>
+                  <td>{{ facility.totalBookings }}</td>
+                  <td>
+                    <div class="progress-cell">
+                      <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="facility.occupancyRate"></div>
+                      </div>
+                      <span class="progress-text">{{ facility.occupancyRate }}%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span [class]="'status-badge status-' + facility.status">
+                      {{ facility.status === 'high-demand' ? 'High Demand' : 'Available' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
 
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="topFacilities.length === 0 && !isLoadingFacility">
-      <div class="empty-icon">📊</div>
-      <h3>No Facility Data Available</h3>
-      <p>There are no facility bookings to display at this time.</p>
+      <!-- Empty State -->
+      @if (topFacilities.length === 0 && !isLoadingFacility) {
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <h3>No Facility Data Available</h3>
+          <p>There are no facility bookings to display at this time.</p>
+        </div>
+      }
     </div>
-  </div>
+  }
 
   <!-- Equipment Usage Tab -->
-  <div class="tab-content" *ngIf="activeTab === 'equipment' && !isLoadingEquipment">
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card" *ngFor="let stat of equipmentStats">
-        <div class="stat-label">{{ stat.label }}</div>
-        <div class="stat-value">{{ stat.value }}</div>
+  @if (activeTab === 'equipment' && !isLoadingEquipment) {
+    <div class="tab-content">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        @for (stat of equipmentStats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        }
       </div>
-    </div>
 
-    <!-- Charts Row -->
-    <div class="charts-row" *ngIf="topEquipment.length > 0">
-      <!-- Equipment Availability Pie Chart -->
-      <div class="chart-container half-width">
-        <h3 class="chart-title">Equipment Availability</h3>
-        <div class="chart-wrapper">
-          <canvas #equipmentPieCanvas></canvas>
+      <!-- Charts Row -->
+      @if (topEquipment.length > 0) {
+        <div class="charts-row">
+          <!-- Equipment Availability Pie Chart -->
+          <div class="chart-container half-width">
+            <h3 class="chart-title">Equipment Availability</h3>
+            <div class="chart-wrapper">
+              <canvas #equipmentPieCanvas></canvas>
+            </div>
+          </div>
+
+          <!-- Borrowing Trends Bar Chart -->
+          <div class="chart-container half-width">
+            <h3 class="chart-title">Borrowing Trends</h3>
+            <div class="chart-wrapper">
+              <canvas #borrowingTrendsCanvas></canvas>
+            </div>
+          </div>
         </div>
-      </div>
+      }
 
-      <!-- Borrowing Trends Bar Chart -->
-      <div class="chart-container half-width">
-        <h3 class="chart-title">Borrowing Trends</h3>
-        <div class="chart-wrapper">
-          <canvas #borrowingTrendsCanvas></canvas>
+      <!-- Top 5 Most Borrowed Equipment -->
+      @if (topEquipment.length > 0) {
+        <div class="table-container">
+          <h3 class="table-title">Top 5 Most Borrowed Equipment</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Equipment Name</th>
+                <th>Times Borrowed</th>
+                <th>Available/Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (equipment of topEquipment; track equipment.rank) {
+                <tr>
+                  <td>
+                    <span class="rank-badge">{{ equipment.rank }}</span>
+                  </td>
+                  <td>{{ equipment.name }}</td>
+                  <td>{{ equipment.timesBorrowed }}</td>
+                  <td>{{ equipment.available }}/{{ equipment.total }}</td>
+                  <td>
+                    <span [class]="'status-badge status-' + equipment.status">
+                      {{ equipment.status === 'low-stock' ? 'Low Stock' :
+                         equipment.status === 'available' ? 'Available' : 'Unavailable' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
-      </div>
-    </div>
+      }
 
-    <!-- Top 5 Most Borrowed Equipment -->
-    <div class="table-container" *ngIf="topEquipment.length > 0">
-      <h3 class="table-title">Top 5 Most Borrowed Equipment</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Equipment Name</th>
-            <th>Times Borrowed</th>
-            <th>Available/Total</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let equipment of topEquipment">
-            <td>
-              <span class="rank-badge">{{ equipment.rank }}</span>
-            </td>
-            <td>{{ equipment.name }}</td>
-            <td>{{ equipment.timesBorrowed }}</td>
-            <td>{{ equipment.available }}/{{ equipment.total }}</td>
-            <td>
-              <span [class]="'status-badge status-' + equipment.status">
-                {{ equipment.status === 'low-stock' ? 'Low Stock' :
-                   equipment.status === 'available' ? 'Available' : 'Unavailable' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Empty State -->
+      @if (topEquipment.length === 0 && !isLoadingEquipment) {
+        <div class="empty-state">
+          <div class="empty-icon">🔧</div>
+          <h3>No Equipment Data Available</h3>
+          <p>There are no equipment borrowing records to display at this time.</p>
+        </div>
+      }
     </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="topEquipment.length === 0 && !isLoadingEquipment">
-      <div class="empty-icon">🔧</div>
-      <h3>No Equipment Data Available</h3>
-      <p>There are no equipment borrowing records to display at this time.</p>
-    </div>
-  </div>
+  }
 
   <!-- User Activity Tab -->
-  <div class="tab-content" *ngIf="activeTab === 'user' && !isLoadingUser">
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card" *ngFor="let stat of userStats">
-        <div class="stat-label">{{ stat.label }}</div>
-        <div class="stat-value">{{ stat.value }}</div>
+  @if (activeTab === 'user' && !isLoadingUser) {
+    <div class="tab-content">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        @for (stat of userStats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        }
       </div>
-    </div>
 
-    <!-- User Distribution Pie Chart -->
-    <div class="chart-container" *ngIf="topUsers.length > 0">
-      <h3 class="chart-title">User Distribution by Role</h3>
-      <div class="chart-wrapper">
-        <canvas #userPieCanvas></canvas>
-      </div>
-    </div>
+      <!-- User Distribution Pie Chart -->
+      @if (topUsers.length > 0) {
+        <div class="chart-container">
+          <h3 class="chart-title">User Distribution by Role</h3>
+          <div class="chart-wrapper">
+            <canvas #userPieCanvas></canvas>
+          </div>
+        </div>
+      }
 
-    <!-- Most Active Users/Organizations -->
-    <div class="table-container" *ngIf="topUsers.length > 0">
-      <h3 class="table-title">Most Active Users / Organizations</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>User / Organization</th>
-            <th>Type</th>
-            <th>Total Activities</th>
-            <th>Last Active</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of topUsers">
-            <td>
-              <span class="rank-badge">{{ user.rank }}</span>
-            </td>
-            <td>{{ user.name }}</td>
-            <td>
-              <span class="type-badge">{{ user.type }}</span>
-            </td>
-            <td>{{ user.totalActivities }} activities</td>
-            <td>{{ user.lastActive }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <!-- Most Active Users/Organizations -->
+      @if (topUsers.length > 0) {
+        <div class="table-container">
+          <h3 class="table-title">Most Active Users / Organizations</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>User / Organization</th>
+                <th>Type</th>
+                <th>Total Activities</th>
+                <th>Last Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of topUsers; track user.rank) {
+                <tr>
+                  <td>
+                    <span class="rank-badge">{{ user.rank }}</span>
+                  </td>
+                  <td>{{ user.name }}</td>
+                  <td>
+                    <span class="type-badge">{{ user.type }}</span>
+                  </td>
+                  <td>{{ user.totalActivities }} activities</td>
+                  <td>{{ user.lastActive }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
 
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="topUsers.length === 0 && !isLoadingUser">
-      <div class="empty-icon">👥</div>
-      <h3>No User Data Available</h3>
-      <p>There are no user activity records to display at this time.</p>
+      <!-- Empty State -->
+      @if (topUsers.length === 0 && !isLoadingUser) {
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <h3>No User Data Available</h3>
+          <p>There are no user activity records to display at this time.</p>
+        </div>
+      }
     </div>
-  </div>
+  }
 
   <!-- Audit Logs Tab -->
-  <div class="tab-content" *ngIf="activeTab === 'audit' && !isLoadingAudit">
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card" *ngFor="let stat of auditStats">
-        <div class="stat-label">{{ stat.label }}</div>
-        <div class="stat-value">{{ stat.value }}</div>
+  @if (activeTab === 'audit' && !isLoadingAudit) {
+    <div class="tab-content">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        @for (stat of auditStats; track stat.label) {
+          <div class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        }
       </div>
-    </div>
 
-    <!-- Audit Logs Table -->
-    <div class="table-container" *ngIf="auditLogs.length > 0">
-      <h3 class="table-title">System Audit Logs</h3>
-      <table class="data-table audit-table">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>User</th>
-            <th>Action</th>
-            <th>Module</th>
-            <th>Details</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let log of paginatedAuditLogs">
-            <td class="timestamp-cell">{{ formatTimestamp(log.timestamp) }}</td>
-            <td>{{ log.user }}</td>
-            <td>
-              <span class="action-badge">{{ log.action }}</span>
-            </td>
-            <td>{{ log.module }}</td>
-            <td class="details-cell">{{ log.details }}</td>
-            <td>
-              <span [class]="'status-badge status-' + log.status">
-                {{ log.status === 'success' ? 'Success' :
-                   log.status === 'failed' ? 'Failed' : 'Warning' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Audit Logs Table -->
+      @if (auditLogs.length > 0) {
+        <div class="table-container">
+          <h3 class="table-title">System Audit Logs</h3>
+          <table class="data-table audit-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Module</th>
+                <th>Details</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (log of paginatedAuditLogs; track log.timestamp) {
+                <tr>
+                  <td class="timestamp-cell">{{ formatTimestamp(log.timestamp) }}</td>
+                  <td>{{ log.user }}</td>
+                  <td>
+                    <span class="action-badge">{{ log.action }}</span>
+                  </td>
+                  <td>{{ log.module }}</td>
+                  <td class="details-cell">{{ log.details }}</td>
+                  <td>
+                    <span [class]="'status-badge status-' + log.status">
+                      {{ log.status === 'success' ? 'Success' :
+                         log.status === 'failed' ? 'Failed' : 'Warning' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
 
-      <!-- Pagination -->
-      <div class="pagination" *ngIf="totalPages > 1">
-        <button
-          class="pagination-button"
-          (click)="goToPage(currentPage - 1)"
-          [disabled]="currentPage === 1">
-          Previous
-        </button>
+          <!-- Pagination -->
+          @if (totalPages > 1) {
+            <div class="pagination">
+              <button
+                class="pagination-button"
+                (click)="goToPage(currentPage - 1)"
+                [disabled]="currentPage === 1">
+                Previous
+              </button>
 
-        <div class="page-numbers">
-          <button
-            *ngFor="let page of [].constructor(totalPages); let i = index"
-            class="page-number"
-            [class.active]="currentPage === i + 1"
-            (click)="goToPage(i + 1)">
-            {{ i + 1 }}
-          </button>
+              <div class="page-numbers">
+                @for (page of [].constructor(totalPages); track $index) {
+                  <button
+                    class="page-number"
+                    [class.active]="currentPage === $index + 1"
+                    (click)="goToPage($index + 1)">
+                    {{ $index + 1 }}
+                  </button>
+                }
+              </div>
+
+              <button
+                class="pagination-button"
+                (click)="goToPage(currentPage + 1)"
+                [disabled]="currentPage === totalPages">
+                Next
+              </button>
+            </div>
+          }
         </div>
+      }
 
-        <button
-          class="pagination-button"
-          (click)="goToPage(currentPage + 1)"
-          [disabled]="currentPage === totalPages">
-          Next
-        </button>
-      </div>
+      <!-- Empty State -->
+      @if (auditLogs.length === 0 && !isLoadingAudit) {
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>No Audit Logs Available</h3>
+          <p>There are no system activity logs to display at this time.</p>
+        </div>
+      }
     </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="auditLogs.length === 0 && !isLoadingAudit">
-      <div class="empty-icon">📋</div>
-      <h3>No Audit Logs Available</h3>
-      <p>There are no system activity logs to display at this time.</p>
-    </div>
-  </div>
+  }
 </div>
