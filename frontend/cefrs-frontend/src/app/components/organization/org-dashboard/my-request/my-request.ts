@@ -199,7 +199,7 @@ export class OrgMyRequestComponent implements OnInit {
   }
 
   openCancelModal(request: Request): void {
-    if (request.type !== 'Facility' || request.status !== 'Pending') return;
+    if ((request.type !== 'Facility' && request.type !== 'Equipment') || request.status !== 'Pending') return;
     this.requestToCancel = request;
     this.showCancelModal = true;
   }
@@ -210,23 +210,39 @@ export class OrgMyRequestComponent implements OnInit {
   }
 
   confirmCancel(): void {
-    if (!this.requestToCancel || this.requestToCancel.type !== 'Facility') return;
+    if (!this.requestToCancel) return;
     const idParts = this.requestToCancel.id.split('-');
     const id = Number(idParts[1]);
     
-    this.reservationService.cancelReservation(id).subscribe({
-      next: () => {
-        this.closeCancelModal();
-        this.successMessage = 'Reservation request cancelled successfully!';
-        this.showSuccessModal = true;
-        this.loadMyRequests();
-      },
-      error: (err) => {
-        console.error('Error cancelling reservation', err);
-        this.closeCancelModal();
-        alert('Failed to cancel reservation. Please try again.');
-      }
-    });
+    if (this.requestToCancel.type === 'Facility') {
+      this.reservationService.cancelReservation(id).subscribe({
+        next: () => {
+          this.closeCancelModal();
+          this.successMessage = 'Reservation request cancelled successfully!';
+          this.showSuccessModal = true;
+          this.loadMyRequests();
+        },
+        error: (err) => {
+          console.error('Error cancelling reservation', err);
+          this.closeCancelModal();
+          alert('Failed to cancel reservation. Please try again.');
+        }
+      });
+    } else if (this.requestToCancel.type === 'Equipment') {
+      this.borrowingService.cancelBorrowing(id).subscribe({
+        next: () => {
+          this.closeCancelModal();
+          this.successMessage = 'Equipment borrowing request cancelled successfully!';
+          this.showSuccessModal = true;
+          this.loadMyRequests();
+        },
+        error: (err) => {
+          console.error('Error cancelling borrowing', err);
+          this.closeCancelModal();
+          alert('Failed to cancel borrowing request. Please try again.');
+        }
+      });
+    }
   }
 
   closeSuccessModal(): void {
