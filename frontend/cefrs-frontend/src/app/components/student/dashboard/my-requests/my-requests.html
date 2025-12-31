@@ -65,6 +65,9 @@
               <div class="detail-row"><strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}</div>
               </div>
               <div class="request-actions">
+              @if (request.type === 'Equipment' && request.status === 'Pending') {
+                <button class="action-btn cancel-btn" (click)="openCancelModal(request)">Cancel</button>
+              }
               @if (request.type === 'Equipment' && (request.status === 'Approved' || request.status === 'Borrowed' || request.status === 'Overdue')) {
                 <button class="action-btn return-btn" (click)="markBorrowingAsReturned(request)">Mark Returned</button>
               }
@@ -95,7 +98,7 @@
       </div>
 
       <div class="modal-body">
-        <p>Are you sure you want to cancel this facility reservation request?</p>
+        <p>Are you sure you want to cancel this {{ requestToCancel?.type === 'Facility' ? 'facility reservation' : 'equipment borrowing' }} request?</p>
       </div>
 
       <div class="modal-footer">
