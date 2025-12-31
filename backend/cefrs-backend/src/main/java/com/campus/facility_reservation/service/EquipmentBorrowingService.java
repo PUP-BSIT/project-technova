@@ -261,6 +261,26 @@ public class EquipmentBorrowingService {
         return convertToDTO(updated);
     }
 
+    @Audited(action = "CANCEL", table = "equipment_borrowing")
+    @Transactional
+    public void cancelBorrowing(Long id, Long userId) {
+        EquipmentBorrowing borrowing = borrowingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Borrowing not found"));
+
+        if (!borrowing.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Unauthorized to cancel this borrowing");
+        }
+
+        BorrowingStatus oldStatus = borrowing.getStatus();
+        borrowing.setStatus(BorrowingStatus.CANCELLED);
+        borrowingRepository.save(borrowing);
+
+        // Only promote from waitlist if an APPROVED borrowing has been cancelled
+        if (oldStatus == BorrowingStatus.APPROVED) {
+            promoteNextFromWaitlist(borrowing);
+        }
+    }
+
     /**
      * Promote the next WAITLISTED borrowing (if any) that overlaps the given
      * borrowing's
