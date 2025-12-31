@@ -417,6 +417,11 @@ $transition-base: 0.3s;
     color: #78350f;
   }
 
+  &.status-cancelled {
+    background: #9ca3af;
+    color: $white;
+  }
+
   &.status-available {
     background: $success-color;
     color: $white;

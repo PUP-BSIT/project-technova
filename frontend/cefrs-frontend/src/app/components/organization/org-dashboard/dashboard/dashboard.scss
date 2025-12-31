@@ -169,6 +169,11 @@
   color: #78350f;
 }
 
+.status-badge.status-cancelled {
+  background: #9ca3af;
+  color: $white;
+}
+
 .transactions-list {
   display: flex;
   flex-direction: column;

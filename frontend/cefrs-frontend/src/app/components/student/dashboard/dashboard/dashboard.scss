@@ -181,6 +181,11 @@
     background: #fbbf24;
     color: #78350f;
   }
+
+  &.status-cancelled {
+    background: #9ca3af;
+    color: $white;
+  }
 }
 
 .request-info {

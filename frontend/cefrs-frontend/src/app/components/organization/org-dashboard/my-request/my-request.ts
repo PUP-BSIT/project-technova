@@ -44,6 +44,10 @@ export class OrgMyRequestComponent implements OnInit {
   allRequests: Request[] = [];
 
   loading = false;
+  showCancelModal = false;
+  requestToCancel: Request | null = null;
+  showSuccessModal = false;
+  successMessage = '';
 
   ngOnInit(): void {
     this.loadMyRequests();
@@ -88,7 +92,8 @@ export class OrgMyRequestComponent implements OnInit {
       COMPLETED: 'Completed',
       OVERDUE: 'Overdue',
       BORROWED: 'Borrowed',
-      WAITLISTED: 'Waitlisted'
+      WAITLISTED: 'Waitlisted',
+      CANCELLED: 'Cancelled'
     };
     return map[raw.toUpperCase()] || raw;
   }
@@ -187,9 +192,62 @@ export class OrgMyRequestComponent implements OnInit {
       Rejected: 'status-rejected',
       Returned: 'status-returned',
       Completed: 'status-completed',
-      Waitlisted: 'status-waitlisted'
+      Waitlisted: 'status-waitlisted',
+      Cancelled: 'status-cancelled'
     };
     return map[status] || '';
+  }
+
+  openCancelModal(request: Request): void {
+    if ((request.type !== 'Facility' && request.type !== 'Equipment') || request.status !== 'Pending') return;
+    this.requestToCancel = request;
+    this.showCancelModal = true;
+  }
+
+  closeCancelModal(): void {
+    this.showCancelModal = false;
+    this.requestToCancel = null;
+  }
+
+  confirmCancel(): void {
+    if (!this.requestToCancel) return;
+    const idParts = this.requestToCancel.id.split('-');
+    const id = Number(idParts[1]);
+    
+    if (this.requestToCancel.type === 'Facility') {
+      this.reservationService.cancelReservation(id).subscribe({
+        next: () => {
+          this.closeCancelModal();
+          this.successMessage = 'Reservation request cancelled successfully!';
+          this.showSuccessModal = true;
+          this.loadMyRequests();
+        },
+        error: (err) => {
+          console.error('Error cancelling reservation', err);
+          this.closeCancelModal();
+          alert('Failed to cancel reservation. Please try again.');
+        }
+      });
+    } else if (this.requestToCancel.type === 'Equipment') {
+      this.borrowingService.cancelBorrowing(id).subscribe({
+        next: () => {
+          this.closeCancelModal();
+          this.successMessage = 'Equipment borrowing request cancelled successfully!';
+          this.showSuccessModal = true;
+          this.loadMyRequests();
+        },
+        error: (err) => {
+          console.error('Error cancelling borrowing', err);
+          this.closeCancelModal();
+          alert('Failed to cancel borrowing request. Please try again.');
+        }
+      });
+    }
+  }
+
+  closeSuccessModal(): void {
+    this.showSuccessModal = false;
+    this.successMessage = '';
   }
 }
 

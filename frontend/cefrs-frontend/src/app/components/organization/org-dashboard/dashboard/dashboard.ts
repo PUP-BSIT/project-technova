@@ -265,7 +265,8 @@ export class Dashboard implements OnInit {
       COMPLETED: 'Completed',
       OVERDUE: 'Overdue',
       BORROWED: 'Borrowed',
-      WAITLISTED: 'Waitlisted'
+      WAITLISTED: 'Waitlisted',
+      CANCELLED: 'Cancelled'
     };
     return map[raw.toUpperCase()] || raw;
   }
@@ -277,7 +278,8 @@ export class Dashboard implements OnInit {
       Rejected: 'status-rejected',
       Returned: 'status-returned',
       Completed: 'status-completed',
-      Waitlisted: 'status-waitlisted'
+      Waitlisted: 'status-waitlisted',
+      Cancelled: 'status-cancelled'
     };
     return map[status] || '';
   }

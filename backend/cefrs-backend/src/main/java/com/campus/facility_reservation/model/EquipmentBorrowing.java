@@ -80,6 +80,6 @@ public class EquipmentBorrowing {
     }
     
     public enum BorrowingStatus {
-        PENDING, APPROVED, BORROWED, RETURNED, REJECTED, OVERDUE, WAITLISTED
+        PENDING, APPROVED, BORROWED, RETURNED, REJECTED, OVERDUE, WAITLISTED, CANCELLED
     }
 }

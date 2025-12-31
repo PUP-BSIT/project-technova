@@ -23,6 +23,8 @@
         <option>Completed</option>
         <option>Borrowed</option>
         <option>Overdue</option>
+        <option>Waitlisted</option>
+        <option>Cancelled</option>
       </select>
       <select [(ngModel)]="selectedType" class="filter-select">
         <option>All Types</option>
@@ -63,10 +65,16 @@
               <div class="detail-row"><strong>Admin Notes:</strong> {{ request.adminNotes || 'N/A' }}</div>
               </div>
               <div class="request-actions">
+              @if (request.type === 'Equipment' && request.status === 'Pending') {
+                <button class="action-btn cancel-btn" (click)="openCancelModal(request)">Cancel</button>
+              }
               @if (request.type === 'Equipment' && (request.status === 'Approved' || request.status === 'Borrowed' || request.status === 'Overdue')) {
                 <button class="action-btn return-btn" (click)="markBorrowingAsReturned(request)">Mark Returned</button>
               }
-              @if (request.type === 'Facility' && (request.status === 'Approved' || request.status === 'Pending')) {
+              @if (request.type === 'Facility' && request.status === 'Pending') {
+                <button class="action-btn cancel-btn" (click)="openCancelModal(request)">Cancel</button>
+              }
+              @if (request.type === 'Facility' && request.status === 'Approved') {
                 <button class="action-btn return-btn" (click)="markReservationAsCompleted(request)">Mark Returned</button>
               }
               </div>
@@ -79,3 +87,45 @@
     </div>
   </div>
 </div>
+
+<!-- Cancel Confirmation Modal -->
+@if (showCancelModal && requestToCancel) {
+  <div class="modal-overlay" (click)="closeCancelModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirm Cancellation</h3>
+        <button class="close-btn" (click)="closeCancelModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p>Are you sure you want to cancel this {{ requestToCancel?.type === 'Facility' ? 'facility reservation' : 'equipment borrowing' }} request?</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-confirm" (click)="confirmCancel()">Yes, Cancel</button>
+        <button class="btn-cancel" (click)="closeCancelModal()">No, Keep It</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Success Modal -->
+@if (showSuccessModal) {
+  <div class="modal-overlay" (click)="closeSuccessModal()">
+    <div class="modal-container success-modal" (click)="$event.stopPropagation()">
+      <div class="success-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <h2 class="success-message">{{ successMessage }}</h2>
+      <button
+        type="button"
+        class="modal-btn modal-btn-done"
+        (click)="closeSuccessModal()">
+        Done
+      </button>
+    </div>
+  </div>
+}
