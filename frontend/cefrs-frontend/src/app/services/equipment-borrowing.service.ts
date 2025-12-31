@@ -84,5 +84,9 @@ export class EquipmentBorrowingService {
       : `${this.apiUrl}/${id}/status`;
     return this.http.put<ApiResponse<EquipmentBorrowing>>(url, body);
   }
+
+  cancelBorrowing(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}/cancel`);
+  }
 }
 
