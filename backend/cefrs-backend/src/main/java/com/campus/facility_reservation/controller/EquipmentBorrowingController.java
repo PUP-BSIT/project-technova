@@ -130,4 +130,15 @@ public class EquipmentBorrowingController {
         EquipmentBorrowingDTO borrowing = borrowingService.markAsReturnedByUser(id, userId);
         return ResponseEntity.ok(ApiResponse.success("Borrowing marked as returned", borrowing));
     }
+
+    // DELETE /api/equipment-borrowing/{id}/cancel (cancel borrowing by user)
+    @DeleteMapping("/{id}/cancel")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> cancelBorrowing(
+            @PathVariable Long id,
+            Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        borrowingService.cancelBorrowing(id, userId);
+        return ResponseEntity.ok(ApiResponse.success("Borrowing cancelled", null));
+    }
 }
