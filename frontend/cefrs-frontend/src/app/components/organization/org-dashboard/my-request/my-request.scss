@@ -262,6 +262,7 @@
     margin: 0;
     color: #111827;
     font-size: 1.25rem;
+    font-family: $font-family;
   }
 
   .close-btn {
@@ -276,6 +277,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 4px;
+    font-family: $font-family;
 
     &:hover {
       background: #f3f4f6;
@@ -292,6 +294,7 @@
     color: #4b5563;
     font-size: 1rem;
     line-height: 1.5;
+    font-family: $font-family;
   }
 }
 
@@ -309,6 +312,7 @@
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s;
+    font-family: $font-family;
   }
 
   .btn-confirm {
