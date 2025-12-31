@@ -157,7 +157,9 @@ export class MyRequests implements OnInit {
       RETURNED: 'Returned',
       COMPLETED: 'Completed',
       OVERDUE: 'Overdue',
-      BORROWED: 'Borrowed'
+      BORROWED: 'Borrowed',
+      WAITLISTED: 'Waitlisted',
+      CANCELLED: 'Cancelled'
     };
     return map[raw.toUpperCase()] || raw;
   }
@@ -170,7 +172,9 @@ export class MyRequests implements OnInit {
       Returned: 'status-returned',
       Completed: 'status-completed',
       Overdue: 'status-rejected',
-      Borrowed: 'status-approved'
+      Borrowed: 'status-approved',
+      Waitlisted: 'status-waitlisted',
+      Cancelled: 'status-cancelled'
     };
     return map[status] || '';
   }
