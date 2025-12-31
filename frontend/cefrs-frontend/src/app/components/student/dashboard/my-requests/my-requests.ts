@@ -37,6 +37,10 @@ export class MyRequests implements OnInit {
   searchQuery = '';
   selectedStatus = 'All Status';
   selectedType = 'All Types';
+  showCancelModal = false;
+  requestToCancel: Request | null = null;
+  showSuccessModal = false;
+  successMessage = '';
 
   clearSearch(): void {
     this.searchQuery = '';
@@ -189,5 +193,41 @@ export class MyRequests implements OnInit {
       next: () => this.fetchMyRequests(),
       error: (err) => console.error('Error marking reservation completed', err)
     });
+  }
+
+  openCancelModal(request: Request): void {
+    if (request.type !== 'Facility' || request.status !== 'Pending') return;
+    this.requestToCancel = request;
+    this.showCancelModal = true;
+  }
+
+  closeCancelModal(): void {
+    this.showCancelModal = false;
+    this.requestToCancel = null;
+  }
+
+  confirmCancel(): void {
+    if (!this.requestToCancel || this.requestToCancel.type !== 'Facility') return;
+    const idParts = this.requestToCancel.id.split('-');
+    const id = Number(idParts[1]);
+    
+    this.reservationService.cancelReservation(id).subscribe({
+      next: () => {
+        this.closeCancelModal();
+        this.successMessage = 'Reservation request cancelled successfully!';
+        this.showSuccessModal = true;
+        this.fetchMyRequests();
+      },
+      error: (err) => {
+        console.error('Error cancelling reservation', err);
+        this.closeCancelModal();
+        alert('Failed to cancel reservation. Please try again.');
+      }
+    });
+  }
+
+  closeSuccessModal(): void {
+    this.showSuccessModal = false;
+    this.successMessage = '';
   }
 }
