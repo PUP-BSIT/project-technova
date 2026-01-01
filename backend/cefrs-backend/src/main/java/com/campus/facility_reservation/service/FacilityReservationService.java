@@ -2,6 +2,7 @@ package com.campus.facility_reservation.service;
 
 import com.campus.facility_reservation.model.*;
 import com.campus.facility_reservation.model.FacilityReservation.ReservationStatus;
+import com.campus.facility_reservation.model.Facility.FacilityStatus;
 import com.campus.facility_reservation.dto.FacilityReservationDTO;
 import com.campus.facility_reservation.dto.FacilityReservationRequestDTO;
 import com.campus.facility_reservation.dto.ReservationApprovalDTO;
@@ -165,6 +166,11 @@ public class FacilityReservationService {
                     reservationRepository.save(other);
                 }
             }
+
+            // **UPDATE FACILITY STATUS TO RESERVED**
+            Facility facility = reservation.getFacility();
+            facility.setStatus(FacilityStatus.RESERVED);
+            facilityRepository.save(facility);
         }
 
         reservation.setStatus(status);
@@ -182,13 +188,25 @@ public class FacilityReservationService {
         }
 
         // If this reservation was APPROVED before and is now being changed to a
-        // non-APPROVED
-        // terminal state, promote the next WAITLISTED reservation (if any) for this
-        // slot.
+        // non-APPROVED terminal state, update facility status and promote waitlist
         if (oldStatus == ReservationStatus.APPROVED
                 && (status == ReservationStatus.CANCELLED
                         || status == ReservationStatus.REJECTED
                         || status == ReservationStatus.COMPLETED)) {
+
+            // **CHECK IF FACILITY HAS OTHER APPROVED RESERVATIONS**
+            Facility facility = reservation.getFacility();
+            List<FacilityReservation> otherApprovedReservations = reservationRepository
+                    .findByFacilityOrderByReservationDateAscStartTimeAsc(facility).stream()
+                    .filter(r -> r.getStatus() == ReservationStatus.APPROVED && !r.getId().equals(reservation.getId()))
+                    .collect(Collectors.toList());
+
+            // If no other approved reservations, set facility back to AVAILABLE
+            if (otherApprovedReservations.isEmpty()) {
+                facility.setStatus(FacilityStatus.AVAILABLE);
+                facilityRepository.save(facility);
+            }
+
             promoteNextFromWaitlist(reservation);
         }
 
@@ -218,12 +236,26 @@ public class FacilityReservationService {
             throw new RuntimeException("Reservation cannot be marked as completed in its current status");
         }
 
+        ReservationStatus oldStatus = reservation.getStatus();
         reservation.setStatus(ReservationStatus.COMPLETED);
         FacilityReservation updated = reservationRepository.save(reservation);
 
-        // When a reservation is completed, free the slot for the next in the waiting
-        // list
-        promoteNextFromWaitlist(reservation);
+        // When a reservation is completed and it was APPROVED, check facility status
+        if (oldStatus == ReservationStatus.APPROVED) {
+            Facility facility = reservation.getFacility();
+            List<FacilityReservation> otherApprovedReservations = reservationRepository
+                    .findByFacilityOrderByReservationDateAscStartTimeAsc(facility).stream()
+                    .filter(r -> r.getStatus() == ReservationStatus.APPROVED && !r.getId().equals(reservation.getId()))
+                    .collect(Collectors.toList());
+
+            // If no other approved reservations, set facility back to AVAILABLE
+            if (otherApprovedReservations.isEmpty()) {
+                facility.setStatus(FacilityStatus.AVAILABLE);
+                facilityRepository.save(facility);
+            }
+
+            promoteNextFromWaitlist(reservation);
+        }
 
         return convertToDTO(updated);
     }
@@ -242,8 +274,20 @@ public class FacilityReservationService {
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.save(reservation);
 
-        // Only promote from waitlist if an APPROVED reservation has been cancelled
+        // Only update facility status and promote from waitlist if an APPROVED reservation has been cancelled
         if (oldStatus == ReservationStatus.APPROVED) {
+            Facility facility = reservation.getFacility();
+            List<FacilityReservation> otherApprovedReservations = reservationRepository
+                    .findByFacilityOrderByReservationDateAscStartTimeAsc(facility).stream()
+                    .filter(r -> r.getStatus() == ReservationStatus.APPROVED && !r.getId().equals(reservation.getId()))
+                    .collect(Collectors.toList());
+
+            // If no other approved reservations, set facility back to AVAILABLE
+            if (otherApprovedReservations.isEmpty()) {
+                facility.setStatus(FacilityStatus.AVAILABLE);
+                facilityRepository.save(facility);
+            }
+
             promoteNextFromWaitlist(reservation);
         }
     }
@@ -260,10 +304,8 @@ public class FacilityReservationService {
 
     /**
      * Promote the next WAITLISTED reservation (if any) that overlaps the given
-     * reservation's
-     * facility, date, and time range. The promoted reservation is moved back to
-     * PENDING so
-     * that an admin can review and approve it explicitly.
+     * reservation's facility, date, and time range. The promoted reservation is moved back to
+     * PENDING so that an admin can review and approve it explicitly.
      */
     private void promoteNextFromWaitlist(FacilityReservation releasedReservation) {
         List<FacilityReservation> waitlisted = reservationRepository.findOverlappingByStatusOrderByCreatedAtAsc(
@@ -295,8 +337,7 @@ public class FacilityReservationService {
         // Get all facilities
         List<Facility> allFacilities = facilityRepository.findAll();
 
-        // Filter for available facilities with same or greater capacity and similar
-        // type
+        // Filter for available facilities with same or greater capacity and similar type
         List<FacilityDTO> suggestedFacilities = new ArrayList<>();
 
         for (Facility facility : allFacilities) {
@@ -346,7 +387,7 @@ public class FacilityReservationService {
                 facility.getCapacity(),
                 facility.getDescription(),
                 facility.getImageUrl(),
-                "AVAILABLE");
+                facility.getStatus().name());
     }
 
     private FacilityReservationDTO convertToDTO(FacilityReservation reservation) {

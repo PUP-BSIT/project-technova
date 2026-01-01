@@ -105,7 +105,7 @@ export class Equipment implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading equipment:', error);
           this.isLoading = false;
-          this.displayMessage('error', 'Failed to load equipment');
+          this.displayMessage('error', 'Failed to load equipment. Please refresh the page or contact support.');
         }
       });
   }
@@ -171,7 +171,59 @@ export class Equipment implements OnInit, OnDestroy {
     this.showAddEditModal = true;
   }
 
+  /**
+   * Check if equipment can be deleted
+   */
+  canDeleteEquipment(item: EquipmentItem): boolean {
+    // Cannot delete if any items are borrowed
+    return item.quantityAvailable === item.quantityTotal && item.status !== 'BORROWED';
+  }
+
+  /**
+   * Get reason why equipment cannot be deleted
+   */
+  getDeleteBlockReason(item: EquipmentItem): string {
+    if (item.quantityAvailable < item.quantityTotal) {
+      const borrowedCount = item.quantityTotal - item.quantityAvailable;
+      return `${borrowedCount} item(s) are currently borrowed.`;
+    }
+    if (item.status === 'BORROWED') {
+      return 'This equipment is currently borrowed.';
+    }
+    return '';
+  }
+
   deleteEquipment(item: EquipmentItem): void {
+    // Frontend validation - check if any items are borrowed
+    const borrowedCount = item.quantityTotal - item.quantityAvailable;
+
+    if (borrowedCount > 0) {
+      this.displayMessage(
+        'error',
+        `Cannot delete "${item.name}" because ${borrowedCount} item(s) are currently borrowed. ` +
+        'Please wait for all items to be returned before deleting this equipment.'
+      );
+      return;
+    }
+
+    if (item.status === 'BORROWED') {
+      this.displayMessage(
+        'error',
+        `Cannot delete "${item.name}" because it is marked as borrowed. ` +
+        'Please wait for all items to be returned before attempting to delete.'
+      );
+      return;
+    }
+
+    if (item.status === 'UNAVAILABLE') {
+      this.displayMessage(
+        'error',
+        `Cannot delete "${item.name}" because it is marked as unavailable. ` +
+        'This may indicate active borrowings or maintenance. Please check the equipment status first.'
+      );
+      return;
+    }
+
     this.selectedEquipment = item;
     this.showDeleteModal = true;
   }
@@ -195,12 +247,61 @@ export class Equipment implements OnInit, OnDestroy {
   }
 
   saveAddEdit(): void {
+    // Trim all text fields
+    const trimmedName = this.equipmentForm.name.trim();
+    const trimmedDescription = this.equipmentForm.description.trim();
+    const trimmedImageUrl = this.equipmentForm.imageUrl.trim();
+
+    // Validate required fields
+    if (!trimmedName) {
+      this.displayMessage('error', 'Equipment name is required. Please enter a name for this equipment.');
+      return;
+    }
+
+    if (this.equipmentForm.quantityTotal <= 0) {
+      this.displayMessage('error', 'Quantity must be greater than 0. Please enter a valid quantity.');
+      return;
+    }
+
+    // Validate image URL if provided
+    if (trimmedImageUrl && !this.isValidUrl(trimmedImageUrl)) {
+      this.displayMessage('error', 'Invalid image URL. Please enter a valid URL starting with http:// or https://');
+      return;
+    }
+
+    // Check for duplicate names (frontend validation)
+    const duplicateName = this.equipment.find(e =>
+      e.name.toLowerCase().trim() === trimmedName.toLowerCase() &&
+      e.id !== this.equipmentForm.id
+    );
+
+    if (duplicateName) {
+      this.displayMessage(
+        'error',
+        `Equipment named "${trimmedName}" already exists. Please choose a different name.`
+      );
+      return;
+    }
+
+    // Additional validation for edit mode - check if reducing quantity below borrowed
+    if (this.isEditMode && this.selectedEquipment) {
+      const currentBorrowed = this.selectedEquipment.quantityTotal - this.selectedEquipment.quantityAvailable;
+      if (this.equipmentForm.quantityTotal < currentBorrowed) {
+        this.displayMessage(
+          'error',
+          `Cannot reduce quantity to ${this.equipmentForm.quantityTotal} because ${currentBorrowed} item(s) are currently borrowed. ` +
+          'Please ensure the new quantity is at least equal to the number of borrowed items.'
+        );
+        return;
+      }
+    }
+
     const requestData: EquipmentRequestDTO = {
-      name: this.equipmentForm.name,
+      name: trimmedName,
       category: this.equipmentForm.category,
       quantityTotal: this.equipmentForm.quantityTotal,
-      description: this.equipmentForm.description,
-      imageUrl: this.equipmentForm.imageUrl.trim(),
+      description: trimmedDescription,
+      imageUrl: trimmedImageUrl,
       status: this.equipmentForm.status
     };
 
@@ -212,11 +313,12 @@ export class Equipment implements OnInit, OnDestroy {
           next: () => {
             this.loadEquipment();
             this.closeAddEditModal();
-            this.displayMessage('success', 'Equipment updated successfully!');
+            this.displayMessage('success', `Equipment "${trimmedName}" has been updated successfully!`);
           },
           error: (error) => {
             console.error('Error updating equipment:', error);
-            this.displayMessage('error', 'Failed to update equipment');
+            const errorMessage = this.parseUpdateError(error, trimmedName);
+            this.displayMessage('error', errorMessage);
           }
         });
     } else {
@@ -227,32 +329,202 @@ export class Equipment implements OnInit, OnDestroy {
           next: () => {
             this.loadEquipment();
             this.closeAddEditModal();
-            this.displayMessage('success', 'Equipment created successfully!');
+            this.displayMessage('success', `Equipment "${trimmedName}" has been created successfully!`);
           },
           error: (error) => {
             console.error('Error creating equipment:', error);
-            this.displayMessage('error', 'Failed to create equipment');
+            const errorMessage = this.parseUpdateError(error, trimmedName);
+            this.displayMessage('error', errorMessage);
           }
         });
     }
   }
 
+  private parseUpdateError(error: any, equipmentName: string): string {
+    console.error('Update error details:', error);
+
+    // Try to extract error message from various formats
+    let errorMessage = this.extractErrorMessage(error);
+
+    if (errorMessage) {
+      const lowerError = errorMessage.toLowerCase();
+
+      // Check for specific error patterns
+      if (lowerError.includes('duplicate') || lowerError.includes('already exists') || lowerError.includes('unique constraint')) {
+        return `Equipment named "${equipmentName}" already exists in the system. Please choose a different name.`;
+      }
+
+      if (lowerError.includes('quantity') && lowerError.includes('borrowed')) {
+        return `Cannot reduce quantity: Some items are currently borrowed. ` +
+          'The new quantity must be at least equal to the number of borrowed items. ' +
+          'Please wait for items to be returned or increase the quantity.';
+      }
+
+      if (lowerError.includes('quantity') && lowerError.includes('reduce')) {
+        return `Cannot reduce quantity below the number of items currently borrowed. ` +
+          'Please ensure all borrowed items can fit within the new quantity.';
+      }
+
+      if (lowerError.includes('borrowed') || lowerError.includes('borrow')) {
+        return `Cannot modify this equipment because items are currently borrowed. ` +
+          'Please wait for all items to be returned before making changes.';
+      }
+
+      if (lowerError.includes('invalid') && lowerError.includes('quantity')) {
+        return 'The quantity value is invalid. Please enter a positive number.';
+      }
+
+      if (lowerError.includes('invalid') && lowerError.includes('category')) {
+        return 'The selected category is invalid. Please choose a valid category.';
+      }
+
+      if (lowerError.includes('invalid') && lowerError.includes('status')) {
+        return 'The selected status is invalid. Please choose a valid status option.';
+      }
+
+      // Return server message if it's descriptive and reasonable length
+      if (errorMessage.length >= 15 && errorMessage.length <= 200) {
+        return errorMessage;
+      }
+    }
+
+    // Status code based messages
+    if (error.status === 400) {
+      return 'Invalid data provided. Please check that all required fields are filled correctly and try again.';
+    }
+
+    if (error.status === 409) {
+      return `Cannot save changes to "${equipmentName}" due to a conflict. ` +
+        'This equipment may have active borrowings or reservations that prevent modifications. ' +
+        'Please check the equipment status and try again.';
+    }
+
+    if (error.status === 422) {
+      return 'The data provided cannot be processed. Please verify all fields are correct.';
+    }
+
+    if (error.status === 500) {
+      return 'A server error occurred while saving the equipment. Please try again or contact support if the problem persists.';
+    }
+
+    // Default error message
+    return `Failed to save equipment "${equipmentName}". Please verify all information is correct and try again. ` +
+      'If the problem persists, contact support for assistance.';
+  }
+
   confirmDelete(): void {
     if (this.selectedEquipment) {
+      const equipmentName = this.selectedEquipment.name;
+
       this.equipmentService.deleteEquipment(this.selectedEquipment.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
             this.loadEquipment();
             this.closeDeleteModal();
-            this.displayMessage('success', 'Equipment deleted successfully!');
+            this.displayMessage('success', `Equipment "${equipmentName}" has been deleted successfully.`);
           },
           error: (error) => {
             console.error('Error deleting equipment:', error);
-            this.displayMessage('error', 'Failed to delete equipment');
+            const errorMessage = this.parseDeleteError(error, equipmentName);
+            this.closeDeleteModal(); // Close modal even on error
+            this.displayMessage('error', errorMessage);
           }
         });
     }
+  }
+
+  private parseDeleteError(error: any, equipmentName: string): string {
+    console.error('Delete error details:', error);
+
+    // Try to extract error message from various formats
+    let errorMessage = this.extractErrorMessage(error);
+
+    if (errorMessage) {
+      const lowerError = errorMessage.toLowerCase();
+
+      // Check for specific error patterns
+      if (lowerError.includes('borrowed') || lowerError.includes('borrow')) {
+        return `Cannot delete "${equipmentName}" because items are currently borrowed. ` +
+          'Please wait for all items to be returned before attempting to delete this equipment.';
+      }
+
+      if (lowerError.includes('in use') || lowerError.includes('active')) {
+        return `Cannot delete "${equipmentName}" because it is currently in use. ` +
+          'Please ensure all items are returned and try again.';
+      }
+
+      if (lowerError.includes('reserved') || lowerError.includes('reservation')) {
+        return `Cannot delete "${equipmentName}" because it has active reservations or bookings. ` +
+          'Please cancel all reservations before deleting.';
+      }
+
+      if (lowerError.includes('foreign key') || lowerError.includes('constraint') || lowerError.includes('reference')) {
+        return `Cannot delete "${equipmentName}" because it has related records (such as borrowing history or reservations). ` +
+          'Please remove all related records first or contact support for assistance.';
+      }
+
+      if (lowerError.includes('dependency') || lowerError.includes('dependent')) {
+        return `Cannot delete "${equipmentName}" because other records depend on it. ` +
+          'Please remove dependent records first.';
+      }
+
+      // Return server message if it's descriptive and reasonable length
+      if (errorMessage.length >= 15 && errorMessage.length <= 200) {
+        return errorMessage;
+      }
+    }
+
+    // Status code based messages
+    if (error.status === 409) {
+      return `Cannot delete "${equipmentName}" because it has active borrowings or dependencies. ` +
+        'Please ensure all items are returned and no other records reference this equipment.';
+    }
+
+    if (error.status === 400) {
+      return `Cannot delete "${equipmentName}". This equipment may be in use or have active borrowings. ` +
+        'Please check the equipment status and try again.';
+    }
+
+    if (error.status === 500) {
+      return `Cannot delete "${equipmentName}" due to a server error. ` +
+        'This equipment likely has borrowing history or related records that must be handled first. ' +
+        'Please contact support if you need assistance.';
+    }
+
+    // Default error message
+    return `Failed to delete "${equipmentName}". This equipment may have active borrowings or dependencies. ` +
+      'Please ensure all items are returned and try again. If the problem persists, contact support.';
+  }
+
+  /**
+   * Extract error message from various error response formats
+   */
+  private extractErrorMessage(error: any): string {
+    // Check error.error (can be string or object)
+    if (error.error) {
+      if (typeof error.error === 'string') {
+        return error.error.trim();
+      }
+      if (error.error.message) {
+        return error.error.message.trim();
+      }
+      if (error.error.error) {
+        return error.error.error.trim();
+      }
+    }
+
+    // Check error.message
+    if (error.message && typeof error.message === 'string') {
+      return error.message.trim();
+    }
+
+    // Check statusText
+    if (error.statusText && typeof error.statusText === 'string') {
+      return error.statusText.trim();
+    }
+
+    return '';
   }
 
   closeAddEditModal(): void {
