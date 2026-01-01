@@ -310,16 +310,37 @@ export class ForgotPassword implements OnInit {
       this.currentStep--;
       this.errorMessage = '';
     } else {
-      this.router.navigate(['/login']);
+      const role = this.route.snapshot.queryParams['role'] || '';
+      if (role === 'admin') {
+        this.router.navigate(['/admin-login']);
+      } else if (role === 'org' || role === 'CAMPUS_ORGANIZATION') {
+        this.router.navigate(['/org-login']);
+      } else {
+        this.router.navigate(['/login']);
+      }
     }
   }
 
   goToLogin(): void {
-    this.router.navigate(['/login']);
+    const role = this.route.snapshot.queryParams['role'] || '';
+    if (role === 'admin') {
+      this.router.navigate(['/admin-login']);
+    } else if (role === 'org' || role === 'CAMPUS_ORGANIZATION') {
+      this.router.navigate(['/org-login']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   goToPreviousPage(): void {
-    window.history.back();
+    const role = this.route.snapshot.queryParams['role'] || '';
+    if (role === 'admin') {
+      this.router.navigate(['/admin-login']);
+    } else if (role === 'org' || role === 'CAMPUS_ORGANIZATION') {
+      this.router.navigate(['/org-login']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   // Utility Methods
