@@ -97,7 +97,7 @@ export class OrgLoginComponent {
 
   onForgotPassword(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['/forgot-password']);
+    this.router.navigate(['/forgot-password'], { queryParams: { role: 'org' } });
   }
 
   goToRegister(): void {
