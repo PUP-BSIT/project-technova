@@ -46,8 +46,8 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   clearSearch(): void {
-  this.searchQuery = '';
-  this.applyFilters();
+    this.searchQuery = '';
+    this.applyFilters();
   }
 
   // Data
@@ -133,7 +133,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -195,27 +194,32 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (equipmentList) => {
-          this.equipment = equipmentList.map(e => ({
-            id: e.id,
-            name: e.name,
-            code: `EQ-${e.id.toString().padStart(4, '0')}`,
-            category: e.category,
-            quantityTotal: e.quantityTotal,
-            quantityAvailable: e.quantityAvailable,
-            quantityBorrowed: e.quantityTotal - e.quantityAvailable,
-            description: e.description,
-            imageUrl: e.imageUrl,
-            status: e.status,
-            condition: this.getConditionFromQuantity(e.quantityAvailable, e.quantityTotal),
-            lastModified: new Date(),
-            selected: false,
-            editing: false,
-            location: (e as any).location || 'Not Assigned',
-            supplier: (e as any).supplier || 'Not Assigned',
-            reorderPoint: Math.floor(e.quantityTotal * 0.3),
-            lastAuditDate: new Date(),
-            needsAttention: e.quantityAvailable <= Math.floor(e.quantityTotal * 0.3)
-          }));
+          this.equipment = equipmentList.map(e => {
+            // Calculate borrowed as the difference between total and available
+            const borrowed = Math.max(0, e.quantityTotal - e.quantityAvailable);
+
+            return {
+              id: e.id,
+              name: e.name,
+              code: `EQ-${e.id.toString().padStart(4, '0')}`,
+              category: e.category,
+              quantityTotal: e.quantityTotal,
+              quantityAvailable: e.quantityAvailable,
+              quantityBorrowed: borrowed,
+              description: e.description,
+              imageUrl: e.imageUrl,
+              status: e.status,
+              condition: this.getConditionFromQuantity(e.quantityAvailable, e.quantityTotal),
+              lastModified: new Date(),
+              selected: false,
+              editing: false,
+              location: (e as any).location || 'Not Assigned',
+              supplier: (e as any).supplier || 'Not Assigned',
+              reorderPoint: Math.floor(e.quantityTotal * 0.3),
+              lastAuditDate: new Date(),
+              needsAttention: e.quantityAvailable <= Math.floor(e.quantityTotal * 0.3)
+            };
+          });
           this.applyFilters();
           this.isLoading = false;
         },
@@ -227,25 +231,8 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       });
   }
 
-  // Helper methods for demo data
-  private getRandomLocation(): string {
-    const locs = ['Storage Room A', 'Storage Room B', 'Tech Lab', 'Admin Office', 'Warehouse'];
-    return locs[Math.floor(Math.random() * locs.length)];
-  }
-
-  private getRandomSupplier(): string {
-    const suppliers = ['TechSupply Co.', 'EquipMart', 'ProAudio Solutions', 'Global Tech Distributors'];
-    return suppliers[Math.floor(Math.random() * suppliers.length)];
-  }
-
-  private getRandomDate(): Date {
-    const days = Math.floor(Math.random() * 90);
-    const date = new Date();
-    date.setDate(date.getDate() - days);
-    return date;
-  }
-
   getConditionFromQuantity(available: number, total: number): string {
+    if (total === 0) return 'Out of Stock';
     const percentAvailable = (available / total) * 100;
     if (percentAvailable === 100) return 'Excellent';
     if (percentAvailable >= 75) return 'Good';
@@ -289,7 +276,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
     this.filteredEquipment = filtered;
   }
 
-  // View mode switching
   switchView(mode: 'table' | 'audit' | 'reorder'): void {
     this.viewMode = mode;
     if (mode === 'audit') {
@@ -299,7 +285,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
     }
   }
 
-  // Audit mode
   startAuditMode(): void {
     this.auditMode = true;
     this.auditItems.clear();
@@ -309,7 +294,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   }
 
   updateAuditCount(itemId: number, count: number): void {
-    this.auditItems.set(itemId, count);
+    this.auditItems.set(itemId, Math.max(0, count));
   }
 
   completeAudit(): void {
@@ -322,16 +307,21 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   private executeAuditCompletion(): void {
     const adjustments: Promise<any>[] = [];
 
-    this.auditItems.forEach((count, id) => {
+    this.auditItems.forEach((auditCount, id) => {
       const item = this.equipment.find(e => e.id === id);
-      if (item && count !== item.quantityTotal) {
-        const difference = count - item.quantityTotal;
-        const newAvailable = Math.max(0, item.quantityAvailable + difference);
+      if (item && auditCount !== item.quantityTotal) {
+        const difference = auditCount - item.quantityTotal;
+
+        // Properly maintain the borrowed count
+        // The borrowed count should remain the same, we're just adjusting total
+        const currentBorrowed = item.quantityBorrowed;
+        const newTotal = auditCount;
+        const newAvailable = Math.max(0, newTotal - currentBorrowed);
 
         const requestData: any = {
           name: item.name,
           category: item.category,
-          quantityTotal: count,
+          quantityTotal: newTotal,
           quantityAvailable: newAvailable,
           description: item.description,
           status: item.status,
@@ -339,14 +329,13 @@ export class EquipmentInventory implements OnInit, OnDestroy {
           supplier: item.supplier
         };
 
-        // Only include imageUrl if it's NOT a base64 data URI
         if (item.imageUrl && !item.imageUrl.startsWith('data:image')) {
           requestData.imageUrl = item.imageUrl;
         } else {
-          requestData.imageUrl = ''; // Send empty string for base64 images
+          requestData.imageUrl = '';
         }
 
-        console.log(`Updating item ${id}:`, requestData);
+        console.log(`Updating item ${id} - Total: ${newTotal}, Available: ${newAvailable}, Borrowed: ${currentBorrowed}`);
 
         adjustments.push(
           new Promise((resolve, reject) => {
@@ -393,9 +382,8 @@ export class EquipmentInventory implements OnInit, OnDestroy {
     this.viewMode = 'table';
   }
 
-  // Stock adjustment
   openAdjustmentModal(item: EquipmentInventoryItem): void {
-    this.selectedEquipment = item;
+    this.selectedEquipment = { ...item };
     this.adjustmentType = 'set';
     this.adjustmentQuantity = item.quantityTotal;
     this.adjustmentReason = 'stock_count';
@@ -411,26 +399,34 @@ export class EquipmentInventory implements OnInit, OnDestroy {
   submitAdjustment(): void {
     if (!this.selectedEquipment) return;
 
-    let newQuantity = this.adjustmentQuantity;
+    let newTotal = this.adjustmentQuantity;
 
     if (this.adjustmentType === 'add') {
-      newQuantity = this.selectedEquipment.quantityTotal + this.adjustmentQuantity;
+      newTotal = this.selectedEquipment.quantityTotal + this.adjustmentQuantity;
     } else if (this.adjustmentType === 'remove') {
-      newQuantity = this.selectedEquipment.quantityTotal - this.adjustmentQuantity;
+      newTotal = this.selectedEquipment.quantityTotal - this.adjustmentQuantity;
     }
 
-    if (newQuantity < 0) {
+    if (newTotal < 0) {
       this.displayMessage('error', 'Quantity cannot be negative');
       return;
     }
 
-    const difference = newQuantity - this.selectedEquipment.quantityTotal;
-    const newAvailable = Math.max(0, this.selectedEquipment.quantityAvailable + difference);
+    // Properly calculate available based on borrowed count
+    const currentBorrowed = this.selectedEquipment.quantityBorrowed;
+
+    // If new total is less than borrowed, we need to adjust
+    if (newTotal < currentBorrowed) {
+      this.displayMessage('error', `Cannot set total to ${newTotal}. There are ${currentBorrowed} items currently borrowed.`);
+      return;
+    }
+
+    const newAvailable = newTotal - currentBorrowed;
 
     const requestData: any = {
       name: this.selectedEquipment.name,
       category: this.selectedEquipment.category,
-      quantityTotal: newQuantity,
+      quantityTotal: newTotal,
       quantityAvailable: newAvailable,
       description: this.selectedEquipment.description,
       status: this.selectedEquipment.status,
@@ -438,14 +434,16 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       supplier: this.selectedEquipment.supplier
     };
 
-    // Only include imageUrl if it's NOT a base64 data URI
     if (this.selectedEquipment.imageUrl && !this.selectedEquipment.imageUrl.startsWith('data:image')) {
       requestData.imageUrl = this.selectedEquipment.imageUrl;
     } else {
       requestData.imageUrl = '';
     }
 
-    console.log('Submitting adjustment:', requestData);
+    console.log('Submitting adjustment:', {
+      ...requestData,
+      calculatedBorrowed: currentBorrowed
+    });
 
     this.equipmentService.updateEquipment(this.selectedEquipment.id, requestData)
       .pipe(takeUntil(this.destroy$))
@@ -462,7 +460,6 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       });
   }
 
-  // Bulk operations
   toggleSelectAll(): void {
     this.filteredEquipment.forEach(item => {
       item.selected = this.selectAll;
@@ -514,10 +511,8 @@ export class EquipmentInventory implements OnInit, OnDestroy {
     this.selectedItems.forEach(id => {
       const item = this.equipment.find(e => e.id === id);
       if (item) {
-        // 1. Update local UI
         item.location = this.newLocation;
 
-        // 2. Prepare API Request
         const requestData: any = {
           name: item.name,
           category: item.category,
@@ -529,26 +524,23 @@ export class EquipmentInventory implements OnInit, OnDestroy {
           supplier: item.supplier
         };
 
-        // 3. Add to execution queue
         updatePromises.push(
           this.equipmentService.updateEquipment(id, requestData).toPromise()
         );
       }
     });
 
-    // Execute all updates
     Promise.all(updatePromises)
       .then(() => {
         this.displayMessage('success', `Location updated for ${this.selectedItems.size} items`);
         this.closeLocationModal();
         this.selectedItems.clear();
         this.selectAll = false;
-        this.loadEquipment(); // Refresh data from server
+        this.loadEquipment();
       })
       .catch(() => this.displayMessage('error', 'Failed to update some items'));
   }
 
-  // Export functions
   exportToCSV(): void {
     this.closeDropdowns();
     const headers = ['Code', 'Product', 'Category', 'Location', 'Stock', 'Available', 'Borrowed', 'Reorder Point', 'Supplier', 'Last Audit', 'Status'];
@@ -566,9 +558,9 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       this.escapeCSV(item.condition)
     ]);
 
-    let csvContent = headers.join(',    ') + '\n';
+    let csvContent = headers.join(',') + '\n';
     rows.forEach(row => {
-      csvContent += row.join(',    ') + '\n';
+      csvContent += row.join(',') + '\n';
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -622,71 +614,16 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       <head>
         <title>Equipment Inventory Report - ${today}</title>
         <style>
-          @page {
-            size: A4 landscape;
-            margin: 15mm;
-          }
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #69040C;
-            padding-bottom: 15px;
-          }
-          .header h1 {
-            margin: 0;
-            color: #69040C;
-            font-size: 24px;
-          }
-          .header p {
-            margin: 5px 0 0 0;
-            color: #666;
-            font-size: 14px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 11px;
-          }
-          th {
-            background-color: #69040C;
-            color: white;
-            padding: 12px 8px;
-            text-align: left;
-            font-weight: 600;
-            border: 1px solid #ddd;
-          }
-          td {
-            padding: 10px 8px;
-            border: 1px solid #ddd;
-          }
-          tr:nth-child(even) {
-            background-color: #f9f9f9;
-          }
-          tr:hover {
-            background-color: #f5f5f5;
-          }
-          .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-          }
-          @media print {
-            body {
-              padding: 0;
-            }
-            .no-print {
-              display: none;
-            }
-          }
+          @page { size: A4 landscape; margin: 15mm; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+          .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #69040C; padding-bottom: 15px; }
+          .header h1 { margin: 0; color: #69040C; font-size: 24px; }
+          .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
+          th { background-color: #69040C; color: white; padding: 12px 8px; text-align: left; font-weight: 600; border: 1px solid #ddd; }
+          td { padding: 10px 8px; border: 1px solid #ddd; }
+          tr:nth-child(even) { background-color: #f9f9f9; }
+          .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
         </style>
       </head>
       <body>
@@ -694,28 +631,16 @@ export class EquipmentInventory implements OnInit, OnDestroy {
           <h1>Equipment Inventory Report</h1>
           <p>Generated on ${today} | Total Items: ${this.filteredEquipment.length}</p>
         </div>
-
         <table>
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Location</th>
-              <th>Stock</th>
-              <th>Available</th>
-              <th>Borrowed</th>
-              <th>Reorder Point</th>
-              <th>Supplier</th>
-              <th>Last Audit</th>
-              <th>Status</th>
+              <th>Code</th><th>Product</th><th>Category</th><th>Location</th>
+              <th>Stock</th><th>Available</th><th>Borrowed</th><th>Reorder Point</th>
+              <th>Supplier</th><th>Last Audit</th><th>Status</th>
             </tr>
           </thead>
-          <tbody>
-            ${rows}
-          </tbody>
+          <tbody>${rows}</tbody>
         </table>
-
         <div class="footer">
           <p>CEFRS - Equipment Inventory Management System</p>
           <p>This report contains ${this.filteredEquipment.length} item(s)</p>
@@ -742,9 +667,9 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       this.escapeCSV(item.supplier || 'N/A')
     ]);
 
-    let csvContent = headers.join(',    ') + '\n';
+    let csvContent = headers.join(',') + '\n';
     rows.forEach(row => {
-      csvContent += row.join(',    ') + '\n';
+      csvContent += row.join(',') + '\n';
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -788,99 +713,27 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       <head>
         <title>Reorder List - ${today}</title>
         <style>
-          @page {
-            size: A4;
-            margin: 15mm;
-          }
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #ffc107;
-            padding-bottom: 15px;
-          }
-          .header h1 {
-            margin: 0;
-            color: #ffc107;
-            font-size: 24px;
-          }
-          .header p {
-            margin: 5px 0 0 0;
-            color: #666;
-            font-size: 14px;
-          }
-          .alert {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-            color: #856404;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 12px;
-          }
-          th {
-            background-color: #ffc107;
-            color: #333;
-            padding: 12px 8px;
-            text-align: left;
-            font-weight: 600;
-            border: 1px solid #ddd;
-          }
-          td {
-            padding: 10px 8px;
-            border: 1px solid #ddd;
-          }
-          tr:nth-child(even) {
-            background-color: #f9f9f9;
-          }
-          .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-          }
+          @page { size: A4; margin: 15mm; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+          .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #ffc107; padding-bottom: 15px; }
+          .header h1 { margin: 0; color: #ffc107; font-size: 24px; }
+          .alert { background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; color: #856404; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+          th { background-color: #ffc107; color: #333; padding: 12px 8px; text-align: left; font-weight: 600; border: 1px solid #ddd; }
+          td { padding: 10px 8px; border: 1px solid #ddd; }
+          tr:nth-child(even) { background-color: #f9f9f9; }
+          .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>⚠️ Equipment Reorder List</h1>
-          <p>Generated on ${today}</p>
-        </div>
-
-        <div class="alert">
-          ${needsReorder.length} item(s) need to be reordered
-        </div>
-
+        <div class="header"><h1>⚠️ Equipment Reorder List</h1><p>Generated on ${today}</p></div>
+        <div class="alert">${needsReorder.length} item(s) need to be reordered</div>
         <table>
           <thead>
-            <tr>
-              <th>Code</th>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Current Stock</th>
-              <th>Reorder Point</th>
-              <th>Suggested Order</th>
-              <th>Supplier</th>
-            </tr>
+            <tr><th>Code</th><th>Product</th><th>Category</th><th>Current Stock</th><th>Reorder Point</th><th>Suggested Order</th><th>Supplier</th></tr>
           </thead>
-          <tbody>
-            ${rows}
-          </tbody>
+          <tbody>${rows}</tbody>
         </table>
-
         <div class="footer">
           <p>CEFRS - Equipment Inventory Management System</p>
           <p>Please process these orders as soon as possible</p>
@@ -894,10 +747,7 @@ export class EquipmentInventory implements OnInit, OnDestroy {
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.focus();
-
-      setTimeout(() => {
-        printWindow.print();
-      }, 250);
+      setTimeout(() => printWindow.print(), 250);
     }
   }
 

@@ -50,7 +50,10 @@ export class ManageRequest implements OnInit {
   approvalNotes: string = '';
   declineReason: string = '';
   sendNotification: boolean = true;
-  
+  // For Manage Request and Equipment Pickup Modal
+  showPickupModal: boolean = false;
+  pickupNotes: string = '';
+
   allRequests: UnifiedRequest[] = [];
   loading = false;
   actionLoading = false;
@@ -61,7 +64,7 @@ export class ManageRequest implements OnInit {
     private reservationService: ReservationService,
     private borrowingService: EquipmentBorrowingService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   clearSearch(): void {
     this.searchText = '';
@@ -69,7 +72,7 @@ export class ManageRequest implements OnInit {
 
   ngOnInit(): void {
     this.loadAllRequests();
-    
+
     // Check for query params to set initial filter
     this.route.queryParams.subscribe(params => {
       if (params['status']) {
@@ -103,9 +106,9 @@ export class ManageRequest implements OnInit {
             type: 'facility',
             name: r.facilityName,
             requester: r.userName,
-          requesterRole: r.userRole,
-          studentId: r.studentId,
-          organizationName: r.organizationName,
+            requesterRole: r.userRole,
+            studentId: r.studentId,
+            organizationName: r.organizationName,
             userName: r.userName,
             facilityId: r.facilityId,
             reservationDate: r.reservationDate,
@@ -127,9 +130,9 @@ export class ManageRequest implements OnInit {
             type: 'equipment',
             name: b.equipmentName,
             requester: b.userName,
-          requesterRole: b.userRole,
-          studentId: b.studentId,
-          organizationName: b.organizationName,
+            requesterRole: b.userRole,
+            studentId: b.studentId,
+            organizationName: b.organizationName,
             userName: b.userName,
             equipmentId: b.equipmentId,
             borrowDate: b.borrowDate,
@@ -185,7 +188,7 @@ export class ManageRequest implements OnInit {
     }
 
     // Sort by creation date (newest first)
-    return filtered.sort((a, b) => 
+    return filtered.sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }
@@ -446,5 +449,67 @@ export class ManageRequest implements OnInit {
         }
       });
     }
+  }
+
+  // Add this method to handle marking equipment as picked up/borrowed
+  markAsBorrowed(request: UnifiedRequest): void {
+    if (!request || request.type !== 'equipment') return;
+
+    this.selectedRequest = request;
+    this.pickupNotes = '';
+    this.showPickupModal = true;
+  }
+
+  // Add helper method to check if equipment can be marked as borrowed
+  canMarkAsBorrowed(request: UnifiedRequest): boolean {
+    if (request.type !== 'equipment' || request.status !== 'approved') {
+      return false;
+    }
+
+    // Check if borrow date is today or in the past
+    if (!request.borrowDate) return false;
+
+    const borrowDate = new Date(request.borrowDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    borrowDate.setHours(0, 0, 0, 0);
+
+    return borrowDate <= today;
+  }
+
+  confirmPickup(): void {
+    if (!this.selectedRequest) return;
+
+    this.actionLoading = true;
+    this.error = null;
+
+    const notes = this.pickupNotes.trim() || 'Equipment picked up and borrowed';
+
+    this.borrowingService.updateBorrowingStatus(
+      this.selectedRequest.id,
+      'BORROWED',
+      notes
+    ).subscribe({
+      next: (response: any) => {
+        this.actionLoading = false;
+        if (response.success) {
+          this.closePickupModal();
+          this.showSuccess('Equipment marked as picked up successfully!');
+          this.loadAllRequests();
+        }
+      },
+      error: (err: any) => {
+        this.actionLoading = false;
+        this.error = err.error?.message || 'Failed to mark equipment as borrowed';
+        console.error('Error marking as borrowed:', err);
+      }
+    });
+  }
+
+  closePickupModal(): void {
+    this.showPickupModal = false;
+    this.selectedRequest = null;
+    this.pickupNotes = '';
+    this.actionLoading = false;
   }
 }

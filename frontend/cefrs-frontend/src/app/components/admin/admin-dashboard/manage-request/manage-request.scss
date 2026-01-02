@@ -27,32 +27,37 @@ $font-family: 'Roboto', sans-serif;
 
 // Responsive Mixins
 @mixin respond-to($breakpoint) {
-  @if $breakpoint == 'xs' {
+  @if $breakpoint =='xs' {
     @media (max-width: #{$breakpoint-xs}) {
       @content;
     }
   }
-  @else if $breakpoint == 's' {
+
+  @else if $breakpoint =='s' {
     @media (min-width: #{$breakpoint-xs + 1}) and (max-width: #{$breakpoint-s}) {
       @content;
     }
   }
-  @else if $breakpoint == 'm' {
+
+  @else if $breakpoint =='m' {
     @media (min-width: #{$breakpoint-s + 1}) and (max-width: #{$breakpoint-m}) {
       @content;
     }
   }
-  @else if $breakpoint == 'tablet' {
+
+  @else if $breakpoint =='tablet' {
     @media (min-width: #{$breakpoint-m + 1}) and (max-width: #{$breakpoint-l}) {
       @content;
     }
   }
-  @else if $breakpoint == 'l' {
+
+  @else if $breakpoint =='l' {
     @media (min-width: #{$breakpoint-l + 1}) {
       @content;
     }
   }
-  @else if $breakpoint == 'mobile-all' {
+
+  @else if $breakpoint =='mobile-all' {
     @media (max-width: #{$breakpoint-m}) {
       @content;
     }
@@ -567,25 +572,29 @@ $font-family: 'Roboto', sans-serif;
     padding: 4px 8px;
   }
 
-  &.status-approved { 
-    background: #7fe87f; 
-    color: #1a5c1a; 
+  &.status-approved {
+    background: #7fe87f;
+    color: #1a5c1a;
   }
-  &.status-declined { 
-    background: #fca5a5; 
-    color: #7f1d1d; 
+
+  &.status-declined {
+    background: #fca5a5;
+    color: #7f1d1d;
   }
-  &.status-pending { 
-    background: #fcd34d; 
-    color: #78350f; 
+
+  &.status-pending {
+    background: #fcd34d;
+    color: #78350f;
   }
-  &.status-completed { 
-    background: #cfe2ff; 
-    color: #084298; 
+
+  &.status-completed {
+    background: #cfe2ff;
+    color: #084298;
   }
-  &.status-returned { 
-    background: #cfe2ff; 
-    color: #084298; 
+
+  &.status-returned {
+    background: #cfe2ff;
+    color: #084298;
   }
 }
 
@@ -963,6 +972,7 @@ $font-family: 'Roboto', sans-serif;
 }
 
 @include respond-to('mobile-all') {
+
   button,
   input,
   select,
@@ -978,6 +988,37 @@ $font-family: 'Roboto', sans-serif;
     &::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.2);
       border-radius: 2px;
+    }
+  }
+
+  .pickup-button {
+    @include button-reset;
+    padding: 8px 24px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: background 0.2s;
+
+    @include respond-to('mobile-all') {
+      width: 100%;
+      font-size: 14px;
+      padding: 10px 16px;
+    }
+
+    @include respond-to('s') {
+      font-size: 13px;
+      padding: 9px 12px;
+    }
+
+    &:hover {
+      background: #2563eb;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 }
