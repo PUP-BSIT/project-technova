@@ -87,11 +87,34 @@
                   Decline
                 </button>
               } @else {
-                @if (request.type === 'equipment' && (request.status === 'approved' || request.status === 'borrowed' || request.status === 'overdue')) {
-                  <button class="return-button" (click)="markRequestReturned(request)" [disabled]="actionLoading">Mark Returned</button>
+                <!-- Equipment: Show "Mark as Picked Up" for APPROVED status -->
+                @if (request.type === 'equipment' && request.status === 'approved' && canMarkAsBorrowed(request)) {
+                  <button
+                    class="pickup-button"
+                    (click)="markAsBorrowed(request)"
+                    [disabled]="actionLoading">
+                    Mark as Picked Up
+                  </button>
                 }
-                @else if (request.type === 'facility' && (request.status === 'approved' || request.status === 'pending')) {
-                  <button class="return-button" (click)="markRequestReturned(request)" [disabled]="actionLoading">Mark Returned</button>
+
+                <!-- Equipment: Show "Mark Returned" for BORROWED/OVERDUE status -->
+                @if (request.type === 'equipment' && (request.status === 'borrowed' || request.status === 'overdue')) {
+                  <button
+                    class="return-button"
+                    (click)="markRequestReturned(request)"
+                    [disabled]="actionLoading">
+                    Mark Returned
+                  </button>
+                }
+
+                <!-- Facility: Keep existing logic -->
+                @if (request.type === 'facility' && (request.status === 'approved' || request.status === 'pending')) {
+                  <button
+                    class="return-button"
+                    (click)="markRequestReturned(request)"
+                    [disabled]="actionLoading">
+                    Mark Returned
+                  </button>
                 }
               }
             </div>
@@ -296,6 +319,85 @@
         <button 
           class="modal-button modal-button-cancel" 
           (click)="closeDeclineModal()"
+          [disabled]="actionLoading">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showPickupModal) {
+  <div class="modal-overlay" (click)="closePickupModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">Mark Equipment as Picked Up</h2>
+
+      <div class="modal-info">
+        <div class="info-row">
+          <span class="info-label">Request ID:</span>
+          <span class="info-value">{{ selectedRequest ? formatRequestId(selectedRequest) : '' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Equipment:</span>
+          <span class="info-value">{{ selectedRequest?.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Quantity:</span>
+          <span class="info-value">{{ selectedRequest?.quantity }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Borrower:</span>
+          <span class="info-value">
+            {{ selectedRequest?.requester }}
+            @if (selectedRequest && isOrganization(selectedRequest) && selectedRequest.organizationName) {
+              <span class="info-note">({{ selectedRequest.organizationName }})</span>
+            }
+            @if (selectedRequest && isStudent(selectedRequest) && selectedRequest.studentId) {
+              <span class="info-note">(ID: {{ selectedRequest.studentId }})</span>
+            }
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Borrow Date:</span>
+          <span class="info-value">{{ formatDate(selectedRequest?.borrowDate || '') }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Expected Return:</span>
+          <span class="info-value">{{ formatDate(selectedRequest?.expectedReturnDate || '') }}</span>
+        </div>
+      </div>
+
+      <div class="modal-alert">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div>
+          <strong>This will deduct {{ selectedRequest?.quantity }} item(s) from available stock.</strong>
+          <p>Make sure the borrower has physically received the equipment before confirming.</p>
+        </div>
+      </div>
+
+      <div class="modal-form-group">
+        <label class="modal-label">Pickup Notes (Optional)</label>
+        <textarea
+          class="modal-textarea"
+          [(ngModel)]="pickupNotes"
+          placeholder="Add any notes about the equipment condition, accessories included, etc...">
+        </textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          class="modal-button modal-button-confirm"
+          (click)="confirmPickup()"
+          [disabled]="actionLoading">
+          {{ actionLoading ? 'Processing...' : 'Confirm Pickup' }}
+        </button>
+        <button
+          class="modal-button modal-button-cancel"
+          (click)="closePickupModal()"
           [disabled]="actionLoading">
           Cancel
         </button>
