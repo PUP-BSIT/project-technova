@@ -1,18 +1,26 @@
 package com.campus.facility_reservation.controller;
 
-import com.campus.facility_reservation.dto.RegisterRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.campus.facility_reservation.dto.AuthResponse;
+import com.campus.facility_reservation.dto.ForgotPasswordRequest;
 import com.campus.facility_reservation.dto.LoginRequest;
 import com.campus.facility_reservation.dto.RefreshTokenRequest;
-import com.campus.facility_reservation.service.AuthService;
-import com.campus.facility_reservation.service.PasswordResetService;
-import com.campus.facility_reservation.dto.ForgotPasswordRequest;
+import com.campus.facility_reservation.dto.RegisterRequest;
 import com.campus.facility_reservation.dto.ResetPasswordRequest;
 import com.campus.facility_reservation.dto.ValidateTokenRequest;
 import com.campus.facility_reservation.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.campus.facility_reservation.service.AuthService;
+import com.campus.facility_reservation.service.PasswordResetService;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -84,8 +92,14 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         try {
-            passwordResetService.createPasswordResetToken(request.getEmail());
-            AuthResponse resp = new AuthResponse(null, null, "Verification code sent if the email exists.");
+            String contactMethod = request.getContactMethod() != null ? request.getContactMethod() : "email";
+            passwordResetService.createPasswordResetToken(contactMethod, request.getEmail(), request.getPhone());
+            
+            String message = "email".equals(contactMethod) 
+                ? "Verification code sent if the email exists."
+                : "Verification code sent if the phone number exists.";
+            
+            AuthResponse resp = new AuthResponse(null, null, message);
             resp.setSuccess(true);
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
