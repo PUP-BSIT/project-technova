@@ -33,6 +33,8 @@ public class EmailService {
     @Value("${app.client.url:https://cefrs.site}")
     private String clientUrl;
 
+    @Value("${app.mail.contact-to:cefrsdit2025@gmail.com}")
+    private String contactTo;
     /**
      * Send approval notification for facility reservation
      */
@@ -710,6 +712,57 @@ public class EmailService {
                 "<div style='text-align:center;margin-top:18px;'><a href='" + link + "' style='display:inline-block;padding:10px 20px;background:#ef4444;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;'>View My Borrowings</a></div>" +
                 "<div class='footer'><p>This is an automated notification.</p></div>" +
                 "</div></body></html>";
+    }
+
+    @Transactional
+    public boolean sendContactUsEmail(String senderName, String senderEmail, String messageBody) {
+        if ((senderEmail == null || senderEmail.trim().isEmpty()) && (senderName == null || senderName.trim().isEmpty())) return false;
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            String subject = "Contact Us Message from " + (senderName != null && !senderName.trim().isEmpty() ? senderName : senderEmail);
+
+            String safeName = escapeHtml(senderName);
+            String safeEmail = escapeHtml(senderEmail);
+            String safeMessage = escapeHtml(messageBody).replace("\n", "<br/>");
+
+                String htmlContent = "<!DOCTYPE html>" +
+                    "<html lang='en'>" +
+                    "<head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'>" +
+                    "<title>Contact Us Message</title>" +
+                    "<style>body{font-family:Segoe UI,Segoe,Arial,sans-serif;background:#f3f4f6;margin:0;padding:20px;} .card{max-width:800px;margin:0 auto;background:#ffffff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.08);overflow:hidden;border:1px solid #eef2f7;} .header{background:linear-gradient(90deg,#dc2626,#ef4444);padding:18px 24px;color:#fff;} .header h1{font-size:18px;margin:0;} .body{padding:24px;color:#111;} .meta{background:#fbfdff;border-left:4px solid #3b82f6;padding:12px;border-radius:6px;margin-bottom:16px;} .meta .label{display:block;font-weight:700;color:#0f172a;margin-bottom:6px;} .message{white-space:pre-wrap;line-height:1.6;color:#0b1220;background:#f9fafb;padding:16px;border-radius:6px;border:1px solid #eef2f7;} .footer{padding:16px;text-align:center;font-size:12px;color:#6b7280;background:#fbfdff;border-top:1px solid #eef2f7;}</style></head>" +
+                    "<body><div class='card'>" +
+                    "<div class='header'><h1>New Contact Us Message</h1></div>" +
+                    "<div class='body'>" +
+                    "<div class='meta'><span class='label'>From</span><div><strong>" + (safeName.isEmpty()? safeEmail : safeName) + "</strong></div><div style='margin-top:6px;color:#374151;'><a href='mailto:" + safeEmail + "' style='color:#2563eb;text-decoration:none;'>" + safeEmail + "</a></div></div>" +
+                    "<div class='message'>" + safeMessage + "</div>" +
+                    "</div>" +
+                    "<div class='footer'>Campus Equipment & Facility Reservation System (CEFRS) — This is an automated message.</div>" +
+                    "</div></body></html>";
+
+            helper.setFrom(mailFrom, mailFromName);
+            helper.setTo(contactTo);
+            if (senderEmail != null && !senderEmail.trim().isEmpty()) {
+                try {
+                    helper.setReplyTo(senderEmail);
+                } catch (Exception ignored) {}
+            }
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("Contact message sent from {} <{}>", senderName, senderEmail);
+            return true;
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            log.error("Failed to send contact message from {}: {}", senderEmail, e.getMessage());
+            return false;
+        }
+    }
+
+    private String escapeHtml(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#x27;");
     }
 
     private String getRoleLoginPath(User admin) {
