@@ -24,19 +24,11 @@ public class SmsService {
 
     @Value("${app.sms.api-url:https://api.semaphore.co/api/v4/messages}")
     private String smsApiUrl;
-
-    /**
-     * Send SMS verification code to phone number using Semaphore SMS API
-     */
     public boolean sendVerificationCode(String phoneNumber, String code) {
         try {
-            // Clean phone number (remove non-digits)
             String cleanPhone = phoneNumber.replaceAll("\\D", "");
             
             // Ensure phone number starts with country code (e.g., 63 for Philippines)
-            // If it doesn't start with a country code, you may need to add it
-            // For now, we'll use it as-is
-            
             // Format message
             String message = "Your CEFRS password reset code is: " + code + ". Valid for 15 minutes.";
             
