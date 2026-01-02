@@ -102,8 +102,6 @@ public class AuthController {
             resp.setSuccess(true);
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
-            // For security reasons, always return success message even on error
-            // This prevents attackers from determining which emails/phones are registered
             String contactMethod = request.getContactMethod() != null ? request.getContactMethod() : "email";
             String message = "email".equals(contactMethod) 
                 ? "If an account exists with this email, a verification code has been sent."
