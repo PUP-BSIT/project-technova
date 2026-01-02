@@ -106,8 +106,18 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      console.debug('Sending forgot-password request for', this.emailOrPhone);
-      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).pipe(timeout(10000)));
+      console.debug('Sending forgot-password request for', this.emailOrPhone, 'via', this.contactMethod);
+      const requestBody: any = {
+        contactMethod: this.contactMethod
+      };
+      
+      if (this.contactMethod === 'email') {
+        requestBody.email = this.emailOrPhone;
+      } else {
+        requestBody.phone = this.emailOrPhone.replace(/\D/g, ''); // Clean phone number
+      }
+      
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', requestBody).pipe(timeout(10000)));
       console.debug('Forgot-password response received', resp);
       this.isLoading = false;
       if (resp && resp.success) {
@@ -151,8 +161,18 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      console.debug('Resending forgot-password request for', this.emailOrPhone);
-      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', { email: this.emailOrPhone }).pipe(timeout(10000)));
+      console.debug('Resending forgot-password request for', this.emailOrPhone, 'via', this.contactMethod);
+      const requestBody: any = {
+        contactMethod: this.contactMethod
+      };
+      
+      if (this.contactMethod === 'email') {
+        requestBody.email = this.emailOrPhone;
+      } else {
+        requestBody.phone = this.emailOrPhone.replace(/\D/g, ''); // Clean phone number
+      }
+      
+      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', requestBody).pipe(timeout(10000)));
       console.debug('Resend response received', resp);
       if (resp && resp.success) {
         this.ngZone.run(() => {
@@ -300,7 +320,12 @@ export class ForgotPassword implements OnInit {
     this.showConfirmationModal = false;
     this.cd.detectChanges();
     const role = this.route.snapshot.queryParams['role'] || '';
-    const target = role === 'admin' ? '/admin-login' : '/login';
+    let target = '/login'; // Default to student login
+    if (role === 'admin') {
+      target = '/admin-login';
+    } else if (role === 'org' || role === 'CAMPUS_ORGANIZATION') {
+      target = '/org-login';
+    }
     this.router.navigate([target], { queryParams: { passwordReset: 'success' } });
   }
 
