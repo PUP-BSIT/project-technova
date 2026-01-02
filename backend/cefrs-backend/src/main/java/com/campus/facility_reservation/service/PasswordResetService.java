@@ -42,7 +42,7 @@ public class PasswordResetService {
             // Validate phone input
             if (phone == null || phone.trim().isEmpty()) {
                 log.warn("Phone number is empty or null");
-                return; // Silently fail - don't reveal if user exists
+                return; 
             }
             
             String cleanPhone = phone.replaceAll("\\D", "");
@@ -52,13 +52,13 @@ public class PasswordResetService {
             
             if (userOpt.isEmpty()) {
                 log.warn("No user found with phone number: {}", cleanPhone);
-                return; // Silently fail - don't reveal if user exists
+                return; 
             }
         } else {
             // Validate email input
             if (email == null || email.trim().isEmpty()) {
                 log.warn("Email is empty or null");
-                return; // Silently fail
+                return; 
             }
             
             log.info("Looking up user by email: {}", email);
@@ -66,7 +66,7 @@ public class PasswordResetService {
             
             if (userOpt.isEmpty()) {
                 log.warn("No user found with email: {}", email);
-                return; // Silently fail
+                return; 
             }
         }
 
@@ -87,7 +87,6 @@ public class PasswordResetService {
             
             if (!smsSent) {
                 log.error("Failed to send SMS verification code to: {}", cleanPhone);
-                // Don't throw exception - silently fail for security
             } else {
                 log.info("SMS verification code sent successfully to: {}", cleanPhone);
             }
@@ -98,7 +97,6 @@ public class PasswordResetService {
                 log.info("Email verification code sent successfully to: {}", user.getEmail());
             } catch (Exception e) {
                 log.error("Failed to send email verification code to: {}", user.getEmail(), e);
-                // Don't throw exception - silently fail for security
             }
         }
     }
