@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EquipmentService } from '../../../../services/equipment.service';
+import { EquipmentService, SuggestedEquipmentResponse } from '../../../../services/equipment.service';
 import { EquipmentBorrowingService, BorrowingRequest } from '../../../../services/equipment-borrowing.service';
 
 interface Equipment {
@@ -56,6 +56,11 @@ export class OrgEquipmentComponent implements OnInit {
   };
   borrowingLoading = false;
   borrowingError: string | null = null;
+
+  // Suggestions state
+  showSuggestionsModal = false;
+  suggestedEquipment: SuggestedEquipmentResponse | null = null;
+  suggestionsLoading = false;
 
   ngOnInit(): void {
     this.fetchEquipment();
@@ -161,8 +166,100 @@ export class OrgEquipmentComponent implements OnInit {
         this.borrowingLoading = false;
         this.borrowingError = this.parseServerError(err) || 'Failed to submit borrowing request';
         console.error('Error creating borrowing:', err);
+        // Try to load alternative suggestions when submission fails due to unavailability
+        this.loadSuggestions();
       }
     });
+  }
+
+  loadSuggestions(): void {
+    const equipmentId = this.borrowingForm.equipmentId || this.selectedEquipment?.id;
+    if (!equipmentId || !this.borrowingForm.borrowDate || !this.borrowingForm.expectedReturnDate) return;
+
+    this.suggestionsLoading = true;
+    this.suggestedEquipment = null;
+
+    this.equipmentService.getSuggestedEquipment(equipmentId, this.borrowingForm.borrowDate, this.borrowingForm.expectedReturnDate)
+      .subscribe({
+        next: (resp: any) => {
+          this.suggestionsLoading = false;
+          if (resp && resp.success && resp.data) {
+            this.suggestedEquipment = resp.data;
+          } else {
+            this.suggestedEquipment = {
+              unavailableEquipment: {
+                id: equipmentId,
+                name: resp?.data?.unavailableEquipment?.name || this.selectedEquipment?.name || 'Requested equipment',
+                category: resp?.data?.unavailableEquipment?.category || this.selectedEquipment?.category || '',
+                quantityTotal: resp?.data?.unavailableEquipment?.quantityTotal || 0,
+                quantityAvailable: resp?.data?.unavailableEquipment?.quantityAvailable || 0,
+                description: resp?.data?.unavailableEquipment?.description || this.selectedEquipment?.description || '',
+                imageUrl: resp?.data?.unavailableEquipment?.imageUrl || this.selectedEquipment?.imageUrl || '',
+                status: resp?.data?.unavailableEquipment?.status || ''
+              },
+              requestedBorrowDate: this.borrowingForm.borrowDate,
+              requestedReturnDate: this.borrowingForm.expectedReturnDate,
+              reason: resp?.message || 'No alternatives found for the selected dates',
+              suggestedEquipment: []
+            } as SuggestedEquipmentResponse;
+          }
+          this.showSuggestionsModal = true;
+        },
+        error: (err: any) => {
+          this.suggestionsLoading = false;
+          console.error('Error loading equipment suggestions:', err);
+          this.suggestedEquipment = {
+            unavailableEquipment: {
+              id: equipmentId,
+              name: this.selectedEquipment?.name || 'Requested equipment',
+              category: this.selectedEquipment?.category || '',
+              quantityTotal: 0,
+              quantityAvailable: 0,
+              description: '',
+              imageUrl: '',
+              status: ''
+            },
+            requestedBorrowDate: this.borrowingForm.borrowDate,
+            requestedReturnDate: this.borrowingForm.expectedReturnDate,
+            reason: 'Failed to load alternatives. Please try again later.',
+            suggestedEquipment: []
+          } as SuggestedEquipmentResponse;
+          this.showSuggestionsModal = true;
+        }
+      });
+  }
+
+  selectSuggestedEquipment(equipmentId: number): void {
+    let equipment = this.equipment.find(e => e.id === equipmentId);
+    if (!equipment && this.suggestedEquipment) {
+      const suggested = this.suggestedEquipment.suggestedEquipment.find((s: any) => s.id === equipmentId);
+      if (suggested) {
+        equipment = {
+          id: suggested.id,
+          name: suggested.name,
+          description: suggested.description,
+          category: suggested.category,
+          quantityAvailable: suggested.quantityAvailable,
+          quantityTotal: suggested.quantityTotal,
+          imageUrl: suggested.imageUrl,
+          status: suggested.status
+        } as Equipment;
+        this.equipment.unshift(equipment);
+      }
+    }
+
+    if (equipment) {
+      if (this.suggestedEquipment) {
+        if (!this.borrowingForm.borrowDate) this.borrowingForm.borrowDate = this.suggestedEquipment.requestedBorrowDate || '';
+        if (!this.borrowingForm.expectedReturnDate) this.borrowingForm.expectedReturnDate = this.suggestedEquipment.requestedReturnDate || '';
+        if (!this.borrowingForm.purpose) this.borrowingForm.purpose = this.suggestedEquipment.reason || '';
+      }
+
+      this.selectedEquipment = equipment;
+      this.borrowingForm.equipmentId = equipmentId;
+      this.showSuggestionsModal = false;
+      this.showEquipmentModal = true;
+    }
   }
 
   // Parse common server error shapes and extract a useful message
