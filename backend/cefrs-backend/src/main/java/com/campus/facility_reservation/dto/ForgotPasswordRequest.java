@@ -3,7 +3,7 @@ package com.campus.facility_reservation.dto;
 public class ForgotPasswordRequest {
     private String email;
     private String phone;
-    private String contactMethod; // "email" or "phone"
+    private String contactMethod;
 
     public ForgotPasswordRequest() {}
 
