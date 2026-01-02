@@ -78,7 +78,6 @@ public class AuthController {
 
     @GetMapping("/check-phone")
     public ResponseEntity<Boolean> checkPhoneAvailability(@RequestParam String phoneNumber) {
-        // This line now correctly uses the injected 'userRepository'
         boolean isAvailable = !userRepository.existsByPhoneNumber(phoneNumber);
         return ResponseEntity.ok(isAvailable);
     }
@@ -96,14 +95,23 @@ public class AuthController {
             passwordResetService.createPasswordResetToken(contactMethod, request.getEmail(), request.getPhone());
             
             String message = "email".equals(contactMethod) 
-                ? "Verification code sent if the email exists."
-                : "Verification code sent if the phone number exists.";
+                ? "If an account exists with this email, a verification code has been sent."
+                : "If an account exists with this phone number, a verification code has been sent.";
             
             AuthResponse resp = new AuthResponse(null, null, message);
             resp.setSuccess(true);
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, null, "Failed: " + e.getMessage()));
+            // For security reasons, always return success message even on error
+            // This prevents attackers from determining which emails/phones are registered
+            String contactMethod = request.getContactMethod() != null ? request.getContactMethod() : "email";
+            String message = "email".equals(contactMethod) 
+                ? "If an account exists with this email, a verification code has been sent."
+                : "If an account exists with this phone number, a verification code has been sent.";
+            
+            AuthResponse resp = new AuthResponse(null, null, message);
+            resp.setSuccess(true);
+            return ResponseEntity.ok(resp);
         }
     }
 
