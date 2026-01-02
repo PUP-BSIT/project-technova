@@ -556,6 +556,37 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
+.pickup-button {
+  @include button-reset;
+  padding: 8px 24px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background 0.2s;
+
+  @include respond-to('mobile-all') {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  @include respond-to('s') {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
+  &:hover {
+    background: #2563eb;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .action-status-label {
   padding: 6px 12px;
   border-radius: 4px;
@@ -988,37 +1019,6 @@ $font-family: 'Roboto', sans-serif;
     &::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.2);
       border-radius: 2px;
-    }
-  }
-
-  .pickup-button {
-    @include button-reset;
-    padding: 8px 24px;
-    background: #3b82f6;
-    color: white;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 16px;
-    transition: background 0.2s;
-
-    @include respond-to('mobile-all') {
-      width: 100%;
-      font-size: 14px;
-      padding: 10px 16px;
-    }
-
-    @include respond-to('s') {
-      font-size: 13px;
-      padding: 9px 12px;
-    }
-
-    &:hover {
-      background: #2563eb;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
     }
   }
 }
