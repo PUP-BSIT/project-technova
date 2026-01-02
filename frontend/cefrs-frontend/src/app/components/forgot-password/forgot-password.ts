@@ -37,12 +37,19 @@ export class ForgotPassword implements OnInit {
   
   // Loading states
   isLoading: boolean = false;
+  
   // Confirmation modal
   showConfirmationModal: boolean = false;
   confirmationMessage: string = '';
   private confirmationTimeoutId: any = null;
 
-  constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient, private ngZone: NgZone, private cd: ChangeDetectorRef) {}
+  constructor(
+    private router: Router, 
+    private route: ActivatedRoute, 
+    private http: HttpClient, 
+    private ngZone: NgZone, 
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     // If an email query param is provided (e.g. from admin login), prefill the email
@@ -107,6 +114,7 @@ export class ForgotPassword implements OnInit {
 
     try {
       console.debug('Sending forgot-password request for', this.emailOrPhone, 'via', this.contactMethod);
+      
       const requestBody: any = {
         contactMethod: this.contactMethod
       };
@@ -117,24 +125,25 @@ export class ForgotPassword implements OnInit {
         requestBody.phone = this.emailOrPhone.replace(/\D/g, ''); // Clean phone number
       }
       
-      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', requestBody).pipe(timeout(10000)));
+      const resp: any = await firstValueFrom(
+        this.http.post<any>('/api/auth/forgot-password', requestBody).pipe(timeout(10000))
+      );
+      
       console.debug('Forgot-password response received', resp);
-      this.isLoading = false;
-      if (resp && resp.success) {
-        this.ngZone.run(() => {
-          this.currentStep = 2;
-          this.startResendTimer();
-          this.cd.detectChanges();
-        });
-      } else {
-        this.ngZone.run(() => {
-          this.errorMessage = resp?.message || 'Failed to send verification code. Please try again.';
-          this.cd.detectChanges();
-        });
-      }
+      
+      this.ngZone.run(() => {
+        // Always advance to step 2 since backend returns success for security
+        this.currentStep = 2;
+        this.startResendTimer();
+        this.cd.detectChanges();
+      });
+      
     } catch (error: any) {
       console.error('Forgot-password error', error);
-      this.errorMessage = error?.error?.message || 'Failed to send verification code. Please try again.';
+      this.ngZone.run(() => {
+        this.errorMessage = error?.error?.message || 'Failed to send verification code. Please try again.';
+        this.cd.detectChanges();
+      });
     } finally {
       this.isLoading = false;
     }
@@ -162,6 +171,7 @@ export class ForgotPassword implements OnInit {
 
     try {
       console.debug('Resending forgot-password request for', this.emailOrPhone, 'via', this.contactMethod);
+      
       const requestBody: any = {
         contactMethod: this.contactMethod
       };
@@ -172,22 +182,23 @@ export class ForgotPassword implements OnInit {
         requestBody.phone = this.emailOrPhone.replace(/\D/g, ''); // Clean phone number
       }
       
-      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/forgot-password', requestBody).pipe(timeout(10000)));
+      const resp: any = await firstValueFrom(
+        this.http.post<any>('/api/auth/forgot-password', requestBody).pipe(timeout(10000))
+      );
+      
       console.debug('Resend response received', resp);
-      if (resp && resp.success) {
-        this.ngZone.run(() => {
-          this.startResendTimer();
-          this.cd.detectChanges();
-        });
-      } else {
-        this.ngZone.run(() => {
-          this.errorMessage = resp?.message || 'Failed to resend code. Please try again.';
-          this.cd.detectChanges();
-        });
-      }
+      
+      this.ngZone.run(() => {
+        this.startResendTimer();
+        this.cd.detectChanges();
+      });
+      
     } catch (error: any) {
       console.error('Resend error', error);
-      this.errorMessage = error?.error?.message || 'Failed to resend code. Please try again.';
+      this.ngZone.run(() => {
+        this.errorMessage = error?.error?.message || 'Failed to resend code. Please try again.';
+        this.cd.detectChanges();
+      });
     } finally {
       this.isLoading = false;
     }
@@ -210,17 +221,24 @@ export class ForgotPassword implements OnInit {
   }
 
   async verifyCode(): Promise<void> {
-    // In this demo flow we only validate presence and length, then advance.
     if (!this.validateVerificationCode()) {
       return;
     }
+    
     this.isLoading = true;
     this.errorMessage = '';
 
     try {
       console.debug('Validating token', this.verificationCode);
-      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/validate-reset-token', { token: this.verificationCode }).pipe(timeout(10000)));
+      
+      const resp: any = await firstValueFrom(
+        this.http.post<any>('/api/auth/validate-reset-token', { 
+          token: this.verificationCode 
+        }).pipe(timeout(10000))
+      );
+      
       console.debug('Token validation response', resp);
+      
       if (resp && resp.success) {
         this.ngZone.run(() => {
           this.currentStep = 3;
@@ -234,7 +252,10 @@ export class ForgotPassword implements OnInit {
       }
     } catch (error: any) {
       console.error('Token validation error', error);
-      this.errorMessage = error?.error?.message || 'Invalid verification code';
+      this.ngZone.run(() => {
+        this.errorMessage = error?.error?.message || 'Invalid or expired verification code';
+        this.cd.detectChanges();
+      });
     } finally {
       this.isLoading = false;
     }
@@ -281,8 +302,15 @@ export class ForgotPassword implements OnInit {
     this.errorMessage = '';
 
     try {
-      const resp: any = await firstValueFrom(this.http.post<any>('/api/auth/reset-password', { token: this.verificationCode, newPassword: this.newPassword }).pipe(timeout(10000)));
+      const resp: any = await firstValueFrom(
+        this.http.post<any>('/api/auth/reset-password', { 
+          token: this.verificationCode, 
+          newPassword: this.newPassword 
+        }).pipe(timeout(10000))
+      );
+      
       console.debug('Reset password response', resp);
+      
       if (resp && resp.success) {
         this.ngZone.run(() => {
           this.showConfirmation(resp?.message || 'Password reset successful. Redirecting to login...');
@@ -294,7 +322,11 @@ export class ForgotPassword implements OnInit {
         });
       }
     } catch (error: any) {
-      this.errorMessage = error?.error?.message || 'Failed to reset password. Please try again.';
+      console.error('Reset password error', error);
+      this.ngZone.run(() => {
+        this.errorMessage = error?.error?.message || 'Failed to reset password. Please try again.';
+        this.cd.detectChanges();
+      });
     } finally {
       this.isLoading = false;
     }
@@ -304,9 +336,11 @@ export class ForgotPassword implements OnInit {
     this.confirmationMessage = message;
     this.showConfirmationModal = true;
     this.cd.detectChanges();
+    
     if (this.confirmationTimeoutId) {
       clearTimeout(this.confirmationTimeoutId);
     }
+    
     this.confirmationTimeoutId = setTimeout(() => {
       this.closeModalAndGoLogin();
     }, 5000);
@@ -317,15 +351,19 @@ export class ForgotPassword implements OnInit {
       clearTimeout(this.confirmationTimeoutId);
       this.confirmationTimeoutId = null;
     }
+    
     this.showConfirmationModal = false;
     this.cd.detectChanges();
+    
     const role = this.route.snapshot.queryParams['role'] || '';
     let target = '/login'; // Default to student login
+    
     if (role === 'admin') {
       target = '/admin-login';
     } else if (role === 'org' || role === 'CAMPUS_ORGANIZATION') {
       target = '/org-login';
     }
+    
     this.router.navigate([target], { queryParams: { passwordReset: 'success' } });
   }
 
@@ -366,13 +404,6 @@ export class ForgotPassword implements OnInit {
     } else {
       this.router.navigate(['/login']);
     }
-  }
-
-  // Utility Methods
-  private simulateApiCall(delay: number): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), delay);
-    });
   }
 
   // Format phone number as user types
