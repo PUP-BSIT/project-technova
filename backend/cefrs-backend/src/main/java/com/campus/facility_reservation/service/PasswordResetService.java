@@ -14,9 +14,11 @@ import com.campus.facility_reservation.repository.PasswordResetTokenRepository;
 import com.campus.facility_reservation.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PasswordResetService {
 
     private final PasswordResetTokenRepository tokenRepository;
@@ -37,21 +39,34 @@ public class PasswordResetService {
         Optional<User> userOpt;
         
         if ("phone".equals(contactMethod)) {
+            // Validate phone input
             if (phone == null || phone.trim().isEmpty()) {
-                throw new Exception("Phone number is required");
+                log.warn("Phone number is empty or null");
+                return; // Silently fail - don't reveal if user exists
             }
+            
             String cleanPhone = phone.replaceAll("\\D", "");
+            log.info("Looking up user by phone: {}", cleanPhone);
+            
             userOpt = userRepository.findByPhoneNumber(cleanPhone);
+            
             if (userOpt.isEmpty()) {
-                throw new Exception("No user found with that phone number");
+                log.warn("No user found with phone number: {}", cleanPhone);
+                return; // Silently fail - don't reveal if user exists
             }
         } else {
+            // Validate email input
             if (email == null || email.trim().isEmpty()) {
-                throw new Exception("Email is required");
+                log.warn("Email is empty or null");
+                return; // Silently fail
             }
+            
+            log.info("Looking up user by email: {}", email);
             userOpt = userRepository.findByEmail(email);
+            
             if (userOpt.isEmpty()) {
-                throw new Exception("No user found with that email");
+                log.warn("No user found with email: {}", email);
+                return; // Silently fail
             }
         }
 
@@ -62,15 +77,29 @@ public class PasswordResetService {
         PasswordResetToken token = new PasswordResetToken(code, user, expiry);
         tokenRepository.save(token);
 
+        log.info("Password reset token created for user: {}", user.getEmail());
+
         // Send code via email or SMS based on contact method
         if ("phone".equals(contactMethod)) {
             String cleanPhone = phone.replaceAll("\\D", "");
+            log.info("Attempting to send SMS to: {}", cleanPhone);
             boolean smsSent = smsService.sendVerificationCode(cleanPhone, code);
+            
             if (!smsSent) {
-                throw new Exception("Failed to send SMS verification code");
+                log.error("Failed to send SMS verification code to: {}", cleanPhone);
+                // Don't throw exception - silently fail for security
+            } else {
+                log.info("SMS verification code sent successfully to: {}", cleanPhone);
             }
         } else {
-            emailService.sendPasswordResetEmail(user, code);
+            log.info("Attempting to send email to: {}", user.getEmail());
+            try {
+                emailService.sendPasswordResetEmail(user, code);
+                log.info("Email verification code sent successfully to: {}", user.getEmail());
+            } catch (Exception e) {
+                log.error("Failed to send email verification code to: {}", user.getEmail(), e);
+                // Don't throw exception - silently fail for security
+            }
         }
     }
 
@@ -96,6 +125,7 @@ public class PasswordResetService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         tokenRepository.deleteByToken(token);
+        log.info("Password reset successfully for user: {}", user.getEmail());
     }
 
     private String generateVerificationCode() {
