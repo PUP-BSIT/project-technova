@@ -107,13 +107,13 @@
                   </button>
                 }
 
-                <!-- Facility: Keep existing logic -->
-                @if (request.type === 'facility' && (request.status === 'approved' || request.status === 'pending')) {
+                <!-- Facility: Show "Mark as Completed" for APPROVED status -->
+                @if (request.type === 'facility' && request.status === 'approved') {
                   <button
-                    class="return-button"
-                    (click)="markRequestReturned(request)"
+                    class="complete-button"
+                    (click)="markFacilityCompleted(request)"
                     [disabled]="actionLoading">
-                    Mark Returned
+                    Mark as Completed
                   </button>
                 }
               }

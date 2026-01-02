@@ -556,6 +556,37 @@ $font-family: 'Roboto', sans-serif;
   }
 }
 
+.complete-button {
+  @include button-reset;
+  padding: 8px 20px;
+  background: #8b5cf6;
+  color: #ffffff;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s;
+
+  @include respond-to('mobile-all') {
+    width: 100%;
+    font-size: 13px;
+    padding: 9px 16px;
+  }
+
+  @include respond-to('s') {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  &:hover {
+    background: #7c3aed;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .pickup-button {
   @include button-reset;
   padding: 8px 24px;

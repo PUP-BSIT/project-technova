@@ -406,8 +406,9 @@ export class ManageRequest implements OnInit {
     return (request.requesterRole || '').toUpperCase().includes('STUDENT');
   }
 
-  markRequestReturned(request: UnifiedRequest): void {
-    if (!request) return;
+  markFacilityCompleted(request: UnifiedRequest): void {
+    if (!request || request.type !== 'facility') return;
+
     this.actionLoading = true;
     const adminId = localStorage.getItem('userId');
     if (!adminId) {
@@ -416,39 +417,49 @@ export class ManageRequest implements OnInit {
       return;
     }
 
-    if (request.type === 'equipment') {
-      // Mark equipment borrowing as RETURNED
-      this.borrowingService.updateBorrowingStatus(request.id, 'RETURNED', 'Marked returned by admin').subscribe({
-        next: (res: any) => {
-          this.actionLoading = false;
-          if (res.success) {
-            this.showSuccess('Equipment marked returned');
-            this.loadAllRequests();
-          }
-        },
-        error: (err: any) => {
-          this.actionLoading = false;
-          this.error = err.error?.message || 'Failed to mark equipment returned';
-          console.error('Error marking equipment returned:', err);
+    // Mark facility reservation as COMPLETED
+    this.reservationService.updateReservationStatus(request.id, 'COMPLETED', 'Facility reservation completed by admin').subscribe({
+      next: (res: any) => {
+        this.actionLoading = false;
+        if (res.success) {
+          this.showSuccess('Facility reservation marked as completed');
+          this.loadAllRequests();
         }
-      });
-    } else {
-      // Mark facility reservation as COMPLETED (treat as returned)
-      this.reservationService.updateReservationStatus(request.id, 'COMPLETED', 'Marked returned by admin').subscribe({
-        next: (res: any) => {
-          this.actionLoading = false;
-          if (res.success) {
-            this.showSuccess('Reservation marked returned');
-            this.loadAllRequests();
-          }
-        },
-        error: (err: any) => {
-          this.actionLoading = false;
-          this.error = err.error?.message || 'Failed to mark reservation returned';
-          console.error('Error marking reservation returned:', err);
-        }
-      });
+      },
+      error: (err: any) => {
+        this.actionLoading = false;
+        this.error = err.error?.message || 'Failed to mark facility as completed';
+        console.error('Error marking facility completed:', err);
+      }
+    });
+  }
+
+  markRequestReturned(request: UnifiedRequest): void {
+    if (!request || request.type !== 'equipment') return;
+
+    this.actionLoading = true;
+    const adminId = localStorage.getItem('userId');
+    if (!adminId) {
+      this.actionLoading = false;
+      this.error = 'Your admin session is missing. Please sign in again.';
+      return;
     }
+
+    // Mark equipment borrowing as RETURNED
+    this.borrowingService.updateBorrowingStatus(request.id, 'RETURNED', 'Equipment marked returned by admin').subscribe({
+      next: (res: any) => {
+        this.actionLoading = false;
+        if (res.success) {
+          this.showSuccess('Equipment marked as returned');
+          this.loadAllRequests();
+        }
+      },
+      error: (err: any) => {
+        this.actionLoading = false;
+        this.error = err.error?.message || 'Failed to mark equipment as returned';
+        console.error('Error marking equipment returned:', err);
+      }
+    });
   }
 
   // Add this method to handle marking equipment as picked up/borrowed
