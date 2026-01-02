@@ -738,6 +738,24 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /* Get visible page numbers for pagination */
+  getVisiblePages(): number[] {
+    const delta = 2; // Number of pages to show on each side of current page
+    const pages: number[] = [];
+
+    const start = Math.max(1, this.currentPage - delta);
+    const end = Math.min(this.totalPages, this.currentPage + delta);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  /* Expose Math for template */
+  Math = Math;
+
   /* Refresh data for the current tab */
   refreshData(): void {
     this.loadDashboardStats();

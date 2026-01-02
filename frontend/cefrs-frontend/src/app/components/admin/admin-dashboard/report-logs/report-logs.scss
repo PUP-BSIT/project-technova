@@ -1015,17 +1015,51 @@ $font-family: 'Roboto', sans-serif;
 // Pagination Styles
 .pagination {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 16px;
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid $border-color;
 
   @include respond-to('mobile-all') {
-    gap: 8px;
+    gap: 12px;
     margin-top: 16px;
     padding-top: 16px;
+  }
+}
+
+.pagination-info {
+  text-align: center;
+  font-size: 14px;
+  color: $text-secondary;
+  font-weight: 500;
+
+  @include respond-to('mobile-all') {
+    font-size: 12px;
+  }
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  @include respond-to('mobile-all') {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+
+.pagination-ellipsis {
+  padding: 8px 4px;
+  color: $text-secondary;
+  font-size: 14px;
+  user-select: none;
+
+  @include respond-to('mobile-all') {
+    font-size: 12px;
+    padding: 6px 2px;
   }
 }
 
@@ -1061,6 +1095,7 @@ $font-family: 'Roboto', sans-serif;
 .page-numbers {
   display: flex;
   gap: 4px;
+  align-items: center;
 
   @include respond-to('mobile-all') {
     gap: 2px;

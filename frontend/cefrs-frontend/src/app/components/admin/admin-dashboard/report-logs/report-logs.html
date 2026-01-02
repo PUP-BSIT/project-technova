@@ -356,30 +356,53 @@
           <!-- Pagination -->
           @if (totalPages > 1) {
             <div class="pagination">
-              <button
-                class="pagination-button"
-                (click)="goToPage(currentPage - 1)"
-                [disabled]="currentPage === 1">
-                Previous
-              </button>
-
-              <div class="page-numbers">
-                @for (page of [].constructor(totalPages); track $index) {
-                  <button
-                    class="page-number"
-                    [class.active]="currentPage === $index + 1"
-                    (click)="goToPage($index + 1)">
-                    {{ $index + 1 }}
-                  </button>
-                }
+              <div class="pagination-info">
+                Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, totalAuditLogs) }} of {{ totalAuditLogs }} entries
               </div>
 
-              <button
-                class="pagination-button"
-                (click)="goToPage(currentPage + 1)"
-                [disabled]="currentPage === totalPages">
-                Next
-              </button>
+              <div class="pagination-controls">
+                <button
+                  class="pagination-button"
+                  (click)="goToPage(currentPage - 1)"
+                  [disabled]="currentPage === 1">
+                  Previous
+                </button>
+
+                <div class="page-numbers">
+                  <!-- First page -->
+                  @if (currentPage > 3) {
+                    <button class="page-number" (click)="goToPage(1)">1</button>
+                    @if (currentPage > 4) {
+                      <span class="pagination-ellipsis">...</span>
+                    }
+                  }
+
+                  <!-- Page numbers around current page -->
+                  @for (page of getVisiblePages(); track page) {
+                    <button
+                      class="page-number"
+                      [class.active]="currentPage === page"
+                      (click)="goToPage(page)">
+                      {{ page }}
+                    </button>
+                  }
+
+                  <!-- Last page -->
+                  @if (currentPage < totalPages - 2) {
+                    @if (currentPage < totalPages - 3) {
+                      <span class="pagination-ellipsis">...</span>
+                    }
+                    <button class="page-number" (click)="goToPage(totalPages)">{{ totalPages }}</button>
+                  }
+                </div>
+
+                <button
+                  class="pagination-button"
+                  (click)="goToPage(currentPage + 1)"
+                  [disabled]="currentPage === totalPages">
+                  Next
+                </button>
+              </div>
             </div>
           }
         </div>
