@@ -1,38 +1,42 @@
 <div class="view-container">
-  <h1 class="page-title">Manage Request</h1>
-  
-  <div class="filter-section">
-    <div class="search-box">
-      <input type="text" placeholder="Search by requester, item, or ID..." [(ngModel)]="searchText">
-      @if (searchText) {
-        <button class="clear-button" (click)="clearSearch()" type="button" aria-label="Clear search">
-          <span class="clear-icon">✕</span>
-        </button>
-      } @else {
-        <button class="search-button">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-        </button>
-      }
-    </div>
-    <div class="filter-dropdowns">
-      <select class="filter-dropdown" [(ngModel)]="selectedType">
-        <option>All Types</option>
-        <option>Equipment</option>
-        <option>Facility</option>
-      </select>
-      <select class="filter-dropdown" [(ngModel)]="selectedStatus">
-        <option>All Status</option>
-        <option>Pending</option>
-        <option>Approved</option>
-        <option>Rejected</option>
-        <option>Waitlisted</option>
-        <option>Returned</option>
-      </select>
+  <div class="fixed-header-section">
+    <h1 class="page-title">Manage Request</h1>
+    
+    <div class="filter-section">
+      <div class="search-box">
+        <input type="text" placeholder="Search by requester, item, or ID..." [(ngModel)]="searchText">
+        @if (searchText) {
+          <button class="clear-button" (click)="clearSearch()" type="button" aria-label="Clear search">
+            <span class="clear-icon">✕</span>
+          </button>
+        } @else {
+          <button class="search-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        }
+      </div>
+      <div class="filter-dropdowns">
+        <select class="filter-dropdown" [(ngModel)]="selectedType">
+          <option>All Types</option>
+          <option>Equipment</option>
+          <option>Facility</option>
+        </select>
+        <select class="filter-dropdown" [(ngModel)]="selectedStatus">
+          <option>All Status</option>
+          <option>Pending</option>
+          <option>Approved</option>
+          <option>Rejected</option>
+          <option>Waitlisted</option>
+          <option>Returned</option>
+        </select>
+      </div>
     </div>
   </div>
+
+  <div class="scrollable-content">
 
   @if (loading && allRequests.length === 0) {
     <div class="loading-message">
@@ -190,7 +194,7 @@
         }
     </div>
   }
-
+  </div>
 </div>
 
 @if (showApproveModal) {

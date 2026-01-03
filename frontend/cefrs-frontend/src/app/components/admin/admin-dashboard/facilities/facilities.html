@@ -1,32 +1,36 @@
 <div class="view-container">
-  <h1 class="page-title">Facilities</h1>
-  
-  <div class="filter-section">
-    <button class="add-button" (click)="addNewFacility()">+ Add New Facility</button>
-    <div class="search-box">
-      <input type="text" placeholder="Search by name or location..." [(ngModel)]="searchText">
-      @if (searchText) {
-        <button class="clear-button" (click)="clearSearch()" type="button" aria-label="Clear search">
-          <span class="clear-icon">✕</span>
-        </button>
-      } @else {
-        <button class="search-button">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-        </button>
-      }
-    </div>
-    <div class="filter-dropdowns">
-      <select class="filter-dropdown" [(ngModel)]="selectedStatus">
-        <option>All Status</option>
-        <option>Available</option>
-        <option>Reserved</option>
-        <option>Unavailable</option>
-      </select>
+  <div class="fixed-header-section">
+    <h1 class="page-title">Facilities</h1>
+    
+    <div class="filter-section">
+      <button class="add-button" (click)="addNewFacility()">+ Add New Facility</button>
+      <div class="search-box">
+        <input type="text" placeholder="Search by name or location..." [(ngModel)]="searchText">
+        @if (searchText) {
+          <button class="clear-button" (click)="clearSearch()" type="button" aria-label="Clear search">
+            <span class="clear-icon">✕</span>
+          </button>
+        } @else {
+          <button class="search-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        }
+      </div>
+      <div class="filter-dropdowns">
+        <select class="filter-dropdown" [(ngModel)]="selectedStatus">
+          <option>All Status</option>
+          <option>Available</option>
+          <option>Reserved</option>
+          <option>Unavailable</option>
+        </select>
+      </div>
     </div>
   </div>
+
+  <div class="scrollable-content">
 
   @if (isLoading) {
     <div class="loading-message">Loading facilities...</div>
@@ -75,6 +79,7 @@
       </div>
     }
   }
+  </div>
 </div>
 
 <!-- Add/Edit Facility Modal -->
