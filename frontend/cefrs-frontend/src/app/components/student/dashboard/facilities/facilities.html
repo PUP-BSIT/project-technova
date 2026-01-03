@@ -53,9 +53,9 @@
                 <div class="facility-capacity">Capacity: {{ facility.capacity }} People</div>
                 <button 
                   class="request-btn" 
-                  [disabled]="facility.status !== 'AVAILABLE'"
+                  [disabled]="facility.status !== 'AVAILABLE' && facility.status !== 'RESERVED'"
                   (click)="requestFacility(facility.id)">
-                  @if (facility.status !== 'AVAILABLE') { Not Available } @else { Reserve Facility }
+                  @if (facility.status !== 'AVAILABLE' && facility.status !== 'RESERVED') { Not Available } @else { Reserve Facility }
                 </button>
               </div>
             </div>
@@ -115,6 +115,18 @@
             rows="4"
             placeholder="Describe the purpose of your reservation..."
             required></textarea>
+        </div>
+
+        <div class="modal-form-group">
+          <label class="modal-label">Expected Capacity *</label>
+          <input
+            type="number"
+            class="modal-input"
+            [(ngModel)]="reservationForm.expectedCapacity"
+            name="expectedCapacity"
+            min="1"
+            placeholder="Enter expected number of attendees"
+            required>
         </div>
 
         <div class="modal-note">

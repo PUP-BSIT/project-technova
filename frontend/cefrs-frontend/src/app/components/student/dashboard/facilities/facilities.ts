@@ -41,7 +41,8 @@ export class Facilities implements OnInit {
     reservationDate: '',
     startTime: '',
     endTime: '',
-    purpose: ''
+    purpose: '',
+    expectedCapacity: null as number | null
   };
   reservationLoading = false;
   reservationError: string | null = null;
@@ -93,20 +94,23 @@ export class Facilities implements OnInit {
     const map: Record<string, string> = {
       Available: 'status-available',
       AVAILABLE: 'status-available',
-      Reserved: 'status-reserved'
+      Reserved: 'status-reserved',
+      RESERVED: 'status-reserved'
     };
     return map[status] || '';
   }
 
   requestFacility(facilityId: number): void {
     const facility = this.facilities.find(f => f.id === facilityId);
-    if (facility && facility.status === 'AVAILABLE') {
+    // Allow requesting a facility even if it's already RESERVED (future/other timeslots).
+    if (facility && (facility.status === 'AVAILABLE' || facility.status === 'RESERVED')) {
       this.selectedFacility = facility;
       this.reservationForm.facilityId = facilityId;
       this.reservationForm.reservationDate = '';
       this.reservationForm.startTime = '';
       this.reservationForm.endTime = '';
       this.reservationForm.purpose = '';
+        this.reservationForm.expectedCapacity = null;
       this.reservationError = null;
       this.showReservationModal = true;
     }
@@ -121,6 +125,7 @@ export class Facilities implements OnInit {
       startTime: '',
       endTime: '',
       purpose: ''
+      , expectedCapacity: null
     };
     this.reservationError = null;
   }
@@ -179,7 +184,8 @@ export class Facilities implements OnInit {
       this.reservationForm.facilityId,
       this.reservationForm.reservationDate,
       this.reservationForm.startTime,
-      this.reservationForm.endTime
+      this.reservationForm.endTime,
+      this.reservationForm.expectedCapacity || undefined
     ).subscribe({
       next: (response) => {
         this.suggestionsLoading = false;

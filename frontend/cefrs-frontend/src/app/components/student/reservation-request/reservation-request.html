@@ -73,6 +73,20 @@
           required></textarea>
       </div>
 
+      <!-- Expected Capacity -->
+      <div class="form-group">
+        <label for="expectedCapacity">Expected Capacity *</label>
+        <input
+          type="number"
+          id="expectedCapacity"
+          name="expectedCapacity"
+          [(ngModel)]="expectedCapacity"
+          class="form-control"
+          min="1"
+          placeholder="Enter expected number of attendees"
+          required>
+      </div>
+
       <!-- Error Message -->
       <div *ngIf="error" class="alert alert-error">
         {{ error }}

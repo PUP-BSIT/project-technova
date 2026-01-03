@@ -39,8 +39,11 @@ export class OrgFacilitiesComponent implements OnInit {
     reservationDate: '',
     startTime: '',
     endTime: '',
-    purpose: ''
+    purpose: '',
+    expectedCapacity: null as number | null
   };
+  
+  
   reservationLoading = false;
   reservationError: string | null = null;
 
@@ -102,13 +105,15 @@ export class OrgFacilitiesComponent implements OnInit {
   // Open facility reservation modal
   requestFacility(facilityId: number): void {
     const facility = this.facilities.find(f => f.id === facilityId);
-    if (facility && facility.status === 'AVAILABLE') {
+    // Allow requesting even if facility is RESERVED for other timeslots
+    if (facility && (facility.status === 'AVAILABLE' || facility.status === 'RESERVED')) {
       this.selectedFacility = facility;
       this.reservationForm.facilityId = facilityId;
       this.reservationForm.reservationDate = '';
       this.reservationForm.startTime = '';
       this.reservationForm.endTime = '';
       this.reservationForm.purpose = '';
+      this.reservationForm.expectedCapacity = null;
       this.reservationError = null;
       this.showReservationModal = true;
     }
@@ -124,6 +129,7 @@ export class OrgFacilitiesComponent implements OnInit {
       startTime: '',
       endTime: '',
       purpose: ''
+      , expectedCapacity: null
     };
     this.reservationError = null;
   }
@@ -184,7 +190,8 @@ export class OrgFacilitiesComponent implements OnInit {
       this.reservationForm.facilityId,
       this.reservationForm.reservationDate,
       this.reservationForm.startTime,
-      this.reservationForm.endTime
+      this.reservationForm.endTime,
+      this.reservationForm.expectedCapacity || undefined
     ).subscribe({
       next: (response) => {
         this.suggestionsLoading = false;

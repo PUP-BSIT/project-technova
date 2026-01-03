@@ -32,9 +32,13 @@ public class FacilityService {
     }
 
     public List<FacilityDTO> getAvailableFacilities() {
-        return facilityRepository.findByStatus(FacilityStatus.AVAILABLE).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        // Return facilities that are either AVAILABLE or RESERVED so the
+        // dashboard can show both. We avoid hiding facilities entirely.
+        return facilityRepository.findAll().stream()
+            .filter(facility -> facility.getStatus() == FacilityStatus.AVAILABLE
+                || facility.getStatus() == FacilityStatus.RESERVED)
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
     public FacilityDTO getFacilityById(Long id) {
@@ -205,15 +209,30 @@ public class FacilityService {
     }
 
     private FacilityDTO convertToDTO(Facility facility) {
+        // Derive a presentation status: if there are approved upcoming or
+        // today's reservations, show RESERVED for the dashboard. This does
+        // not persistently change the facility's stored status.
+        String derivedStatus = facility.getStatus().name();
+        if (hasApprovedFutureReservations(facility)) {
+            derivedStatus = Facility.FacilityStatus.RESERVED.name();
+        }
+
         return new FacilityDTO(
-                facility.getId(),
-                facility.getName(),
-                facility.getType().name(),
-                facility.getBuilding(),
-                facility.getFloor(),
-                facility.getCapacity(),
-                facility.getDescription(),
-                facility.getImageUrl(),
-                facility.getStatus().name());
+            facility.getId(),
+            facility.getName(),
+            facility.getType().name(),
+            facility.getBuilding(),
+            facility.getFloor(),
+            facility.getCapacity(),
+            facility.getDescription(),
+            facility.getImageUrl(),
+            derivedStatus);
     }
+
+        private boolean hasApprovedFutureReservations(Facility facility) {
+        LocalDate today = LocalDate.now();
+        return reservationRepository.findByFacilityOrderByReservationDateAscStartTimeAsc(facility).stream()
+            .anyMatch(r -> r.getStatus() == ReservationStatus.APPROVED &&
+                (r.getReservationDate().isAfter(today) || r.getReservationDate().isEqual(today)));
+        }
 }

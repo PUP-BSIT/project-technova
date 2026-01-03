@@ -107,10 +107,12 @@ export class ReservationService {
     return this.http.put<ApiResponse<Reservation>>(url, body);
   }
 
-  getSuggestedFacilities(facilityId: number, date: string, startTime: string, endTime: string): Observable<ApiResponse<SuggestedFacilities>> {
-    return this.http.get<ApiResponse<SuggestedFacilities>>(
-      `${this.apiUrl}/suggestions?facilityId=${facilityId}&date=${date}&startTime=${startTime}&endTime=${endTime}`
-    );
+  getSuggestedFacilities(facilityId: number, date: string, startTime: string, endTime: string, expectedCapacity?: number): Observable<ApiResponse<SuggestedFacilities>> {
+    let url = `${this.apiUrl}/suggestions?facilityId=${facilityId}&date=${date}&startTime=${startTime}&endTime=${endTime}`;
+    if (expectedCapacity != null) {
+      url += `&expectedCapacity=${expectedCapacity}`;
+    }
+    return this.http.get<ApiResponse<SuggestedFacilities>>(url);
   }
 }
 

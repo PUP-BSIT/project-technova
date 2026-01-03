@@ -30,6 +30,7 @@ export class ReservationRequestComponent implements OnInit {
   startTime: string = '';
   endTime: string = '';
   purpose: string = '';
+  expectedCapacity: number | null = null;
 
   loading = false;
   error: string | null = null;
