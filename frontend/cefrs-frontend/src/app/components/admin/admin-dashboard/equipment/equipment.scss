@@ -25,6 +25,33 @@ $tablet: 1024px;
 }
 
 .view-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: $mobile-l) {
+    height: auto;
+    overflow: visible;
+  }
+
+  @media (max-width: $mobile-m) {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+// Fixed header section (title + filters)
+.fixed-header-section {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f5f5f5;
+  flex-shrink: 0;
+  border-bottom: 1px solid $border-color;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 32px;
 
   @media (max-width: $mobile-l) {
@@ -33,6 +60,26 @@ $tablet: 1024px;
 
   @media (max-width: $mobile-m) {
     padding: 16px 12px;
+  }
+}
+
+// Scrollable content area
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 32px 32px;
+
+  @media (max-width: $mobile-l) {
+    padding: 0 20px 20px;
+    overflow-y: visible;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 0 16px 16px;
+    overflow-y: visible;
   }
 }
 
@@ -58,13 +105,13 @@ $tablet: 1024px;
 .filter-section {
   display: flex;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 0; // Remove bottom margin since it's in fixed header
   flex-wrap: wrap;
   align-items: center;
 
   @media (max-width: $mobile-l) {
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
   }
 
   .search-box {
