@@ -167,10 +167,8 @@ public class FacilityReservationService {
                 }
             }
 
-            // **UPDATE FACILITY STATUS TO RESERVED**
-            Facility facility = reservation.getFacility();
-            facility.setStatus(FacilityStatus.RESERVED);
-            facilityRepository.save(facility);
+            // Do NOT update the facility's global status here; availability
+            // is determined by reservation conflicts for a given date/time.
         }
 
         reservation.setStatus(status);
