@@ -102,7 +102,8 @@ export class OrgFacilitiesComponent implements OnInit {
   // Open facility reservation modal
   requestFacility(facilityId: number): void {
     const facility = this.facilities.find(f => f.id === facilityId);
-    if (facility && facility.status === 'AVAILABLE') {
+    // Allow requesting even if facility is RESERVED for other timeslots
+    if (facility && (facility.status === 'AVAILABLE' || facility.status === 'RESERVED')) {
       this.selectedFacility = facility;
       this.reservationForm.facilityId = facilityId;
       this.reservationForm.reservationDate = '';

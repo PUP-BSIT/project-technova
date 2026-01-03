@@ -93,14 +93,16 @@ export class Facilities implements OnInit {
     const map: Record<string, string> = {
       Available: 'status-available',
       AVAILABLE: 'status-available',
-      Reserved: 'status-reserved'
+      Reserved: 'status-reserved',
+      RESERVED: 'status-reserved'
     };
     return map[status] || '';
   }
 
   requestFacility(facilityId: number): void {
     const facility = this.facilities.find(f => f.id === facilityId);
-    if (facility && facility.status === 'AVAILABLE') {
+    // Allow requesting a facility even if it's already RESERVED (future/other timeslots).
+    if (facility && (facility.status === 'AVAILABLE' || facility.status === 'RESERVED')) {
       this.selectedFacility = facility;
       this.reservationForm.facilityId = facilityId;
       this.reservationForm.reservationDate = '';
