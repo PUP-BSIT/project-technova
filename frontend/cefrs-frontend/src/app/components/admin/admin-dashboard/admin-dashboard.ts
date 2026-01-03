@@ -2,6 +2,7 @@ import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { AuthService } from '../../../services/auth';
 import { ProfileService } from '../../../services/profile.service';
 
@@ -19,6 +20,7 @@ interface NavItem {
   id: string;
   label: string;
   icon: string;
+  title: string; // Add title property for tab names
 }
 
 @Component({
@@ -43,6 +45,7 @@ export class AdminDashboard implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+  private titleService = inject(Title);
 
   currentView: string = 'dashboard';
   user: any = null;
@@ -59,19 +62,21 @@ export class AdminDashboard implements OnInit {
   isCollapsed: boolean = false; // Desktop collapse state
 
   navItems: NavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'assets/dashboard.png' },
-    { id: 'manage-request', label: 'Manage Request', icon: 'assets/manage.png' },
-    { id: 'calendar', label: 'Calendar', icon: 'assets/calendar.png' },
-    { id: 'facilities', label: 'Facilities', icon: 'assets/facilities.png' },
-    { id: 'equipment', label: 'Equipment', icon: 'assets/equipment.png' },
-    { id: 'equipment-inventory', label: 'Equipment Inventory', icon: 'assets/inventory.png' },
-    { id: 'report-logs', label: 'Report and Logs', icon: 'assets/report.png' },
-    { id: 'settings', label: 'Settings', icon: 'assets/settings.png' }
+    { id: 'dashboard', label: 'Dashboard', icon: 'assets/dashboard.png', title: 'Admin Dashboard' },
+    { id: 'manage-request', label: 'Manage Request', icon: 'assets/manage.png', title: 'Admin Manage Request' },
+    { id: 'calendar', label: 'Calendar', icon: 'assets/calendar.png', title: 'Admin Calendar' },
+    { id: 'facilities', label: 'Facilities', icon: 'assets/facilities.png', title: 'Admin Facilities' },
+    { id: 'equipment', label: 'Equipment', icon: 'assets/equipment.png', title: 'Admin Equipment' },
+    { id: 'equipment-inventory', label: 'Equipment Inventory', icon: 'assets/inventory.png', title: 'Admin Equipment Inventory' },
+    { id: 'report-logs', label: 'Report and Logs', icon: 'assets/report.png', title: 'Admin Report and Logs' },
+    { id: 'settings', label: 'Settings', icon: 'assets/settings.png', title: 'Admin Settings' }
   ];
 
   ngOnInit(): void {
     this.loadUserProfile();
     this.checkScreenSize();
+    // Set initial tab title
+    this.updateTabTitle('dashboard');
   }
 
   @HostListener('window:resize', ['$event'])
@@ -137,10 +142,18 @@ export class AdminDashboard implements OnInit {
 
   setCurrentView(view: string): void {
     this.currentView = view;
+    this.updateTabTitle(view);
     if (view === 'settings') {
       this.router.navigate(['/admin-dashboard/settings/profile']);
     }
     this.closeSidenav(); // Close sidenav after navigation on mobile
+  }
+
+  private updateTabTitle(viewId: string): void {
+    const navItem = this.navItems.find(item => item.id === viewId);
+    if (navItem) {
+      this.titleService.setTitle(navItem.title);
+    }
   }
 
   onViewAllRequested(): void {
