@@ -147,8 +147,9 @@ public class FacilityReservationController {
             @RequestParam Long facilityId,
             @RequestParam String date,
             @RequestParam String startTime,
-            @RequestParam String endTime) {
-        SuggestedFacilitiesDTO suggestions = reservationService.getSuggestedFacilities(facilityId, date, startTime, endTime);
+            @RequestParam String endTime,
+            @RequestParam(required = false) Integer expectedCapacity) {
+        SuggestedFacilitiesDTO suggestions = reservationService.getSuggestedFacilities(facilityId, date, startTime, endTime, expectedCapacity);
         return ResponseEntity.ok(ApiResponse.success("Alternative facilities retrieved", suggestions));
     }
 }

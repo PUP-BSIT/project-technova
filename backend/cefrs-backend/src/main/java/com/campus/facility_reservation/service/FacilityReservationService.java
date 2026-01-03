@@ -323,8 +323,8 @@ public class FacilityReservationService {
         }
     }
 
-    public SuggestedFacilitiesDTO getSuggestedFacilities(Long unavailableFacilityId, String dateStr,
-            String startTimeStr, String endTimeStr) {
+        public SuggestedFacilitiesDTO getSuggestedFacilities(Long unavailableFacilityId, String dateStr,
+            String startTimeStr, String endTimeStr, Integer expectedCapacity) {
         Facility unavailableFacility = facilityRepository.findById(unavailableFacilityId)
                 .orElseThrow(() -> new RuntimeException("Facility not found"));
 
@@ -335,8 +335,12 @@ public class FacilityReservationService {
         // Get all facilities
         List<Facility> allFacilities = facilityRepository.findAll();
 
-        // Filter for available facilities with same or greater capacity and similar type
+        // Filter for facilities matching expected capacity (if provided) or
+        // the unavailable facility's capacity otherwise. Also skip facilities
+        // that are explicitly UNAVAILABLE or under MAINTENANCE.
         List<FacilityDTO> suggestedFacilities = new ArrayList<>();
+
+        int capacityBasis = expectedCapacity != null ? expectedCapacity : unavailableFacility.getCapacity();
 
         for (Facility facility : allFacilities) {
             // Skip the unavailable facility
@@ -344,8 +348,13 @@ public class FacilityReservationService {
                 continue;
             }
 
-            // Check if facility has same or greater capacity
-            if (facility.getCapacity() < unavailableFacility.getCapacity()) {
+            // Skip facilities that are clearly unavailable for use
+            if (facility.getStatus() == Facility.FacilityStatus.UNAVAILABLE || facility.getStatus() == Facility.FacilityStatus.MAINTENANCE) {
+                continue;
+            }
+
+            // Check if facility meets the expected capacity requirement
+            if (facility.getCapacity() < capacityBasis) {
                 continue;
             }
 
