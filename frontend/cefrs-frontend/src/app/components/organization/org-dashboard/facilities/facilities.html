@@ -103,6 +103,18 @@
             required></textarea>
         </div>
 
+        <div class="modal-form-group">
+          <label class="modal-label">Expected Capacity *</label>
+          <input
+            type="number"
+            class="modal-input"
+            [(ngModel)]="reservationForm.expectedCapacity"
+            name="expectedCapacity"
+            min="1"
+            placeholder="Enter expected number of attendees"
+            required>
+        </div>
+
         <!-- Admin Review Note -->
         <div class="modal-note">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -216,12 +228,12 @@
                     Capacity: {{ facility.capacity }} people
                   </div>
                 </div>
-                <!-- <button
+                <button
                   type="button"
                   class="modal-btn modal-btn-select"
                   (click)="selectSuggestedFacility(facility.id)">
                   Use This Facility
-                </button> -->
+                </button>
               </div>
             }
           </div>

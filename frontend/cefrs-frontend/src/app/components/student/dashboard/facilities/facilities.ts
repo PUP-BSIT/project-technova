@@ -41,7 +41,8 @@ export class Facilities implements OnInit {
     reservationDate: '',
     startTime: '',
     endTime: '',
-    purpose: ''
+    purpose: '',
+    expectedCapacity: null as number | null
   };
   reservationLoading = false;
   reservationError: string | null = null;
@@ -109,6 +110,7 @@ export class Facilities implements OnInit {
       this.reservationForm.startTime = '';
       this.reservationForm.endTime = '';
       this.reservationForm.purpose = '';
+        this.reservationForm.expectedCapacity = null;
       this.reservationError = null;
       this.showReservationModal = true;
     }
@@ -123,6 +125,7 @@ export class Facilities implements OnInit {
       startTime: '',
       endTime: '',
       purpose: ''
+      , expectedCapacity: null
     };
     this.reservationError = null;
   }
@@ -181,7 +184,8 @@ export class Facilities implements OnInit {
       this.reservationForm.facilityId,
       this.reservationForm.reservationDate,
       this.reservationForm.startTime,
-      this.reservationForm.endTime
+      this.reservationForm.endTime,
+      this.reservationForm.expectedCapacity || undefined
     ).subscribe({
       next: (response) => {
         this.suggestionsLoading = false;
