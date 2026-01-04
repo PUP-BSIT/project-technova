@@ -29,7 +29,6 @@
           <option>Pending</option>
           <option>Approved</option>
           <option>Rejected</option>
-          <option>Waitlisted</option>
           <option>Returned</option>
         </select>
       </div>
@@ -175,12 +174,6 @@
             <div class="detail-item">
               <span class="detail-label">Purpose:</span>
               <span class="detail-value">{{ request.purpose }}</span>
-            </div>
-          }
-          @if (request.status === 'waitlisted') {
-            <div class="detail-item">
-              <span class="detail-label">Queue Status:</span>
-              <span class="detail-value">Waitlisted for this time slot</span>
             </div>
           }
           @if (request.adminNotes) {
