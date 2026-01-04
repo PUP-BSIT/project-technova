@@ -28,6 +28,8 @@ public class EquipmentBorrowingService {
     private final EmailService emailService;
 
     public List<EquipmentBorrowingDTO> getAllBorrowings() {
+        migrateLegacyWaitlisted();
+
         return borrowingRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -54,6 +56,8 @@ public class EquipmentBorrowingService {
     }
 
     public List<EquipmentBorrowingDTO> getPendingBorrowings() {
+        migrateLegacyWaitlisted();
+
         return borrowingRepository.findByStatusOrderByBorrowDateAsc(BorrowingStatus.PENDING).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -84,11 +88,6 @@ public class EquipmentBorrowingService {
             throw new RuntimeException("Not enough equipment available for the requested date range");
         }
 
-        // Check for PENDING conflicts (borrowings awaiting admin approval) - these put
-        // new borrowings on waitlist
-        List<EquipmentBorrowing> pendingConflicts = borrowingRepository.findOverlappingByStatusOrderByCreatedAtAsc(
-                equipment, borrowDate, returnDate, BorrowingStatus.PENDING);
-
         EquipmentBorrowing borrowing = new EquipmentBorrowing();
         borrowing.setUser(user);
         borrowing.setEquipment(equipment);
@@ -97,13 +96,8 @@ public class EquipmentBorrowingService {
         borrowing.setExpectedReturnDate(returnDate);
         borrowing.setPurpose(request.getPurpose());
 
-        // If there are PENDING conflicts, place new borrowing on the waiting list
-        // Otherwise, set as PENDING for admin review
-        if (!pendingConflicts.isEmpty()) {
-            borrowing.setStatus(BorrowingStatus.WAITLISTED);
-        } else {
-            borrowing.setStatus(BorrowingStatus.PENDING);
-        }
+        // Always queue for admin review; availability is re-checked during approval
+        borrowing.setStatus(BorrowingStatus.PENDING);
 
         EquipmentBorrowing saved = borrowingRepository.save(borrowing);
 
@@ -138,15 +132,6 @@ public class EquipmentBorrowingService {
                         "Not enough equipment available to approve this request for the selected dates");
             }
 
-            // Move any overlapping PENDING borrowings into the waiting list for this slot
-            List<EquipmentBorrowing> pendingOverlaps = borrowingRepository.findOverlappingByStatusOrderByCreatedAtAsc(
-                    equipment, borrowing.getBorrowDate(), borrowing.getExpectedReturnDate(), BorrowingStatus.PENDING);
-            for (EquipmentBorrowing other : pendingOverlaps) {
-                if (!other.getId().equals(borrowing.getId())) {
-                    other.setStatus(BorrowingStatus.WAITLISTED);
-                    borrowingRepository.save(other);
-                }
-            }
         }
 
         borrowing.setStatus(status);
@@ -201,21 +186,6 @@ public class EquipmentBorrowingService {
             emailService.sendEquipmentRejectionEmail(updated.getUser(), updated, approval.getAdminNotes());
         }
 
-        // If this borrowing was APPROVED before and is now being changed to a
-        // non-APPROVED
-        // terminal state, promote the next WAITLISTED borrowing (if any) for this slot.
-        if (oldStatus == BorrowingStatus.APPROVED
-                && (status == BorrowingStatus.REJECTED
-                        || status == BorrowingStatus.RETURNED)) {
-            promoteNextFromWaitlist(borrowing);
-        }
-
-        // If a PENDING borrowing is REJECTED, promote the next WAITLISTED borrowing
-        // because rejecting a pending borrowing frees up the slot for waitlisted ones
-        if (oldStatus == BorrowingStatus.PENDING && status == BorrowingStatus.REJECTED) {
-            promoteNextFromWaitlist(borrowing);
-        }
-
         // Send notification
         notificationService.createBorrowingStatusNotification(borrowing.getUser(), updated);
 
@@ -249,12 +219,6 @@ public class EquipmentBorrowingService {
 
         EquipmentBorrowing updated = borrowingRepository.save(borrowing);
 
-        // When a borrowing is returned (was BORROWED or OVERDUE), free the slot for the
-        // next in the waiting list
-        if (oldStatus == BorrowingStatus.BORROWED || oldStatus == BorrowingStatus.OVERDUE) {
-            promoteNextFromWaitlist(borrowing);
-        }
-
         // Send notification
         notificationService.createBorrowingStatusNotification(borrowing.getUser(), updated);
 
@@ -275,33 +239,6 @@ public class EquipmentBorrowingService {
         borrowing.setStatus(BorrowingStatus.CANCELLED);
         borrowingRepository.save(borrowing);
 
-        // Only promote from waitlist if an APPROVED borrowing has been cancelled
-        if (oldStatus == BorrowingStatus.APPROVED) {
-            promoteNextFromWaitlist(borrowing);
-        }
-    }
-
-    /**
-     * Promote the next WAITLISTED borrowing (if any) that overlaps the given
-     * borrowing's
-     * equipment and date range. The promoted borrowing is moved back to PENDING so
-     * that an admin can review and approve it explicitly.
-     */
-    private void promoteNextFromWaitlist(EquipmentBorrowing releasedBorrowing) {
-        List<EquipmentBorrowing> waitlisted = borrowingRepository.findOverlappingByStatusOrderByCreatedAtAsc(
-                releasedBorrowing.getEquipment(),
-                releasedBorrowing.getBorrowDate(),
-                releasedBorrowing.getExpectedReturnDate(),
-                BorrowingStatus.WAITLISTED);
-
-        if (!waitlisted.isEmpty()) {
-            EquipmentBorrowing next = waitlisted.get(0);
-            next.setStatus(BorrowingStatus.PENDING);
-            // Clear any previous admin decision metadata just in case
-            next.setApprovedBy(null);
-            next.setApprovedAt(null);
-            borrowingRepository.save(next);
-        }
     }
 
     private EquipmentBorrowingDTO convertToDTO(EquipmentBorrowing borrowing) {
@@ -322,5 +259,20 @@ public class EquipmentBorrowingService {
                 borrowing.getStatus().name(),
                 borrowing.getAdminNotes(),
                 borrowing.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
+    }
+
+    // Legacy clean-up: surface previously waitlisted borrowings for admin action
+    private void migrateLegacyWaitlisted() {
+        List<EquipmentBorrowing> waitlisted = borrowingRepository.findByStatusOrderByBorrowDateAsc(
+                BorrowingStatus.WAITLISTED);
+
+        if (!waitlisted.isEmpty()) {
+            for (EquipmentBorrowing b : waitlisted) {
+                b.setStatus(BorrowingStatus.PENDING);
+                b.setApprovedBy(null);
+                b.setApprovedAt(null);
+            }
+            borrowingRepository.saveAll(waitlisted);
+        }
     }
 }
