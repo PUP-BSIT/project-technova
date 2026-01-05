@@ -63,13 +63,8 @@ public class EquipmentBorrowingController {
             @RequestBody EquipmentBorrowingRequestDTO request) {
         try {
             EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
-            
-            // Return appropriate message based on borrowing status
-            String message = "WAITLISTED".equalsIgnoreCase(borrowing.getStatus())
-                ? "Your borrowing request has been added to the waiting list because there is already a pending request for this equipment on the same dates. You will be notified if a slot becomes available."
-                : "Borrowing request created successfully";
-            
-            return ResponseEntity.ok(ApiResponse.success(message, borrowing));
+
+            return ResponseEntity.ok(ApiResponse.success("Borrowing request created successfully", borrowing));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(e.getMessage()));
@@ -85,13 +80,8 @@ public class EquipmentBorrowingController {
         try {
             Long userId = (Long) authentication.getPrincipal();
             EquipmentBorrowingDTO borrowing = borrowingService.createBorrowing(userId, request);
-            
-            // Return appropriate message based on borrowing status
-            String message = "WAITLISTED".equalsIgnoreCase(borrowing.getStatus())
-                ? "Your borrowing request has been added to the waiting list because there is already a pending request for this equipment on the same dates. You will be notified if a slot becomes available."
-                : "Borrowing request submitted successfully!";
-            
-            return ResponseEntity.ok(ApiResponse.success(message, borrowing));
+
+            return ResponseEntity.ok(ApiResponse.success("Borrowing request submitted successfully!", borrowing));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(e.getMessage()));
