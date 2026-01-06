@@ -41,6 +41,7 @@ $tablet: 1024px;
   margin: 0 0 0.5rem 0;
 
   @media (max-width: $mobile-l) {
+    margin-left: 50px;
     font-size: 26px;
     margin-bottom: 24px;
   }
