@@ -19,10 +19,10 @@ $tablet: 1024px;
 }
 
 .calendar-header {
-  margin-left: 50px;
   margin-bottom: 2rem;
 
   @media (max-width: $mobile-l) {
+    margin-left: 50px;
     margin-bottom: 1.5rem;
   }
 
