@@ -25,6 +25,11 @@ This system replaces manual forms and verbal requests with a **centralized digit
 [![(CEFRS) Campus Equipment & Facility Reservation System](https://img.shields.io/badge/CEFRS-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://cefrs.site/)
 ---
 
+## ⏯️ System Walkthrough/Video Demo
+- **Video Demo:** <br />
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://youtu.be/geFZFA9emRs)
+---
+
 ## 👤 Sample User Accounts for Testing
 
 These accounts are available to explore the system without registration.
