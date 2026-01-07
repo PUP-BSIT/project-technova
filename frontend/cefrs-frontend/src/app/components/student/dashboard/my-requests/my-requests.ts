@@ -155,7 +155,7 @@ export class MyRequests implements OnInit {
       APPROVED: 'Approved',
       REJECTED: 'Rejected',
       RETURNED: 'Returned',
-      COMPLETED: 'Completed',
+      COMPLETED: 'Returned',
       OVERDUE: 'Overdue',
       BORROWED: 'Borrowed',
       WAITLISTED: 'Waitlisted',
@@ -189,13 +189,13 @@ export class MyRequests implements OnInit {
     });
   }
 
-  markReservationAsCompleted(request: Request): void {
+  markReservationAsReturned(request: Request): void {
     if (request.type !== 'Facility') return;
     const idParts = request.id.split('-');
     const id = Number(idParts[1]);
-    this.reservationService.markAsCompleted(id).subscribe({
+    this.reservationService.markAsReturned(id).subscribe({
       next: () => this.fetchMyRequests(),
-      error: (err) => console.error('Error marking reservation completed', err)
+      error: (err) => console.error('Error marking reservation returned', err)
     });
   }
 

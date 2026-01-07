@@ -188,9 +188,9 @@ public class FacilityReservationService {
         // If this reservation was APPROVED before and is now being changed to a
         // non-APPROVED terminal state, update facility status and promote waitlist
         if (oldStatus == ReservationStatus.APPROVED
-                && (status == ReservationStatus.CANCELLED
-                        || status == ReservationStatus.REJECTED
-                        || status == ReservationStatus.COMPLETED)) {
+            && (status == ReservationStatus.CANCELLED
+                || status == ReservationStatus.REJECTED
+                || status == ReservationStatus.RETURNED)) {
 
             // **CHECK IF FACILITY HAS OTHER APPROVED RESERVATIONS**
             Facility facility = reservation.getFacility();
@@ -217,28 +217,28 @@ public class FacilityReservationService {
         return convertToDTO(updated);
     }
 
-    @Audited(action = "COMPLETE", table = "facility_reservation")
+    @Audited(action = "RETURN", table = "facility_reservation")
     @Transactional
-    public FacilityReservationDTO markAsCompletedByUser(Long id, Long userId) {
+    public FacilityReservationDTO markAsReturnedByUser(Long id, Long userId) {
         FacilityReservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
         if (!reservation.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Unauthorized to mark this reservation as completed");
+            throw new RuntimeException("Unauthorized to mark this reservation as returned");
         }
 
         // Only allow completing if approved or pending (some workflows may allow
         // completion without an explicit approval)
         if (reservation.getStatus() != ReservationStatus.APPROVED
                 && reservation.getStatus() != ReservationStatus.PENDING) {
-            throw new RuntimeException("Reservation cannot be marked as completed in its current status");
+            throw new RuntimeException("Reservation cannot be marked as returned in its current status");
         }
 
         ReservationStatus oldStatus = reservation.getStatus();
-        reservation.setStatus(ReservationStatus.COMPLETED);
+        reservation.setStatus(ReservationStatus.RETURNED);
         FacilityReservation updated = reservationRepository.save(reservation);
 
-        // When a reservation is completed and it was APPROVED, check facility status
+        // When a reservation is returned and it was APPROVED, check facility status
         if (oldStatus == ReservationStatus.APPROVED) {
             Facility facility = reservation.getFacility();
             List<FacilityReservation> otherApprovedReservations = reservationRepository

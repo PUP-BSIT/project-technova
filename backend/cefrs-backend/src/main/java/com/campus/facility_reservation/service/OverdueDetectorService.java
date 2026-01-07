@@ -76,7 +76,7 @@ public class OverdueDetectorService {
             log.error("Failed to query overdue borrowings: {}", e.getMessage());
         }
 
-        // 2) Facility reservation end-of-duration handling (mark completed and notify admin)
+        // 2) Facility reservation end-of-duration handling (mark returned and notify admin)
         try {
             List<FacilityReservation> approved = facilityReservationRepository.findByStatusOrderByReservationDateAscStartTimeAsc(FacilityReservation.ReservationStatus.APPROVED);
             LocalDateTime now = LocalDateTime.now();
@@ -115,7 +115,7 @@ public class OverdueDetectorService {
                         notificationService.createReservationStatusNotification(fr.getUser(), fr);
                         log.info("Marked reservation {} as OVERDUE and notified admin(s)", fr.getId());
                     } catch (Exception e) {
-                        log.error("Error handling completed reservation id={}: {}", fr.getId(), e.getMessage());
+                        log.error("Error handling returned reservation id={}: {}", fr.getId(), e.getMessage());
                     }
                 }
             }

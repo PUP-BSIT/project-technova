@@ -405,34 +405,6 @@ export class ManageRequest implements OnInit {
     return (request.requesterRole || '').toUpperCase().includes('STUDENT');
   }
 
-  markFacilityCompleted(request: UnifiedRequest): void {
-    if (!request || request.type !== 'facility') return;
-
-    this.actionLoading = true;
-    const adminId = localStorage.getItem('userId');
-    if (!adminId) {
-      this.actionLoading = false;
-      this.error = 'Your admin session is missing. Please sign in again.';
-      return;
-    }
-
-    // Mark facility reservation as COMPLETED
-    this.reservationService.updateReservationStatus(request.id, 'COMPLETED', 'Facility reservation completed by admin').subscribe({
-      next: (res: any) => {
-        this.actionLoading = false;
-        if (res.success) {
-          this.showSuccess('Facility reservation marked as completed');
-          this.loadAllRequests();
-        }
-      },
-      error: (err: any) => {
-        this.actionLoading = false;
-        this.error = err.error?.message || 'Failed to mark facility as completed';
-        console.error('Error marking facility completed:', err);
-      }
-    });
-  }
-
   markFacilityReturned(request: UnifiedRequest): void {
     if (!request || request.type !== 'facility') return;
 
@@ -444,8 +416,8 @@ export class ManageRequest implements OnInit {
       return;
     }
 
-    // Mark facility reservation as COMPLETED (used to indicate returned/cleared)
-    this.reservationService.updateReservationStatus(request.id, 'COMPLETED', 'Facility marked returned by admin').subscribe({
+    // Mark facility reservation as RETURNED (used to indicate returned/cleared)
+    this.reservationService.updateReservationStatus(request.id, 'RETURNED', 'Facility marked returned by admin').subscribe({
       next: (res: any) => {
         this.actionLoading = false;
         if (res.success) {
