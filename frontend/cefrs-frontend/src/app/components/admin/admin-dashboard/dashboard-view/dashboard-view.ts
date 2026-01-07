@@ -102,9 +102,9 @@ export class DashboardView implements OnInit, OnDestroy {
           
           this.stats = {
             activeRequests: stats.facilityUsage.activeReservations + stats.equipmentUsage.activeBorrowings,
-            totalReservations: stats.facilityUsage.activeReservations, // Only active facilities in use
-            equipmentBorrowedToday: stats.userActivity.todayBorrowings,
-            facilitiesInUse: allPendingRequests // All pending requests count
+            totalReservations: stats.facilityUsage.activeReservations,
+            equipmentBorrowedToday: stats.equipmentUsage.activeBorrowings, // Changed: Use active borrowings instead of today's borrowings
+            facilitiesInUse: allPendingRequests
           };
 
           // Process pending requests from calendar events
