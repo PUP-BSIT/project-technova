@@ -170,6 +170,10 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.scrollToSection('features');
   }
 
+  scrollToHome() {
+    this.scrollToSection('home');
+  }
+
   scrollToSection(sectionId: string, event?: Event) {
     if (event) {
       event.preventDefault();

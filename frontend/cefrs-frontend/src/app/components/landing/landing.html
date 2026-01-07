@@ -13,6 +13,7 @@
       </button>
       <div class="nav-menu" [class.mobile-open]="showMobileMenu">
         <div class="nav-links">
+          <a (click)="scrollToSection('home', $event); closeMobileMenu()" class="nav-link" href="#home">Home</a>
           <a (click)="scrollToSection('overview', $event); closeMobileMenu()" class="nav-link" href="#overview">Overview</a>
           <a (click)="scrollToSection('features', $event); closeMobileMenu()" class="nav-link" href="#features">Features</a>
           <a (click)="scrollToSection('policies', $event); closeMobileMenu()" class="nav-link" href="#policies">Policies</a>
@@ -45,19 +46,68 @@
     </div>
   </nav>
 
-  <!-- Hero Section - Title + Tagline -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">
-        Campus Equipment & Facility<br />
-        Reservation System
-      </h1>
-      <p class="hero-tagline">
-        A web-based platform that replaces manual forms with a centralized hub for borrowing equipment and reserving facilities across schools and organizations.
-      </p>
-      <div class="hero-actions">
-        <button class="btn-primary" (click)="goToRoleSelection()">Get Started</button>
-        <button class="btn-secondary" (click)="scrollToFeatures()">Learn More</button>
+  <!-- Home Section - Exact Reference Layout -->
+  <section id="home" class="home-section">
+    <div class="home-background">
+      <div class="floating-elements">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+      </div>
+      <div class="grid-overlay"></div>
+    </div>
+    
+    <div class="home-container">
+      <div class="home-main-content">
+        <h1 class="home-title" data-text="Campus Equipment & Facility Reservation System">
+          Campus Equipment & Facility Reservation System
+        </h1>
+        
+        <p class="home-tagline">
+          Transform campus resource management with our cutting-edge digital platform. 
+          Streamline equipment borrowing and facility reservations with real-time availability and automated workflows.
+        </p>
+        
+        <div class="home-actions">
+          <button class="btn-primary-hero" (click)="goToRoleSelection()">
+            <span class="btn-text">Get Started Now</span>
+            <span class="btn-icon">→</span>
+          </button>
+          <button class="btn-secondary-hero" (click)="scrollToFeatures()">
+            <span class="btn-text">Learn More</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="home-visual">
+        <div class="dashboard-mockup">
+          <div class="mockup-header">
+            <div class="mockup-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="mockup-title">CEFRS Dashboard</div>
+          </div>
+          <div class="mockup-content">
+            <div class="mockup-sidebar">
+              <div class="sidebar-item active">📊 Dashboard</div>
+              <div class="sidebar-item">📅 Reservations</div>
+              <div class="sidebar-item">🏗️ Equipment</div>
+              <div class="sidebar-item">🏛️ Facilities</div>
+            </div>
+            <div class="mockup-main">
+              <div class="chart-placeholder">
+                <div class="chart-bar" style="height: 60%"></div>
+                <div class="chart-bar" style="height: 80%"></div>
+                <div class="chart-bar" style="height: 45%"></div>
+                <div class="chart-bar" style="height: 90%"></div>
+                <div class="chart-bar" style="height: 70%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -65,7 +115,9 @@
   <!-- Overview Section -->
   <section id="overview" class="overview">
     <div class="overview-content">
-      <h2 class="section-title">Overview</h2>
+      <h2 class="section-title">
+        <span class="title-highlight">Overview</span>
+      </h2>
       <div class="overview-grid">
         <div class="overview-card">
           <h3>What is CEFRS?</h3>
@@ -102,7 +154,9 @@
   <!-- Features Section -->
   <section id="features" class="features">
     <div class="features-content">
-      <h2 class="section-title">Key Features</h2>
+      <h2 class="section-title">
+        <span class="title-highlight">Key Features</span>
+      </h2>
       <p class="section-subtitle">Everything you need for efficient campus resource management</p>
       
       <div class="features-grid">
@@ -195,7 +249,9 @@
   <!-- Policies Section -->
   <section id="policies" class="policies">
     <div class="policies-content">
-      <h2 class="section-title">Policies & Guidelines</h2>
+      <h2 class="section-title">
+        <span class="title-highlight">Policies & Guidelines</span>
+      </h2>
       <div class="policies-grid">
         <div class="policy-item">
           <h3>Reservation Policy</h3>

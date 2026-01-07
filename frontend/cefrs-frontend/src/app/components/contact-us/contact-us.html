@@ -12,6 +12,7 @@
       </button>
       <div class="nav-menu" [class.mobile-open]="showMobileMenu">
         <div class="nav-links">
+          <a (click)="goToLanding('home', $event); closeMobileMenu()" class="nav-link" href="javascript:void(0)">Home</a>
           <a (click)="goToLanding('overview', $event); closeMobileMenu()" class="nav-link" href="javascript:void(0)">Overview</a>
           <a (click)="goToLanding('features', $event); closeMobileMenu()" class="nav-link" href="javascript:void(0)">Features</a>
           <a (click)="goToLanding('policies', $event); closeMobileMenu()" class="nav-link" href="javascript:void(0)">Policies</a>

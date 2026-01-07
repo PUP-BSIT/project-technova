@@ -74,7 +74,7 @@ describe('LandingComponent', () => {
 
   it('should render the hero title', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const heroTitle = compiled.querySelector('.hero-title');
+    const heroTitle = compiled.querySelector('.home-title');
     expect(heroTitle).toBeTruthy();
     expect(heroTitle?.textContent).toContain('Campus Equipment & Facility');
   });
@@ -120,13 +120,13 @@ describe('LandingComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const navLinks = compiled.querySelectorAll('.navbar .nav-link');
     expect(navLinks.length).toBeGreaterThan(0);
-    expect(navLinks.length).toBe(4); // Overview, Features, Policies, Contact
+    expect(navLinks.length).toBe(5); // Home, Overview, Features, Policies, Contact
   });
 
   it('should have primary action buttons in hero section', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    const heroActions = compiled.querySelectorAll('.hero-actions button');
+    const heroActions = compiled.querySelectorAll('.home-actions button');
     expect(heroActions.length).toBeGreaterThan(0);
     expect(heroActions.length).toBe(2);
   });
