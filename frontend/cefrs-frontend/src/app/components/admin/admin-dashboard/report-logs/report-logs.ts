@@ -253,7 +253,6 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             this.facilityStats = [
               { label: 'Total Reservations', value: facilityUsage.totalReservations },
               { label: 'Active Reservations', value: facilityUsage.activeReservations },
-              { label: 'Average Occupancy', value: `${facilityUsage.averageOccupancy}%` },
               { label: 'Completed', value: facilityUsage.completedReservations }
             ];
           }
@@ -305,8 +304,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             this.equipmentStats = [
               { label: 'Total Borrowings', value: equipmentUsage.totalBorrowings },
               { label: 'Active Borrowings', value: equipmentUsage.activeBorrowings },
-              { label: 'Overdue Items', value: equipmentUsage.overdueItems },
-              { label: 'Avg Duration', value: `${equipmentUsage.averageDuration}h` }
+              { label: 'Overdue Items', value: equipmentUsage.overdueItems }
             ];
           }
 
@@ -348,11 +346,17 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
               lastActive: report.lastActivity
             }));
 
-          const studentCount = reports.filter(r => r.role.toUpperCase() === 'STUDENT').length;
-          const orgCount = reports.filter(r => r.role.toUpperCase() === 'ORGANIZATION').length;
+          // Calculate total activities by role (not just user count)
+          const studentActivities = reports
+            .filter(r => r.role.toUpperCase() === 'STUDENT' || r.role.toUpperCase() === 'USER')
+            .reduce((sum, r) => sum + r.totalReservations + r.totalBorrowings, 0);
+          const orgActivities = reports
+            .filter(r => r.role.toUpperCase() === 'CAMPUS_ORGANIZATION' || r.role.toUpperCase() === 'ORGANIZATION' || r.role.toUpperCase() === 'ORG')
+            .reduce((sum, r) => sum + r.totalReservations + r.totalBorrowings, 0);
+          
           this.userDistribution = {
-            students: studentCount,
-            organizations: orgCount
+            students: studentActivities,
+            organizations: orgActivities
           };
 
           if (this.dashboardStats) {
@@ -360,8 +364,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
             this.userStats = [
               { label: 'Active Users', value: userActivity.totalActiveUsers },
               { label: 'Today Reservations', value: userActivity.todayReservations },
-              { label: 'Today Borrowings', value: userActivity.todayBorrowings },
-              { label: 'Peak Hours', value: userActivity.peakHours }
+              { label: 'Today Borrowings', value: userActivity.todayBorrowings }
             ];
           }
 
@@ -378,8 +381,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
           this.userStats = [
             { label: 'Active Users', value: 0 },
             { label: 'Today Reservations', value: 0 },
-            { label: 'Today Borrowings', value: 0 },
-            { label: 'Peak Hours', value: 'N/A' }
+            { label: 'Today Borrowings', value: 0 }
           ];
           this.isLoadingUser = false;
         }
@@ -610,7 +612,7 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
     this.userPieChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Students/Individual', 'Organization'],
+        labels: ['Student Activities', 'Organization Activities'],
         datasets: [{
           data: [
             this.userDistribution.students,
@@ -673,12 +675,11 @@ export class ReportLogs implements OnInit, OnDestroy, AfterViewInit {
       case 'facility':
         return {
           title: 'Facility Usage Report',
-          headers: ['Rank', 'Facility Name', 'Total Bookings', 'Occupancy Rate', 'Status'],
+          headers: ['Rank', 'Facility Name', 'Total Bookings', 'Status'],
           data: this.topFacilities.map(f => [
             f.rank,
             f.name,
             f.totalBookings,
-            `${f.occupancyRate}%`,
             f.status === 'high-demand' ? 'High Demand' : 'Available'
           ]),
           stats: this.facilityStats
