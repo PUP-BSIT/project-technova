@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, input } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -40,7 +40,11 @@ interface UnifiedRequest {
   standalone: true,
   imports: [CommonModule, FormsModule, TitleCasePipe]
 })
-export class ManageRequest implements OnInit {
+export class ManageRequest implements OnInit, OnChanges {
+  // Input filters from parent component using signal inputs
+  initialStatus = input<string>('');
+  initialType = input<string>('');
+
   searchText: string = '';
   selectedType: string = 'All Types';
   selectedStatus: string = 'All Status';
@@ -71,20 +75,50 @@ export class ManageRequest implements OnInit {
   }
 
   ngOnInit(): void {
+    this.applyInitialFilters();
     this.loadAllRequests();
+  }
 
-    // Check for query params to set initial filter
-    this.route.queryParams.subscribe(params => {
-      if (params['status']) {
-        const status = params['status'].toLowerCase();
-        // Map status to dropdown options
-        if (status === 'pending') {
-          this.selectedStatus = 'Pending';
-        } else if (status === 'approved') {
-          this.selectedStatus = 'Approved';
-        }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialStatus'] || changes['initialType']) {
+      this.applyInitialFilters();
+    }
+  }
+
+  private applyInitialFilters(): void {
+    // Apply status filter
+    const status = this.initialStatus();
+    if (status) {
+      const statusLower = status.toLowerCase();
+      if (statusLower === 'pending') {
+        this.selectedStatus = 'Pending';
+      } else if (statusLower === 'approved') {
+        this.selectedStatus = 'Approved';
+      } else if (statusLower === 'rejected') {
+        this.selectedStatus = 'Rejected';
+      } else if (statusLower === 'returned') {
+        this.selectedStatus = 'Returned';
+      } else {
+        this.selectedStatus = 'All Status';
       }
-    });
+    } else {
+      this.selectedStatus = 'All Status';
+    }
+
+    // Apply type filter
+    const type = this.initialType();
+    if (type) {
+      const typeLower = type.toLowerCase();
+      if (typeLower === 'facility') {
+        this.selectedType = 'Facility';
+      } else if (typeLower === 'equipment') {
+        this.selectedType = 'Equipment';
+      } else {
+        this.selectedType = 'All Types';
+      }
+    } else {
+      this.selectedType = 'All Types';
+    }
   }
 
   loadAllRequests(): void {
