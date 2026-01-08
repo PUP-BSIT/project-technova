@@ -1,82 +1,78 @@
-# 🎓 Campus Equipment Borrowing and Facility Reservation System
+# 🎓 Campus Equipment Borrowing and Facility Reservation System (CEFRS)
 
-A **web-based application** that simplifies the process of **borrowing equipment** and **reserving facilities** within schools and organizations.
-This system replaces manual forms and verbal requests with a **centralized digital platform** where students, staff, and organizations can:
+[![Live Demo](https://img.shields.io/badge/Live_Demo-cefrs.site-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://cefrs.site/)
+[![Video Walkthrough](https://img.shields.io/badge/YouTube-Video_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/geFZFA9emRs)
 
-- 📅 Check **real-time availability**
-- 📝 Submit requests online
-- 🔔 Receive **reservation notifications**
-- 🛠 Allow administrators to efficiently **manage resources**
+A **production-ready** web application designed to digitize resource management within academic institutions. This system eliminates manual paperwork by providing a centralized platform for real-time scheduling, automated notifications, and conflict-free resource allocation.
 
 ---
 
-## 🚀 Features
+## 🌟 Key Features
 
-- **📅 Real-time Scheduling** – View availability of rooms and equipment
-- **📝 Digital Requests** – Borrow equipment or reserve facilities online
-- **🔔 Notifications** – Get updates on status, approvals, and reminders
-- **🛠 Admin Dashboard** – Manage requests and prevent conflicts
-- **📱 Mobile-Responsive** – Optimized for all devices
-- **👥 User Authentication** – Secure login & registration
+### 🛡️ Secure Authentication
+* **Multi-Channel Verification:** Robust "Forgot Password" flow utilizing both **SMS and Email verification codes**.
+* **Role-Based Access Control (RBAC):** Tailored dashboards for Students, Organizations, and Faculty Admins.
+
+### 📅 Advanced Reservation Logic
+* **Double-Booking Prevention:**
+    * **Facilities:** Implements "Waitlist" logic. If a slot is pending, subsequent requests for the same time are automatically flagged.
+    * **Equipment:** Intelligent inventory checks that prevent approval if requested quantities exceed current stock.
+* **Real-time Availability:** Interactive user interface for tracking resource status.
+
+### 🛠️ Administrative Power Tools
+* **📅 Centralized Resource Calendar:** A unified command center to visualize all schedules.
+    * **Status Tracking:** Color-coded entries to distinguish between **Approved**, **Pending**, and **Overdue** requests.
+    * **Dynamic Filtering:** Toggle between **Month, Week, Day, or List views** to manage high-volume bookings.
+* **Automated Inventory Management:** "Reorder Alerts" notify admins when stock falls below thresholds.
+* **Physical Auditing:** Dedicated logs for tracking stock adjustments and physical resource counts.
+* **One-Click Reporting:** Export professional PDF reports for monthly audits and usage analytics.
+
+### 📱 Superior User Experience
+* **Mobile-First Design:** Fully responsive UI featuring a reflowable layout and hamburger navigation for seamless use on smartphones.
+* **Instant Notifications:** Users receive real-time status updates from the admin panel via the notification system.
 
 ---
-## 🌐 Webhost/Live Demo
-- **Live Demo:** <br />
-[![(CEFRS) Campus Equipment & Facility Reservation System](https://img.shields.io/badge/CEFRS-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://cefrs.site/)
+
+## ⏯️ System Walkthrough
+*Watch the full demonstration of the platform, including the Admin Panel and Mobile Responsiveness.*
+
+> [!TIP]
+> **Video Highlights:**
+> - **00:03:32** - SMS Verification Demo
+> - **00:05:20** - Equipment Borrowing Flow
+> - **00:10:32** - Admin Inventory & PDF Export
+> - **00:13:01** - Admin Calendar & Filtering
+> - **00:17:48** - Double-Booking Prevention Logic
+> - **00:21:09** - Mobile View Demonstration
+
 ---
 
-## ⏯️ System Walkthrough/Video Demo
-- **Video Demo:** <br />
-[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://youtu.be/geFZFA9emRs)
----
-
-## 🗓️ Project Timeline
-
-- **Project Timeline:** [TechNova - Project Timeline](https://harmonious-tractor-cfa.notion.site/Technova-Project-Timeline-2683fa52b79c811d890cce8af0b22728?source=copy_link)
+## 🗓️ Project Management
+* **Timeline:** [View TechNova Project Roadmap](https://harmonious-tractor-cfa.notion.site/Technova-Project-Timeline-2683fa52b79c811d890cce8af0b22728?source=copy_link)
+* **Status:** Production Ready / Final Defense Version.
 
 ---
+
 ## 👤 Sample User Accounts for Testing
 
-These accounts are available to explore the system without registration.
+| Role | Email | Password | Permissions |
+| :--- | :--- | :--- | :--- |
+| **Student** | `johndoe@gmail.com` | `Johndoe@123` | View resources, basic facility & equipment requests. |
+| **Organization** | `computersocietydit@gmail.com` | `Comp@123` | Reserve facilities for group events and org activities. |
+| **Faculty Admin** | `facultyadmin@gmail.com` | `Faculty@123` | Full access to Admin Panel, approvals, and inventory. |
+
+**Admin Login URL:** [https://cefrs.site/admin-login](https://cefrs.site/admin-login)
 
 ---
 
-### 🎓 1. Student Account
-
-* **Email:** `johndoe@gmail.com`
-* **Password:** `Johndoe@123`
-* **Permissions:** Can **view** resources, submit basic **facility reservations**, and **borrow** equipment.
-
-### 🏛️ 2. Admin Account
-The administrative interface for this application can be accessed at the following URL:
-[https://www.cefrs.site/admin-login](https://www.cefrs.site/admin-login)
-
-* **Email:** `facultyadmin@gmail.com`
-* **Password:** `Faculty@123`
-* **Permissions:** Can **approve/reject** requests, **manage** facilities and equipment inventory, and view system logs.
-
-### 👥 3. Campus Organization Account
-
-* **Email:** `computersocietydit@gmail.com`
-* **Password:** `Comp@123`
-* **Permissions:** Can reserve facilities for **group events** and submit **equipment** requests for organization activities.
-
----
-
-### 💡 To Explore Without Registering:
-
-> Use the credentials above to log into the system and test the different permission levels.
-
----
-
-## 👥 Meet the Team
+## 👥 Meet Team TechNova
 
 | Avatar | Name | Role |
-|--------|------|------|
-| <img src="https://github.com/relente-patriciajoy.png" width="50"> | **Patricia Joy Relente** | ![](https://img.shields.io/badge/Project_Manager_/_Developer-pink) |
-| <img src="https://github.com/uy-angelicajoy.png" width="50"> | **Angelica Joy Uy** | ![](https://img.shields.io/badge/Technical_Lead_/_Developer-skyblue) |
-| <img src="https://github.com/andaya-gener.png" width="50"> | **Gener Andaya Jr.** | ![](https://img.shields.io/badge/Tester_/_Developer-gray) |
-| <img src="https://github.com/gomez-ashleyhermione.png" width="50"> | **Ashley Hermione Gomez** | ![](https://img.shields.io/badge/UI/UX_Designer_/_Developer-purple) |
-| <img src="https://github.com/barcelos-kevin.png" width="50"> | **Kevin Barcelos** | ![](https://img.shields.io/badge/Developer-red) |
+| :--- | :--- | :--- |
+| <img src="https://github.com/relente-patriciajoy.png" width="50"> | **Patricia Joy Relente** | Project Manager / Developer |
+| <img src="https://github.com/uy-angelicajoy.png" width="50"> | **Angelica Joy Uy** | Technical Lead / Developer |
+| <img src="https://github.com/andaya-gener.png" width="50"> | **Gener Andaya Jr.** | Tester / Developer |
+| <img src="https://github.com/gomez-ashleyhermione.png" width="50"> | **Ashley Hermione Gomez** | UI/UX Designer / Developer |
+| <img src="https://github.com/barcelos-kevin.png" width="50"> | **Kevin Barcelos** | Developer |
 
 ---
