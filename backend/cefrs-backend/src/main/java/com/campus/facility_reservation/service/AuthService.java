@@ -199,6 +199,8 @@ public class AuthService {
                                 .orElseThrow(() -> new RuntimeException("User not found"));
 
                 // Only update the fields that are allowed to change
+                user.setFirstName(request.getFirstName());
+                user.setLastName(request.getLastName());
                 user.setPhoneNumber(request.getPhoneNumber());
                 user.setEmail(request.getEmail());
                 user.setAddress(request.getAddress());
