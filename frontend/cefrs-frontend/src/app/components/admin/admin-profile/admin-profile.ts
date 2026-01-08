@@ -88,24 +88,25 @@ export class AdminProfileComponent implements OnInit {
       return;
     }
 
-    const payload = {
-      firstName: this.profileForm.get('firstName')?.value,
-      lastName: this.profileForm.get('lastName')?.value,
-      phoneNumber: this.profileForm.get('phoneNumber')?.value,
-      email: this.profileForm.get('email')?.value,
-      address: this.profileForm.get('address')?.value
-    };
-
-    
+    // getRawValue ensures disabled controls (e.g., email) are included in the payload
+    const payload = this.profileForm.getRawValue();
 
     this.profileService.updateProfile(payload).subscribe({
       next: (response) => {
-        
         this.successMessage = 'Profile updated successfully.';
         this.errorMessage = '';
         this.isEditing = false;
         this.profileForm.disable();
-        this.loadProfile();
+
+        // Reflect the updated values immediately without waiting for a fresh GET
+        this.user = response;
+        this.profileForm.patchValue({
+          firstName: response.firstName || payload.firstName,
+          lastName: response.lastName || payload.lastName,
+          phoneNumber: response.phoneNumber || payload.phoneNumber,
+          email: response.email || payload.email,
+          address: response.address || payload.address
+        });
       },
       error: (error) => {
         console.error('Update error:', error);
