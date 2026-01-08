@@ -113,7 +113,6 @@
                 <th>Rank</th>
                 <th>Facility Name</th>
                 <th>Total Bookings</th>
-                <th>Occupancy Rate</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -125,14 +124,6 @@
                   </td>
                   <td>{{ facility.name }}</td>
                   <td>{{ facility.totalBookings }}</td>
-                  <td>
-                    <div class="progress-cell">
-                      <div class="progress-bar">
-                        <div class="progress-fill" [style.width.%]="facility.occupancyRate"></div>
-                      </div>
-                      <span class="progress-text">{{ facility.occupancyRate }}%</span>
-                    </div>
-                  </td>
                   <td>
                     <span [class]="'status-badge status-' + facility.status">
                       {{ facility.status === 'high-demand' ? 'High Demand' : 'Available' }}
@@ -253,7 +244,7 @@
       <!-- User Distribution Pie Chart -->
       @if (topUsers.length > 0) {
         <div class="chart-container">
-          <h3 class="chart-title">User Distribution by Role</h3>
+          <h3 class="chart-title">Activities by User Role</h3>
           <div class="chart-wrapper">
             <canvas #userPieCanvas></canvas>
           </div>
