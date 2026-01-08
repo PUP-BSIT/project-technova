@@ -30,6 +30,11 @@ This system replaces manual forms and verbal requests with a **centralized digit
 [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://youtu.be/geFZFA9emRs)
 ---
 
+## 🗓️ Project Timeline
+
+- **Project Timeline:** [TechNova - Project Timeline](https://harmonious-tractor-cfa.notion.site/Technova-Project-Timeline-2683fa52b79c811d890cce8af0b22728?source=copy_link)
+
+---
 ## 👤 Sample User Accounts for Testing
 
 These accounts are available to explore the system without registration.
@@ -61,11 +66,6 @@ The administrative interface for this application can be accessed at the followi
 ### 💡 To Explore Without Registering:
 
 > Use the credentials above to log into the system and test the different permission levels.
----
-
-## 🗓️ Project Timeline
-
-- **Project Timeline:** [TechNova - Project Timeline](https://www.notion.so/Project-Timeline-2683fa52b79c811d890cce8af0b22728?source=copy_link)
 
 ---
 
