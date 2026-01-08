@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
-import { ReportService } from '../../../../services/report.service';
+import { ReservationService } from '../../../../services/reservation.service';
+import { EquipmentBorrowingService } from '../../../../services/equipment-borrowing.service';
 import { CalendarService } from '../../../../services/calendar.service';
 import { AuthService } from '../../../../services/auth';
 
@@ -34,6 +35,7 @@ export class DashboardView implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   @Output() viewAllRequested = new EventEmitter<void>();
+  @Output() navigateToManageRequest = new EventEmitter<{ status?: string; type?: string }>();
 
   pendingRequests: PendingRequest[] = [];
   stats: DashboardStats = {
@@ -54,10 +56,10 @@ export class DashboardView implements OnInit, OnDestroy {
   actionLoading: boolean = false;
 
   constructor(
-    private reportService: ReportService,
+    private reservationService: ReservationService,
+    private borrowingService: EquipmentBorrowingService,
     private calendarService: CalendarService,
-    private authService: AuthService,
-    private router: Router
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -87,38 +89,75 @@ export class DashboardView implements OnInit, OnDestroy {
     this.isLoading = true;
 
     forkJoin({
-      dashboardStats: this.reportService.getDashboardStats(),
-      calendarEvents: this.calendarService.getAllCalendarEvents()
+      reservations: this.reservationService.getAllReservations(),
+      borrowings: this.borrowingService.getAllBorrowings()
     })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          // Process dashboard stats
-          const stats = data.dashboardStats;
-          
-          // Count all pending requests from calendar events
-          const allPendingRequests = data.calendarEvents
-            .filter(event => event.extendedProps.status === 'PENDING').length;
-          
+          const reservations = data.reservations.success ? data.reservations.data : [];
+          const borrowings = data.borrowings.success ? data.borrowings.data : [];
+
+          // Count approved facility reservations
+          const approvedFacilities = reservations.filter(
+            (r: any) => r.status?.toLowerCase() === 'approved'
+          ).length;
+
+          // Count approved/borrowed equipment
+          const approvedEquipment = borrowings.filter(
+            (b: any) => b.status?.toLowerCase() === 'approved' || b.status?.toLowerCase() === 'borrowed'
+          ).length;
+
+          // Count all pending requests
+          const pendingFacilities = reservations.filter(
+            (r: any) => r.status?.toLowerCase() === 'pending'
+          ).length;
+          const pendingEquipment = borrowings.filter(
+            (b: any) => b.status?.toLowerCase() === 'pending'
+          ).length;
+
           this.stats = {
-            activeRequests: stats.facilityUsage.activeReservations + stats.equipmentUsage.activeBorrowings,
-            totalReservations: stats.facilityUsage.activeReservations,
-            equipmentBorrowedToday: stats.equipmentUsage.activeBorrowings, // Changed: Use active borrowings instead of today's borrowings
-            facilitiesInUse: allPendingRequests
+            activeRequests: approvedFacilities + approvedEquipment,
+            totalReservations: approvedFacilities,
+            equipmentBorrowedToday: approvedEquipment,
+            facilitiesInUse: pendingFacilities + pendingEquipment
           };
 
-          // Process pending requests from calendar events
-          this.pendingRequests = data.calendarEvents
-            .filter(event => event.extendedProps.status === 'PENDING')
-            .slice(0, 5) // Show only first 5
-            .map(event => ({
-              id: this.getEventIdNumber(event.id),
-              type: event.extendedProps.type,
-              name: event.extendedProps.userName,
-              details: event.title,
-              date: event.start,
-              status: event.extendedProps.status
-            }));
+          // Process pending requests for the list
+          const allPendingRequests: PendingRequest[] = [];
+
+          // Add pending facility reservations
+          reservations
+            .filter((r: any) => r.status?.toLowerCase() === 'pending')
+            .forEach((r: any) => {
+              allPendingRequests.push({
+                id: r.id,
+                type: 'facility',
+                name: r.userName,
+                details: r.facilityName,
+                date: r.reservationDate,
+                status: r.status
+              });
+            });
+
+          // Add pending equipment borrowings
+          borrowings
+            .filter((b: any) => b.status?.toLowerCase() === 'pending')
+            .forEach((b: any) => {
+              allPendingRequests.push({
+                id: b.id,
+                type: 'equipment',
+                name: b.userName,
+                details: b.equipmentName,
+                date: b.borrowDate,
+                status: b.status
+              });
+            });
+
+          // Sort by date and take first 5
+          this.pendingRequests = allPendingRequests
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            .slice(0, 5);
 
           this.isLoading = false;
         },
@@ -240,15 +279,7 @@ export class DashboardView implements OnInit, OnDestroy {
   }
 
   // Navigate to manage requests with specific filter
-  navigateToRequests(filter?: string): void {
-    this.router.navigate(['/admin-dashboard/manage-request'], {
-      queryParams: filter ? { status: filter } : {}
-    });
-  }
-
-  // Extract numeric ID from event ID string (e.g., "facility-123" to 123)
-  private getEventIdNumber(eventId: string): number {
-    const parts = eventId.split('-');
-    return parseInt(parts[1], 10);
+  navigateToRequests(status?: string, type?: string): void {
+    this.navigateToManageRequest.emit({ status, type });
   }
 }
