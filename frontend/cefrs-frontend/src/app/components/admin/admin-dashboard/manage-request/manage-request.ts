@@ -433,6 +433,34 @@ export class ManageRequest implements OnInit {
     });
   }
 
+  markFacilityReturned(request: UnifiedRequest): void {
+    if (!request || request.type !== 'facility') return;
+
+    this.actionLoading = true;
+    const adminId = localStorage.getItem('userId');
+    if (!adminId) {
+      this.actionLoading = false;
+      this.error = 'Your admin session is missing. Please sign in again.';
+      return;
+    }
+
+    // Mark facility reservation as COMPLETED (used to indicate returned/cleared)
+    this.reservationService.updateReservationStatus(request.id, 'COMPLETED', 'Facility marked returned by admin').subscribe({
+      next: (res: any) => {
+        this.actionLoading = false;
+        if (res.success) {
+          this.showSuccess('Facility marked as returned');
+          this.loadAllRequests();
+        }
+      },
+      error: (err: any) => {
+        this.actionLoading = false;
+        this.error = err.error?.message || 'Failed to mark facility as returned';
+        console.error('Error marking facility returned:', err);
+      }
+    });
+  }
+
   markRequestReturned(request: UnifiedRequest): void {
     if (!request || request.type !== 'equipment') return;
 
@@ -445,7 +473,10 @@ export class ManageRequest implements OnInit {
     }
 
     // Mark equipment borrowing as RETURNED
-    this.borrowingService.updateBorrowingStatus(request.id, 'RETURNED', 'Equipment marked returned by admin').subscribe({
+    // If the item is overdue, include the actual return date (today)
+    const actualReturnDate = request.status === 'overdue' ? new Date().toISOString().split('T')[0] : undefined;
+
+    this.borrowingService.updateBorrowingStatus(request.id, 'RETURNED', 'Equipment marked returned by admin', actualReturnDate).subscribe({
       next: (res: any) => {
         this.actionLoading = false;
         if (res.success) {
