@@ -110,18 +110,18 @@
                   </button>
                 }
 
-                <!-- Facility: Show "Mark Returned" for APPROVED/RETURNED/OVERDUE status -->
+                <!-- Facility: Show "Mark as Completed" for APPROVED status -->
                 @if (request.type === 'facility' && request.status === 'approved') {
                   <button
                     class="complete-button"
-                    (click)="markFacilityReturned(request)"
+                    (click)="markFacilityCompleted(request)"
                     [disabled]="actionLoading">
-                    Mark Returned
+                    Mark as Completed
                   </button>
                 }
 
-                <!-- Facility: Show "Mark Returned" for RETURNED/OVERDUE status -->
-                @if (request.type === 'facility' && request.status === 'overdue') {
+                <!-- Facility: Show "Mark Returned" for COMPLETED/OVERDUE status -->
+                @if (request.type === 'facility' && (request.status === 'completed' || request.status === 'overdue')) {
                   <button
                     class="return-button"
                     (click)="markFacilityReturned(request)"

@@ -68,9 +68,9 @@ public interface FacilityReservationRepository extends JpaRepository<FacilityRes
     @Query("SELECT COUNT(fr) FROM FacilityReservation fr WHERE fr.status IN ('APPROVED', 'PENDING')")
     Long countActiveReservations();
 
-        // Returned reservations
-        @Query("SELECT COUNT(fr) FROM FacilityReservation fr WHERE fr.status = 'RETURNED'")
-        Long countCompletedReservations();
+    // Completed reservations
+    @Query("SELECT COUNT(fr) FROM FacilityReservation fr WHERE fr.status = 'COMPLETED'")
+    Long countCompletedReservations();
 
     // Daily reservation counts for chart (last 30 days)
     @Query("SELECT fr.reservationDate as date, COUNT(fr) as count " +

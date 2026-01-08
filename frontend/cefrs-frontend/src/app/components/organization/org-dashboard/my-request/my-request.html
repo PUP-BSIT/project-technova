@@ -20,6 +20,7 @@
           <option>Approved</option>
           <option>Rejected</option>
           <option>Returned</option>
+          <option>Completed</option>
           <option>Waitlisted</option>
           <option>Cancelled</option>
         </select>
@@ -72,7 +73,7 @@
                 <button class="action-btn cancel-btn" (click)="openCancelModal(request)">Cancel</button>
               }
               @if (request.type === 'Facility' && request.status === 'Approved') {
-                <button class="action-btn return-btn" (click)="markReservationReturned(request)">Mark Returned</button>
+                <button class="action-btn return-btn" (click)="markReservationCompleted(request)">Mark Returned</button>
               }
               </div>
             </div>

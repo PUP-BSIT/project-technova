@@ -191,15 +191,16 @@ public class FacilityService {
 
         // Check for any other non-terminal reservations (WAITLISTED, OVERDUE)
         List<FacilityReservation> otherActiveReservations = allReservations.stream()
-                .filter(r -> r.getStatus() != ReservationStatus.RETURNED &&
-                         r.getStatus() != ReservationStatus.REJECTED)
+                .filter(r -> r.getStatus() != ReservationStatus.COMPLETED &&
+                             r.getStatus() != ReservationStatus.CANCELLED &&
+                             r.getStatus() != ReservationStatus.REJECTED)
                 .collect(Collectors.toList());
 
         if (!otherActiveReservations.isEmpty()) {
             throw new RuntimeException(
                 "Cannot delete facility '" + facility.getName() + "': " +
                 "It has " + otherActiveReservations.size() + " active reservation(s) in various states. " +
-                "Please ensure all reservations are cancelled, rejected, or returned before deleting."
+                "Please ensure all reservations are cancelled, rejected, or completed before deleting."
             );
         }
 

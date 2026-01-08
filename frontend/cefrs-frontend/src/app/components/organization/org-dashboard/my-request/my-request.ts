@@ -89,7 +89,7 @@ export class OrgMyRequestComponent implements OnInit {
       APPROVED: 'Approved',
       REJECTED: 'Rejected',
       RETURNED: 'Returned',
-      COMPLETED: 'Returned',
+      COMPLETED: 'Completed',
       OVERDUE: 'Overdue',
       BORROWED: 'Borrowed',
       WAITLISTED: 'Waitlisted',
@@ -151,13 +151,13 @@ export class OrgMyRequestComponent implements OnInit {
     });
   }
 
-  markReservationReturned(request: Request): void {
+  markReservationCompleted(request: Request): void {
     if (request.type !== 'Facility') return;
     const idParts = request.id.split('-');
     const id = Number(idParts[1]);
-    this.reservationService.markAsReturned(id).subscribe({
+    this.reservationService.markAsCompleted(id).subscribe({
       next: () => this.loadMyRequests(),
-      error: (err) => console.error('Error marking returned', err)
+      error: (err) => console.error('Error marking completed', err)
     });
   }
 

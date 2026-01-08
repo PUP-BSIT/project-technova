@@ -114,15 +114,15 @@ public class FacilityReservationController {
         return ResponseEntity.ok(ApiResponse.success("Reservation status updated", reservation));
     }
 
-    // PUT /api/reservations/{id}/return (mark as returned by borrower)
-    @PutMapping("/{id}/return")
+    // PUT /api/reservations/{id}/complete (mark as completed by borrower)
+    @PutMapping("/{id}/complete")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<FacilityReservationDTO>> markReservationAsReturned(
+    public ResponseEntity<ApiResponse<FacilityReservationDTO>> markReservationAsCompleted(
             @PathVariable Long id,
             Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
-        FacilityReservationDTO reservation = reservationService.markAsReturnedByUser(id, userId);
-        return ResponseEntity.ok(ApiResponse.success("Reservation marked as returned", reservation));
+        FacilityReservationDTO reservation = reservationService.markAsCompletedByUser(id, userId);
+        return ResponseEntity.ok(ApiResponse.success("Reservation marked as completed", reservation));
     }
 
     @DeleteMapping("/{id}/cancel")
