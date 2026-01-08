@@ -24,13 +24,77 @@ $tablet: 1024px;
 
 .view-container {
   padding: 32px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   @media (max-width: $mobile-l) {
     padding: 20px 16px;
+    height: auto;
+    overflow: visible;
   }
 
   @media (max-width: $mobile-m) {
     padding: 16px 12px;
+  }
+}
+
+.fixed-header-section {
+  flex-shrink: 0;
+
+  @media (max-width: $mobile-l) {
+    flex-shrink: unset;
+  }
+}
+
+.pending-requests-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  background: $card-background;
+  padding: 24px 32px;
+  border-radius: 8px 8px 0 0;
+  @include card-shadow;
+
+  @media (max-width: $mobile-l) {
+    padding: 20px;
+    margin-bottom: 0;
+    border-radius: 8px 8px 0 0;
+  }
+
+  @media (max-width: $mobile-m) {
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+
+    @media (max-width: $mobile-l) {
+      font-size: 20px;
+    }
+
+    @media (max-width: $mobile-m) {
+      font-size: 18px;
+    }
+  }
+
+  .view-all-button {
+    @include button-reset;
+    color: $text-primary;
+    font-size: 16px;
+    transition: color 0.2s;
+
+    @media (max-width: $mobile-l) {
+      font-size: 14px;
+    }
+
+    &:hover {
+      color: #69040C;
+    }
   }
 }
 
@@ -159,58 +223,55 @@ $tablet: 1024px;
   }
 }
 
-// Pending Requests Card
+// Pending Requests Card (scrollable area)
 .pending-requests-card {
   background: $card-background;
-  padding: 32px;
-  border-radius: 8px;
+  padding: 0 32px 32px 32px;
+  border-radius: 0 0 8px 8px;
   @include card-shadow;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  margin-top: -16px;
 
   @media (max-width: $mobile-l) {
     padding: 20px;
-    border-radius: 6px;
+    border-radius: 0 0 8px 8px;
+    flex: none;
+    overflow: visible;
+    margin-top: 0;
   }
 
   @media (max-width: $mobile-m) {
     padding: 16px;
   }
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
+  .request-list-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
 
     @media (max-width: $mobile-l) {
-      margin-bottom: 16px;
+      overflow: visible;
     }
 
-    .card-title {
-      font-size: 24px;
-      font-weight: 500;
-      margin: 0;
-
-      @media (max-width: $mobile-l) {
-        font-size: 20px;
-      }
-
-      @media (max-width: $mobile-m) {
-        font-size: 18px;
-      }
+    &::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .view-all-button {
-      @include button-reset;
-      color: $text-primary;
-      font-size: 16px;
-      transition: color 0.2s;
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
 
-      @media (max-width: $mobile-l) {
-        font-size: 14px;
-      }
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
 
       &:hover {
-        color: #69040C;
+        background: #a1a1a1;
       }
     }
   }

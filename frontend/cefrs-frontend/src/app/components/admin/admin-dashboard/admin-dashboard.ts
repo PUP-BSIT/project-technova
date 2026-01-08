@@ -52,6 +52,10 @@ export class AdminDashboard implements OnInit {
   isLoading = true;
   showLogoutModal: boolean = false;
 
+  // Filter state for manage-request view
+  manageRequestStatus: string = '';
+  manageRequestType: string = '';
+
   showNotificationModal: boolean = false;
   notificationType: 'success' | 'error' = 'success';
   notificationMessage: string = '';
@@ -157,6 +161,14 @@ export class AdminDashboard implements OnInit {
   }
 
   onViewAllRequested(): void {
+    this.manageRequestStatus = '';
+    this.manageRequestType = '';
+    this.setCurrentView('manage-request');
+  }
+
+  onNavigateToManageRequest(filters: { status?: string; type?: string }): void {
+    this.manageRequestStatus = filters.status || '';
+    this.manageRequestType = filters.type || '';
     this.setCurrentView('manage-request');
   }
 

@@ -1,59 +1,64 @@
 <div class="view-container">
-  <h1 class="page-title">Admin Dashboard</h1>
+  <div class="fixed-header-section">
+    <h1 class="page-title">Admin Dashboard</h1>
 
-  @if (isLoading) {
-    <div class="loading-message">Loading dashboard data...</div>
-  }
+    @if (isLoading) {
+      <div class="loading-message">Loading dashboard data...</div>
+    }
 
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <div class="stat-card clickable" (click)="navigateToRequests()">
-      <div class="stat-label">All Active Request</div>
-      <img src="assets/all-active.png" alt="Facilities Icon" class="icon" />
-      <div class="stat-value">{{ stats.activeRequests }}</div>
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card clickable" (click)="navigateToRequests('approved')">
+        <div class="stat-label">All Active Request</div>
+        <img src="assets/all-active.png" alt="Facilities Icon" class="icon" />
+        <div class="stat-value">{{ stats.activeRequests }}</div>
+      </div>
+      <div class="stat-card clickable" (click)="navigateToRequests('approved', 'facility')">
+        <div class="stat-label">Active Facilities Reserved</div>
+        <img src="assets/act-facility.png" alt="Facilities Icon" class="icon" />
+        <div class="stat-value">{{ stats.totalReservations }}</div>
+      </div>
+      <div class="stat-card clickable" (click)="navigateToRequests('approved', 'equipment')">
+        <div class="stat-label">Active Equipment Borrowed</div>
+        <img src="assets/act-equipment.png" alt="Facilities Icon" class="icon" />
+        <div class="stat-value">{{ stats.equipmentBorrowedToday }}</div>
+      </div>
+      <div class="stat-card clickable" (click)="navigateToRequests('pending')">
+        <div class="stat-label">All Pending Requests</div>
+        <img src="assets/pending.png" alt="Facilities Icon" class="icon" />
+        <div class="stat-value">{{ stats.facilitiesInUse }}</div>
+      </div>
     </div>
-    <div class="stat-card clickable" (click)="navigateToRequests('approved')">
-      <div class="stat-label">Active Facilities Reserved</div>
-      <img src="assets/act-facility.png" alt="Facilities Icon" class="icon" />
-      <div class="stat-value">{{ stats.totalReservations }}</div>
-    </div>
-    <div class="stat-card clickable" (click)="navigateToRequests('approved')">
-      <div class="stat-label">Active Equipment Borrowed</div>
-      <img src="assets/act-equipment.png" alt="Facilities Icon" class="icon" />
-      <div class="stat-value">{{ stats.equipmentBorrowedToday }}</div>
-    </div>
-    <div class="stat-card clickable" (click)="navigateToRequests('pending')">
-      <div class="stat-label">All Pending Requests</div>
-      <img src="assets/pending.png" alt="Facilities Icon" class="icon" />
-      <div class="stat-value">{{ stats.facilitiesInUse }}</div>
-    </div>
-  </div>
 
-  <!-- Pending Requests -->
-  <div class="pending-requests-card">
-    <div class="card-header">
+    <!-- Pending Requests Header -->
+    <div class="pending-requests-header">
       <h2 class="card-title">Pending Requests</h2>
       <button class="view-all-button" type="button" (click)="viewAllRequests()">View all</button>
     </div>
+  </div>
 
-    <div class="request-list">
-      @if (!isLoading && pendingRequests.length === 0) {
-        <div class="no-requests">No pending requests at this time</div>
-      }
+  <!-- Scrollable Request List -->
+  <div class="pending-requests-card">
+    <div class="request-list-container">
+      <div class="request-list">
+        @if (!isLoading && pendingRequests.length === 0) {
+          <div class="no-requests">No pending requests at this time</div>
+        }
 
-      @for (request of pendingRequests; track request.id) {
-        <div class="request-item">
-          <div class="request-info">
-            <span [class]="'request-badge ' + request.type">{{ request.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>
-            <span class="request-name">{{ request.name }}</span>
-            <div class="request-details">{{ request.details }} • {{ request.date }}</div>
+        @for (request of pendingRequests; track request.id) {
+          <div class="request-item">
+            <div class="request-info">
+              <span [class]="'request-badge ' + request.type">{{ request.type === 'equipment' ? 'Equipment' : 'Facility' }}</span>
+              <span class="request-name">{{ request.name }}</span>
+              <div class="request-details">{{ request.details }} • {{ request.date }}</div>
+            </div>
+            <div class="request-actions">
+              <button class="approve-button" (click)="approveRequest(request)">Approved</button>
+              <button class="decline-button" (click)="declineRequest(request)">Decline</button>
+            </div>
           </div>
-          <div class="request-actions">
-            <button class="approve-button" (click)="approveRequest(request)">Approved</button>
-            <button class="decline-button" (click)="declineRequest(request)">Decline</button>
-          </div>
-        </div>
-      }
+        }
+      </div>
     </div>
   </div>
 </div>
