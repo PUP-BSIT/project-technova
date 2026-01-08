@@ -83,11 +83,14 @@
     </div>
   </aside>
 
-  <main class="main-content">
+  <main class="main-content" [class.dashboard-active]="currentView === 'dashboard'">
     @if (currentView === 'dashboard') {
-      <app-dashboard-view (viewAllRequested)="onViewAllRequested()"></app-dashboard-view>
+      <app-dashboard-view 
+        (viewAllRequested)="onViewAllRequested()"
+        (navigateToManageRequest)="onNavigateToManageRequest($event)">
+      </app-dashboard-view>
     } @else if (currentView === 'manage-request') {
-      <app-manage-request></app-manage-request>
+      <app-manage-request [initialStatus]="manageRequestStatus" [initialType]="manageRequestType"></app-manage-request>
     } @else if (currentView === 'calendar') {
       <app-calendar-view></app-calendar-view>
     } @else if (currentView === 'facilities') {
