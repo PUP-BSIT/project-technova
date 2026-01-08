@@ -38,7 +38,7 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: $spacing-lg;
   padding: $spacing-md $spacing-3xl $spacing-lg;
   width: 100%;
@@ -51,6 +51,13 @@
   border-radius: $radius-lg;
   box-shadow: $shadow-md;
   text-align: center;
+
+  transition: all $transition-fast ease;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-4px);
+  }
 }
 
 .stat-label {
