@@ -2,6 +2,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-cefrs.site-a83232?style=for-the-badge&logo=hostinger&logoColor=white)](https://cefrs.site/)
 [![Video Walkthrough](https://img.shields.io/badge/YouTube-Video_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/geFZFA9emRs)
+[![Video Presentation](https://img.shields.io/badge/YouTube-Video_Presentation-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/kTi40Mf0haE)
 
 A **production-ready** web application designed to digitize resource management within academic institutions. This system eliminates manual paperwork by providing a centralized platform for real-time scheduling, automated notifications, and conflict-free resource allocation.
 
